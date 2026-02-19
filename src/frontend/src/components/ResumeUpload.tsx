@@ -1,188 +1,168 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useUploadResume } from '../hooks/useQueries';
 import { ExternalBlob } from '../backend';
-import { parseResumePDF } from '../services/nlpService';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Upload, FileText, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Upload, FileText, CheckCircle2, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { parseResumePDF } from '../services/nlpService';
+import { extractSkills } from '../services/skillExtraction';
 
 interface ResumeUploadProps {
-  onUploadSuccess: () => void;
+  onUploadSuccess: (skills: string[]) => void;
 }
 
 export default function ResumeUpload({ onUploadSuccess }: ResumeUploadProps) {
+  const [file, setFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isComplete, setIsComplete] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
   const uploadResume = useUploadResume();
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
 
-    if (file.type !== 'application/pdf') {
-      setError('Please upload a PDF file');
+    // Validate file type
+    if (selectedFile.type !== 'application/pdf') {
+      toast.error('Please upload a PDF file');
       return;
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-      setError('File size must be less than 10MB');
+    // Validate file size (10MB max)
+    const maxSize = 10 * 1024 * 1024;
+    if (selectedFile.size > maxSize) {
+      toast.error('File size must be less than 10MB');
       return;
     }
 
-    setError(null);
-    setSelectedFile(file);
+    setFile(selectedFile);
+    setIsComplete(false);
   };
 
   const handleUpload = async () => {
-    if (!selectedFile) return;
+    if (!file) return;
 
     setIsProcessing(true);
     setUploadProgress(0);
 
     try {
-      const arrayBuffer = await selectedFile.arrayBuffer();
-      const uint8Array = new Uint8Array(arrayBuffer);
-
-      // Parse PDF
-      await parseResumePDF(uint8Array);
-
-      const blob = ExternalBlob.fromBytes(uint8Array).withUploadProgress((percentage) => {
+      // Read file as bytes
+      const arrayBuffer = await file.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuffer);
+      
+      // Create ExternalBlob with progress tracking
+      const blob = ExternalBlob.fromBytes(bytes).withUploadProgress((percentage) => {
         setUploadProgress(percentage);
       });
 
-      await uploadResume.mutateAsync({
-        fileId: selectedFile.name,
-        blob,
-      });
+      // Upload to backend
+      const fileId = `resume_${Date.now()}_${file.name}`;
+      await uploadResume.mutateAsync({ fileId, blob });
 
-      setUploadProgress(100);
-      setTimeout(() => {
-        onUploadSuccess();
-      }, 500);
-    } catch (err: any) {
-      setError(err.message || 'Failed to upload resume');
+      // Parse PDF and extract skills
+      toast.info('Analyzing resume...');
+      const extractedText = await parseResumePDF(bytes);
+      const skills = extractSkills(extractedText);
+
+      setIsComplete(true);
+      toast.success(`Resume uploaded! Found ${skills.length} skills.`);
+      onUploadSuccess(skills);
+    } catch (error) {
+      toast.error('Failed to upload resume. Please try again.');
+      console.error('Upload error:', error);
+    } finally {
       setIsProcessing(false);
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      if (file.type !== 'application/pdf') {
-        setError('Please upload a PDF file');
-        return;
-      }
-
-      if (file.size > 10 * 1024 * 1024) {
-        setError('File size must be less than 10MB');
-        return;
-      }
-
-      setError(null);
-      setSelectedFile(file);
     }
   };
 
   return (
     <div className="space-y-4">
-      <div
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
-        className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-colors ${
-          isProcessing
-            ? 'opacity-50 cursor-not-allowed border-border'
-            : 'border-border hover:border-primary/50 hover:bg-muted/50'
-        }`}
-        onClick={() => !isProcessing && fileInputRef.current?.click()}
-      >
+      <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
         <input
           ref={fileInputRef}
           type="file"
           accept=".pdf"
           onChange={handleFileSelect}
           className="hidden"
-          disabled={isProcessing}
         />
-        <div className="flex flex-col items-center space-y-4">
-          {uploadProgress === 100 ? (
-            <CheckCircle2 className="w-16 h-16 text-success" />
-          ) : selectedFile ? (
-            <FileText className="w-16 h-16 text-primary" />
-          ) : (
-            <Upload className="w-16 h-16 text-muted-foreground" />
-          )}
+        
+        {!file ? (
           <div>
-            {selectedFile ? (
-              <>
-                <p className="text-lg font-semibold text-foreground mb-2">{selectedFile.name}</p>
-                <p className="text-sm text-muted-foreground">
-                  {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-                </p>
-              </>
+            <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-sm text-muted-foreground mb-4">
+              Click to upload or drag and drop your resume
+            </p>
+            <Button onClick={() => fileInputRef.current?.click()}>
+              Select PDF File
+            </Button>
+          </div>
+        ) : (
+          <div>
+            {isComplete ? (
+              <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto mb-4" />
             ) : (
-              <>
-                <p className="text-lg font-semibold text-foreground mb-2">Upload your resume</p>
+              <FileText className="h-12 w-12 text-primary mx-auto mb-4" />
+            )}
+            <p className="font-medium mb-2">{file.name}</p>
+            <p className="text-sm text-muted-foreground mb-4">
+              {(file.size / 1024 / 1024).toFixed(2)} MB
+            </p>
+            
+            {isProcessing && (
+              <div className="mb-4">
+                <Progress value={uploadProgress} className="mb-2" />
                 <p className="text-sm text-muted-foreground">
-                  Drag and drop your PDF file here, or click to browse
+                  {uploadProgress < 100 ? 'Uploading...' : 'Processing...'}
                 </p>
-                <p className="text-xs text-muted-foreground mt-2">Maximum file size: 10MB</p>
-              </>
+              </div>
+            )}
+            
+            {!isComplete && (
+              <div className="flex gap-2 justify-center">
+                <Button
+                  onClick={handleUpload}
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    'Upload & Analyze'
+                  )}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setFile(null);
+                    setUploadProgress(0);
+                  }}
+                  disabled={isProcessing}
+                >
+                  Cancel
+                </Button>
+              </div>
+            )}
+            
+            {isComplete && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setFile(null);
+                  setIsComplete(false);
+                  setUploadProgress(0);
+                }}
+              >
+                Upload Different Resume
+              </Button>
             )}
           </div>
-        </div>
+        )}
       </div>
-
-      {selectedFile && uploadProgress < 100 && !isProcessing && (
-        <div className="flex justify-center space-x-3">
-          <Button onClick={handleUpload} disabled={isProcessing}>
-            Upload & Analyze
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => {
-              setSelectedFile(null);
-              setError(null);
-            }}
-          >
-            Cancel
-          </Button>
-        </div>
-      )}
-
-      {isProcessing && uploadProgress < 100 && (
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Uploading...</span>
-            <span className="font-medium text-foreground">{uploadProgress}%</span>
-          </div>
-          <Progress value={uploadProgress} className="h-2" />
-        </div>
-      )}
-
-      {uploadProgress === 100 && (
-        <div className="flex items-center space-x-2 text-success p-3 bg-success/10 rounded-lg border border-success/20">
-          <CheckCircle2 className="w-5 h-5" />
-          <span className="font-medium">Resume uploaded successfully!</span>
-        </div>
-      )}
-
-      {error && (
-        <div className="flex items-center space-x-2 text-destructive p-3 bg-destructive/10 rounded-lg border border-destructive/20">
-          <AlertCircle className="w-5 h-5" />
-          <span className="font-medium">{error}</span>
-        </div>
-      )}
     </div>
   );
 }

@@ -1,35 +1,56 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useGetJobRoles } from '../hooks/useQueries';
-import { JobRole } from '../backend';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import { CheckCircle2 } from 'lucide-react';
+import { Briefcase } from 'lucide-react';
+import type { JobRole } from '../backend';
 
 interface JobRoleSelectorProps {
-  onSelect: (role: JobRole) => void;
+  onSelect: (role: JobRole | null) => void;
+  disabled?: boolean;
 }
 
-export default function JobRoleSelector({ onSelect }: JobRoleSelectorProps) {
+export default function JobRoleSelector({ onSelect, disabled }: JobRoleSelectorProps) {
   const { data: jobRoles, isLoading, isFetched } = useGetJobRoles();
-  const [selectedRole, setSelectedRole] = useState<JobRole | null>(null);
+  const [selectedTitle, setSelectedTitle] = useState<string>('');
 
-  const handleSelect = (role: JobRole) => {
-    setSelectedRole(role);
+  const handleSelect = (title: string) => {
+    setSelectedTitle(title);
+    const role = jobRoles?.find(r => r.title === title);
+    onSelect(role || null);
   };
 
-  const handleConfirm = () => {
-    if (selectedRole) {
-      onSelect(selectedRole);
-    }
-  };
+  if (disabled) {
+    return (
+      <div className="text-center py-8 text-muted-foreground">
+        Please upload your resume first
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
-      <div className="grid md:grid-cols-2 gap-4">
-        {[1, 2, 3, 4].map((i) => (
-          <Skeleton key={i} className="h-48" />
+      <div className="grid gap-4">
+        {[1, 2, 3].map((i) => (
+          <Card key={i}>
+            <CardContent className="p-4">
+              <div className="flex items-start gap-4">
+                <Skeleton className="h-5 w-5 rounded-full mt-1" />
+                <div className="flex-1 space-y-3">
+                  <Skeleton className="h-6 w-48" />
+                  <Skeleton className="h-4 w-32" />
+                  <div className="flex gap-2">
+                    <Skeleton className="h-6 w-20" />
+                    <Skeleton className="h-6 w-24" />
+                    <Skeleton className="h-6 w-16" />
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
     );
@@ -37,61 +58,54 @@ export default function JobRoleSelector({ onSelect }: JobRoleSelectorProps) {
 
   if (isFetched && (!jobRoles || jobRoles.length === 0)) {
     return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground text-lg">
-          No job roles available. Please contact an administrator.
-        </p>
+      <div className="text-center py-8 text-muted-foreground">
+        No job roles available. Please contact an administrator.
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="grid md:grid-cols-2 gap-4">
+    <RadioGroup value={selectedTitle} onValueChange={handleSelect}>
+      <div className="grid gap-4">
         {jobRoles?.map((role) => (
-          <Card
+          <Card 
             key={role.title}
-            className={`cursor-pointer transition-all ${
-              selectedRole?.title === role.title
-                ? 'border-primary bg-primary/5 shadow-md'
-                : 'border-border hover:border-primary/50 hover:shadow-sm'
+            className={`cursor-pointer transition-colors ${
+              selectedTitle === role.title ? 'border-primary bg-primary/5' : 'hover:border-primary/50'
             }`}
-            onClick={() => handleSelect(role)}
+            onClick={() => handleSelect(role.title)}
           >
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <CardTitle className="text-lg font-semibold">{role.title}</CardTitle>
-                {selectedRole?.title === role.title && (
-                  <CheckCircle2 className="w-6 h-6 text-primary" />
-                )}
-              </div>
-              <CardDescription>{role.requiredSkills.length} required skills</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {role.requiredSkills.slice(0, 5).map((skill) => (
-                  <Badge key={skill.name} variant="secondary" className="text-xs">
-                    {skill.name}
-                  </Badge>
-                ))}
-                {role.requiredSkills.length > 5 && (
-                  <Badge variant="outline" className="text-xs">
-                    +{role.requiredSkills.length - 5} more
-                  </Badge>
-                )}
+            <CardContent className="p-4">
+              <div className="flex items-start gap-4">
+                <RadioGroupItem value={role.title} id={role.title} className="mt-1" />
+                <div className="flex-1">
+                  <Label htmlFor={role.title} className="cursor-pointer">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Briefcase className="h-5 w-5 text-primary" />
+                      <span className="font-semibold text-lg">{role.title}</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      {role.requiredSkills.length} required skills
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {role.requiredSkills.slice(0, 5).map((skill, idx) => (
+                        <Badge key={idx} variant="secondary" className="text-xs">
+                          {skill.name}
+                        </Badge>
+                      ))}
+                      {role.requiredSkills.length > 5 && (
+                        <Badge variant="outline" className="text-xs">
+                          +{role.requiredSkills.length - 5} more
+                        </Badge>
+                      )}
+                    </div>
+                  </Label>
+                </div>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
-
-      {selectedRole && (
-        <div className="flex justify-center pt-4">
-          <Button onClick={handleConfirm} size="lg" className="font-semibold px-8">
-            Continue with {selectedRole.title}
-          </Button>
-        </div>
-      )}
-    </div>
+    </RadioGroup>
   );
 }

@@ -1,115 +1,120 @@
-import React, { useState } from 'react';
-import { Link } from '@tanstack/react-router';
-import { Menu, X } from 'lucide-react';
-import LoginButton from './LoginButton';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { useIsCallerAdmin } from '../hooks/useQueries';
+import LoginButton from './LoginButton';
+import { Menu, X, GraduationCap, BarChart3, Shield } from 'lucide-react';
+import { useState } from 'react';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { identity } = useInternetIdentity();
   const { data: isAdmin } = useIsCallerAdmin();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
   const isAuthenticated = !!identity;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
-        <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            {/* Logo */}
-            <Link to="/" className="flex items-center space-x-2">
-              <span className="text-xl font-bold text-primary">SkillGap Analyzer</span>
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-16 items-center justify-between">
+          <div className="flex items-center gap-8">
+            <Link to="/" className="flex items-center gap-2 font-bold text-xl">
+              <GraduationCap className="h-7 w-7 text-primary" />
+              <span className="hidden sm:inline">SkillGap Analyzer</span>
             </Link>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex md:items-center md:space-x-6">
-              {isAuthenticated && (
-                <>
+            
+            {isAuthenticated && (
+              <nav className="hidden md:flex items-center gap-6">
+                <Link
+                  to="/analyze"
+                  className="text-sm font-medium transition-colors hover:text-primary"
+                  activeProps={{ className: 'text-primary' }}
+                >
+                  <div className="flex items-center gap-2">
+                    <BarChart3 className="h-4 w-4" />
+                    Analyze
+                  </div>
+                </Link>
+                {isAdmin && (
                   <Link
-                    to="/analyze"
-                    className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors"
+                    to="/admin"
+                    className="text-sm font-medium transition-colors hover:text-primary"
+                    activeProps={{ className: 'text-primary' }}
                   >
-                    Analysis
+                    <div className="flex items-center gap-2">
+                      <Shield className="h-4 w-4" />
+                      Admin
+                    </div>
                   </Link>
-                  {isAdmin && (
-                    <Link
-                      to="/admin"
-                      className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors"
-                    >
-                      Admin Panel
-                    </Link>
-                  )}
-                </>
-              )}
-              <LoginButton />
-            </div>
-
-            {/* Mobile menu button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-md text-foreground hover:bg-muted transition-colors"
-            >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+                )}
+              </nav>
+            )}
           </div>
 
-          {/* Mobile Navigation */}
-          {mobileMenuOpen && (
-            <div className="md:hidden py-4 border-t border-border">
-              <div className="flex flex-col space-y-3">
-                {isAuthenticated && (
-                  <>
-                    <Link
-                      to="/analyze"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="px-3 py-2 text-sm font-medium text-foreground/80 hover:text-primary hover:bg-muted rounded-md transition-colors"
-                    >
-                      Analysis
-                    </Link>
-                    {isAdmin && (
-                      <Link
-                        to="/admin"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="px-3 py-2 text-sm font-medium text-foreground/80 hover:text-primary hover:bg-muted rounded-md transition-colors"
-                      >
-                        Admin Panel
-                      </Link>
-                    )}
-                  </>
-                )}
-                <div className="px-3 py-2">
-                  <LoginButton />
-                </div>
-              </div>
-            </div>
-          )}
-        </nav>
+          <div className="flex items-center gap-4">
+            <LoginButton />
+            
+            {isAuthenticated && (
+              <button
+                className="md:hidden"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
+                {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && isAuthenticated && (
+          <div className="md:hidden border-t border-border/40 bg-background">
+            <nav className="container py-4 flex flex-col gap-3">
+              <Link
+                to="/analyze"
+                className="flex items-center gap-2 text-sm font-medium py-2 transition-colors hover:text-primary"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <BarChart3 className="h-4 w-4" />
+                Analyze
+              </Link>
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  className="flex items-center gap-2 text-sm font-medium py-2 transition-colors hover:text-primary"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Shield className="h-4 w-4" />
+                  Admin
+                </Link>
+              )}
+            </nav>
+          </div>
+        )}
       </header>
 
       {/* Main Content */}
-      <main className="flex-1">{children}</main>
+      <main className="flex-1">
+        {children}
+      </main>
 
       {/* Footer */}
-      <footer className="border-t border-border bg-card">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-            <p className="text-sm text-muted-foreground">
+      <footer className="border-t border-border/40 bg-muted/30">
+        <div className="container py-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="text-sm text-muted-foreground">
               © {new Date().getFullYear()} SkillGap Analyzer. All rights reserved.
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Built with love using{' '}
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Built with ❤️ using{' '}
               <a
-                href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
-                  window.location.hostname
-                )}`}
+                href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary hover:underline font-medium"
+                className="font-medium hover:text-foreground transition-colors"
               >
                 caffeine.ai
               </a>
-            </p>
+            </div>
           </div>
         </div>
       </footer>

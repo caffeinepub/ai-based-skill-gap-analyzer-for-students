@@ -1,113 +1,102 @@
-import React from 'react';
-import { Link } from '@tanstack/react-router';
-import { FileText, Target, TrendingUp, Shield } from 'lucide-react';
+import { useNavigate } from '@tanstack/react-router';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import { ArrowRight, Target, TrendingUp, Award, BookOpen } from 'lucide-react';
 
 export default function HomePage() {
+  const navigate = useNavigate();
   const { identity } = useInternetIdentity();
   const isAuthenticated = !!identity;
 
   return (
-    <div className="min-h-screen">
+    <div className="relative">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary/5 via-background to-accent/5 py-20 sm:py-32">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center opacity-20"
+          style={{ backgroundImage: 'url(/assets/generated/hero-bg.dim_1920x1080.png)' }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background" />
+        
+        <div className="container relative py-24 md:py-32">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6 tracking-tight">
-              Identify Your Skill Gaps
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
+              Discover Your Skill Gaps,
+              <span className="text-primary block mt-2">Unlock Your Potential</span>
             </h1>
-            <p className="text-lg sm:text-xl text-muted-foreground mb-8 leading-relaxed">
-              Upload your resume and compare it against job requirements to discover exactly what
-              skills you need to advance your career.
+            <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+              AI-powered resume analysis that identifies your skill gaps, compares them with industry requirements, 
+              and provides personalized learning recommendations.
             </p>
+            
             {isAuthenticated ? (
-              <Link to="/analyze">
-                <Button size="lg" className="text-base font-semibold px-8 py-6">
-                  Start Analysis
-                </Button>
-              </Link>
+              <Button size="lg" onClick={() => navigate({ to: '/analyze' })} className="text-lg px-8">
+                Start Analysis
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
             ) : (
-              <p className="text-base text-muted-foreground">
-                Please log in to start your skill gap analysis
-              </p>
+              <div className="text-muted-foreground">
+                Please login to start analyzing your skills
+              </div>
             )}
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-background">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-              How It Works
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Our intelligent analysis helps you understand your current skill set and provides
-              actionable recommendations for growth.
-            </p>
-          </div>
-
+      <section className="py-20 bg-muted/30">
+        <div className="container">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+            How It Works
+          </h2>
+          
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="border-border hover:border-primary/50 transition-colors">
-              <CardHeader>
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <FileText className="w-6 h-6 text-primary" />
+            <Card>
+              <CardContent className="pt-6">
+                <div className="rounded-full bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
+                  <BookOpen className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle className="text-xl font-semibold">Upload Resume</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-base leading-relaxed">
-                  Upload your resume in PDF format. Our system extracts your skills and experience
-                  automatically.
-                </CardDescription>
+                <h3 className="font-semibold text-lg mb-2">Upload Resume</h3>
+                <p className="text-sm text-muted-foreground">
+                  Upload your resume in PDF format for AI-powered analysis
+                </p>
               </CardContent>
             </Card>
 
-            <Card className="border-border hover:border-primary/50 transition-colors">
-              <CardHeader>
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <Target className="w-6 h-6 text-primary" />
+            <Card>
+              <CardContent className="pt-6">
+                <div className="rounded-full bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
+                  <Target className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle className="text-xl font-semibold">Select Job Role</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-base leading-relaxed">
-                  Choose from our curated list of job roles to compare your skills against industry
-                  requirements.
-                </CardDescription>
+                <h3 className="font-semibold text-lg mb-2">Select Job Role</h3>
+                <p className="text-sm text-muted-foreground">
+                  Choose your target job role from our curated list
+                </p>
               </CardContent>
             </Card>
 
-            <Card className="border-border hover:border-primary/50 transition-colors">
-              <CardHeader>
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <TrendingUp className="w-6 h-6 text-primary" />
+            <Card>
+              <CardContent className="pt-6">
+                <div className="rounded-full bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
+                  <TrendingUp className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle className="text-xl font-semibold">View Analysis</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-base leading-relaxed">
-                  Get detailed insights into your skill match percentage and identify specific gaps
-                  in your expertise.
-                </CardDescription>
+                <h3 className="font-semibold text-lg mb-2">Get Analysis</h3>
+                <p className="text-sm text-muted-foreground">
+                  Receive detailed skill gap analysis with match percentage
+                </p>
               </CardContent>
             </Card>
 
-            <Card className="border-border hover:border-primary/50 transition-colors">
-              <CardHeader>
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <Shield className="w-6 h-6 text-primary" />
+            <Card>
+              <CardContent className="pt-6">
+                <div className="rounded-full bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
+                  <Award className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle className="text-xl font-semibold">Get Recommendations</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-base leading-relaxed">
-                  Receive personalized course and project recommendations to bridge your skill gaps
-                  effectively.
-                </CardDescription>
+                <h3 className="font-semibold text-lg mb-2">Learn & Grow</h3>
+                <p className="text-sm text-muted-foreground">
+                  Get personalized course recommendations to bridge gaps
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -116,22 +105,21 @@ export default function HomePage() {
 
       {/* CTA Section */}
       {isAuthenticated && (
-        <section className="py-20 bg-gradient-to-br from-primary/5 to-accent/5">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-3xl mx-auto text-center">
-              <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-6">
-                Ready to Advance Your Career?
-              </h2>
-              <p className="text-lg text-muted-foreground mb-8">
-                Start your skill gap analysis now and take the first step towards your professional
-                goals.
-              </p>
-              <Link to="/analyze">
-                <Button size="lg" className="text-base font-semibold px-8 py-6">
-                  Begin Analysis
+        <section className="py-20">
+          <div className="container">
+            <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
+              <CardContent className="py-12 text-center">
+                <h2 className="text-3xl font-bold mb-4">Ready to Analyze Your Skills?</h2>
+                <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+                  Take the first step towards your dream career. Upload your resume and discover 
+                  what skills you need to succeed.
+                </p>
+                <Button size="lg" onClick={() => navigate({ to: '/analyze' })}>
+                  Get Started Now
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
-              </Link>
-            </div>
+              </CardContent>
+            </Card>
           </div>
         </section>
       )}

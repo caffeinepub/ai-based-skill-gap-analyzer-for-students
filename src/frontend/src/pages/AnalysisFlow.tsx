@@ -1,86 +1,116 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
+import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import ResumeUpload from '../components/ResumeUpload';
 import JobRoleSelector from '../components/JobRoleSelector';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { ArrowRight, FileText, Briefcase } from 'lucide-react';
+import type { JobRole } from '../backend';
 
 export default function AnalysisFlow() {
-  const [step, setStep] = useState<'upload' | 'select'>('upload');
-  const [resumeUploaded, setResumeUploaded] = useState(false);
   const navigate = useNavigate();
+  const { identity } = useInternetIdentity();
+  const [resumeUploaded, setResumeUploaded] = useState(false);
+  const [selectedJobRole, setSelectedJobRole] = useState<JobRole | null>(null);
+  const [extractedSkills, setExtractedSkills] = useState<string[]>([]);
 
-  const handleResumeUpload = () => {
-    setResumeUploaded(true);
-    setStep('select');
-  };
+  const isAuthenticated = !!identity;
 
-  const handleJobRoleSelect = () => {
-    navigate({ to: '/dashboard' });
+  if (!isAuthenticated) {
+    return (
+      <div className="container py-12">
+        <Card>
+          <CardContent className="py-12 text-center">
+            <p className="text-muted-foreground">Please login to access the skill analysis feature.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const canProceed = resumeUploaded && selectedJobRole && extractedSkills.length > 0;
+
+  const handleProceedToAnalysis = () => {
+    if (canProceed) {
+      navigate({ 
+        to: '/dashboard',
+        state: { 
+          jobRole: selectedJobRole,
+          extractedSkills 
+        } as any
+      });
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background py-12">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
-        {/* Progress Steps */}
-        <div className="mb-12">
-          <div className="flex items-center justify-center space-x-4">
-            <div className="flex items-center">
-              <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-colors ${
-                  step === 'upload'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-success text-success-foreground'
-                }`}
-              >
-                {resumeUploaded ? <CheckCircle2 className="w-6 h-6" /> : '1'}
-              </div>
-              <span className="ml-3 text-sm font-medium text-foreground">Upload Resume</span>
-            </div>
-            <div className="w-16 h-0.5 bg-border"></div>
-            <div className="flex items-center">
-              <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-colors ${
-                  step === 'select'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-muted-foreground'
-                }`}
-              >
-                2
-              </div>
-              <span className="ml-3 text-sm font-medium text-foreground">Select Job Role</span>
-            </div>
-          </div>
+    <div className="container py-12">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold mb-4">Skill Gap Analysis</h1>
+          <p className="text-lg text-muted-foreground">
+            Upload your resume and select a job role to discover your skill gaps
+          </p>
         </div>
 
-        {/* Step Content */}
-        {step === 'upload' && (
-          <Card className="border-border shadow-sm">
+        <div className="space-y-8">
+          {/* Step 1: Resume Upload */}
+          <Card>
             <CardHeader>
-              <CardTitle className="text-2xl font-bold">Upload Your Resume</CardTitle>
-              <CardDescription className="text-base">
-                Upload your resume in PDF format to begin the analysis
-              </CardDescription>
+              <div className="flex items-center gap-3">
+                <div className="rounded-full bg-primary/10 w-10 h-10 flex items-center justify-center">
+                  <FileText className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <CardTitle>Step 1: Upload Your Resume</CardTitle>
+                  <CardDescription>Upload your resume in PDF format (max 10MB)</CardDescription>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              <ResumeUpload onUploadSuccess={handleResumeUpload} />
+              <ResumeUpload 
+                onUploadSuccess={(skills) => {
+                  setResumeUploaded(true);
+                  setExtractedSkills(skills);
+                }}
+              />
             </CardContent>
           </Card>
-        )}
 
-        {step === 'select' && (
-          <Card className="border-border shadow-sm">
+          {/* Step 2: Job Role Selection */}
+          <Card>
             <CardHeader>
-              <CardTitle className="text-2xl font-bold">Select Target Job Role</CardTitle>
-              <CardDescription className="text-base">
-                Choose the job role you want to compare your skills against
-              </CardDescription>
+              <div className="flex items-center gap-3">
+                <div className="rounded-full bg-primary/10 w-10 h-10 flex items-center justify-center">
+                  <Briefcase className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <CardTitle>Step 2: Select Target Job Role</CardTitle>
+                  <CardDescription>Choose the job role you're aiming for</CardDescription>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              <JobRoleSelector onSelect={handleJobRoleSelect} />
+              <JobRoleSelector 
+                onSelect={setSelectedJobRole}
+                disabled={!resumeUploaded}
+              />
             </CardContent>
           </Card>
-        )}
+
+          {/* Proceed Button */}
+          <div className="flex justify-center pt-4">
+            <Button 
+              size="lg" 
+              onClick={handleProceedToAnalysis}
+              disabled={!canProceed}
+              className="px-8"
+            >
+              Proceed to Analysis
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );

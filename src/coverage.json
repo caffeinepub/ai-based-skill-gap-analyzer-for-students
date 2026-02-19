@@ -1,224 +1,54 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-19T17:17:31.436Z",
+  "generatedAt": "2026-02-19T16:45:55.849Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 16,
-    "implemented": 16,
+    "total": 3,
+    "implemented": 1,
     "items": [
       {
-        "id": "REQ-20",
-        "summary": "Update the global CSS configuration in frontend/index.css to implement a professional color palette using navy (#1e3a5f), charcoal (#2c2c2c), slate grays (#64748b, #475569), and white (#ffffff) for both light and dark modes, replacing the current warm education-focused colors while maintaining the OKLCH color space format",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/index.css"
-        ],
-        "matchedFiles": [
-          "frontend/src/index.css"
-        ]
+        "id": "REQ-17",
+        "summary": "Add initialization logic to the backend main actor that automatically seeds the database with default job roles (Data Analyst, Web Developer, AI Engineer, DevOps Engineer, UI/UX Designer) when the canister is first deployed or when no job roles exist in the system",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
-        "id": "REQ-21",
-        "summary": "Update the Tailwind configuration in frontend/tailwind.config.js to align with the new professional color scheme, ensuring all color tokens reference the updated CSS variables for navy, charcoal, slate, and white tones",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/tailwind.config.js"
-        ],
-        "matchedFiles": [
-          "frontend/tailwind.config.js"
-        ]
+        "id": "REQ-18",
+        "summary": "Define default job roles with realistic skill requirements including Data Analyst (SQL, Python, Excel, Statistics, Data Visualization, Power BI/Tableau), Web Developer (HTML, CSS, JavaScript, React, Node.js, Git, REST APIs), AI Engineer (Python, Machine Learning, TensorFlow/PyTorch, Deep Learning, NLP, Computer Vision), DevOps Engineer (Linux, Docker, Kubernetes, CI/CD, AWS/Azure/GCP, Git, Bash scripting), and UI/UX Designer (Figma/Adobe XD, User Research, Wireframing, Prototyping, Visual Design, HTML/CSS basics)",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
-        "id": "REQ-22",
-        "summary": "Refine typography across the application by updating font sizes, weights, and line heights in the Tailwind configuration to create a clear visual hierarchy suitable for a professional SaaS platform, ensuring headings are bold and distinctive while body text remains highly readable",
+        "id": "REQ-19",
+        "summary": "Update the JobRoleSelector component to show a loading state while job roles are being fetched or seeded, displaying a spinner or skeleton loader instead of the 'No job roles available. Please contact an administrator.' error message when roles are still being initialized",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/tailwind.config.js"
+          "frontend/src/components/JobRoleSelector.tsx",
+          "frontend/src/hooks/useQueries.ts"
         ],
         "matchedFiles": [
-          "frontend/tailwind.config.js"
-        ]
-      },
-      {
-        "id": "REQ-23",
-        "summary": "Update the Layout component (frontend/src/components/Layout.tsx) to apply the professional theme styling with refined spacing, modern navigation appearance, and clean header/footer design using the new color palette",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/Layout.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/Layout.tsx"
-        ]
-      },
-      {
-        "id": "REQ-24",
-        "summary": "Update the HomePage component (frontend/src/pages/HomePage.tsx) with polished professional styling including refined hero section, clean feature cards, and improved visual hierarchy using the new navy, charcoal, and slate color palette",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/HomePage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/HomePage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-25",
-        "summary": "Update the AnalysisFlow component (frontend/src/pages/AnalysisFlow.tsx) with professional styling for the resume upload and job role selection steps, ensuring forms and cards use the new color palette and refined spacing",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/AnalysisFlow.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/AnalysisFlow.tsx"
-        ]
-      },
-      {
-        "id": "REQ-26",
-        "summary": "Update the AnalysisDashboard component (frontend/src/pages/AnalysisDashboard.tsx) with professional theme styling for all data visualization cards, metrics display, and results sections using the navy, charcoal, and slate color palette",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/AnalysisDashboard.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/AnalysisDashboard.tsx"
-        ]
-      },
-      {
-        "id": "REQ-27",
-        "summary": "Update chart components (SkillMatchChart, SkillCategoryChart, ProficiencyGapChart) to use a professional color palette for data visualization with navy, charcoal, slate, and complementary accent colors that maintain clarity and readability",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/SkillMatchChart.tsx",
-          "frontend/src/components/SkillCategoryChart.tsx",
-          "frontend/src/components/ProficiencyGapChart.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/SkillMatchChart.tsx",
-          "frontend/src/components/SkillCategoryChart.tsx",
-          "frontend/src/components/ProficiencyGapChart.tsx"
-        ]
-      },
-      {
-        "id": "REQ-28",
-        "summary": "Update the GapAnalysisResults component (frontend/src/components/GapAnalysisResults.tsx) to display matching and missing skills with professional card styling, refined badges, and clear visual separation using the new color scheme",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/GapAnalysisResults.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/GapAnalysisResults.tsx"
-        ]
-      },
-      {
-        "id": "REQ-29",
-        "summary": "Update the RecommendationsDisplay component (frontend/src/components/RecommendationsDisplay.tsx) with professional styling for course recommendations and project suggestions, using clean cards and refined typography",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/RecommendationsDisplay.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/RecommendationsDisplay.tsx"
-        ]
-      },
-      {
-        "id": "REQ-30",
-        "summary": "Update the AdminPanel component (frontend/src/pages/AdminPanel.tsx) with professional admin interface styling including refined form controls, clean job role cards, and polished CRUD operation buttons using the navy and charcoal color scheme",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/AdminPanel.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/AdminPanel.tsx"
-        ]
-      },
-      {
-        "id": "REQ-31",
-        "summary": "Update the JobRoleForm component (frontend/src/components/JobRoleForm.tsx) with professional form styling including refined input fields, clean skill management interface, and polished validation error displays",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/JobRoleForm.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/JobRoleForm.tsx"
-        ]
-      },
-      {
-        "id": "REQ-32",
-        "summary": "Update the ResumeUpload component (frontend/src/components/ResumeUpload.tsx) with professional styling for the drag-and-drop zone, upload progress indicator, and file validation messages using refined colors and typography",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/ResumeUpload.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/ResumeUpload.tsx"
-        ]
-      },
-      {
-        "id": "REQ-33",
-        "summary": "Update the JobRoleSelector component (frontend/src/components/JobRoleSelector.tsx) with professional card styling for job role options, refined skill badges, and clean selection states using the navy and slate color palette",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/JobRoleSelector.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/JobRoleSelector.tsx"
-        ]
-      },
-      {
-        "id": "REQ-34",
-        "summary": "Update button components throughout the application (LoginButton, DownloadReportButton, and all form buttons) to use a consistent professional button design system with navy primary buttons, charcoal secondary buttons, refined hover states, and appropriate spacing",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/LoginButton.tsx",
-          "frontend/src/components/DownloadReportButton.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/LoginButton.tsx",
-          "frontend/src/components/DownloadReportButton.tsx"
-        ]
-      },
-      {
-        "id": "REQ-35",
-        "summary": "Update the ProfileSetupModal component (frontend/src/components/ProfileSetupModal.tsx) with professional modal styling including refined form fields, clean layout, and polished save button using the new color scheme",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/ProfileSetupModal.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/ProfileSetupModal.tsx"
+          "frontend/src/components/JobRoleSelector.tsx",
+          "frontend/src/hooks/useQueries.ts"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
+    "build-template/README.md",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/App.tsx",
-    "frontend/src/components/DownloadReportButton.tsx",
-    "frontend/src/components/GapAnalysisResults.tsx",
-    "frontend/src/components/JobRoleForm.tsx",
     "frontend/src/components/JobRoleSelector.tsx",
-    "frontend/src/components/Layout.tsx",
-    "frontend/src/components/LoginButton.tsx",
-    "frontend/src/components/ProficiencyGapChart.tsx",
-    "frontend/src/components/ProfileSetupModal.tsx",
-    "frontend/src/components/RecommendationsDisplay.tsx",
-    "frontend/src/components/ResumeUpload.tsx",
-    "frontend/src/components/SkillCategoryChart.tsx",
-    "frontend/src/components/SkillMatchChart.tsx",
-    "frontend/src/index.css",
-    "frontend/src/pages/AdminPanel.tsx",
-    "frontend/src/pages/AnalysisDashboard.tsx",
-    "frontend/src/pages/AnalysisFlow.tsx",
-    "frontend/src/pages/HomePage.tsx",
-    "frontend/src/services/nlpService.ts",
-    "frontend/tailwind.config.js",
+    "frontend/src/hooks/useQueries.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

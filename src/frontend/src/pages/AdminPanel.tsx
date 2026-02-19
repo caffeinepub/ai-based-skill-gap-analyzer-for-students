@@ -1,136 +1,138 @@
-import React, { useState } from 'react';
-import { useGetJobRoles, useAddJobRole, useUpdateJobRole, useRemoveJobRole } from '../hooks/useQueries';
-import JobRoleForm from '../components/JobRoleForm';
+import { useState } from 'react';
 import AdminGuard from '../components/AdminGuard';
-import { JobRole, Skill } from '../backend';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import JobRoleForm from '../components/JobRoleForm';
+import { useGetJobRoles, useRemoveJobRole } from '../hooks/useQueries';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Shield } from 'lucide-react';
+import { toast } from 'sonner';
+import type { JobRole } from '../backend';
 
 export default function AdminPanel() {
   const { data: jobRoles, isLoading } = useGetJobRoles();
-  const addJobRole = useAddJobRole();
-  const updateJobRole = useUpdateJobRole();
   const removeJobRole = useRemoveJobRole();
-
-  const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingRole, setEditingRole] = useState<JobRole | null>(null);
+  const [showForm, setShowForm] = useState(false);
 
-  const handleAddRole = () => {
-    setEditingRole(null);
-    setIsFormOpen(true);
+  const handleDelete = async (title: string) => {
+    if (confirm(`Are you sure you want to delete the job role "${title}"?`)) {
+      try {
+        await removeJobRole.mutateAsync(title);
+        toast.success('Job role deleted successfully');
+      } catch (error) {
+        toast.error('Failed to delete job role');
+        console.error('Delete error:', error);
+      }
+    }
   };
 
-  const handleEditRole = (role: JobRole) => {
+  const handleEdit = (role: JobRole) => {
     setEditingRole(role);
-    setIsFormOpen(true);
+    setShowForm(true);
   };
 
-  const handleDeleteRole = async (title: string) => {
-    if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
-      await removeJobRole.mutateAsync(title);
-    }
-  };
-
-  const handleSubmit = async (title: string, skills: Skill[]) => {
-    if (editingRole) {
-      await updateJobRole.mutateAsync({ title, requiredSkills: skills });
-    } else {
-      await addJobRole.mutateAsync({ title, requiredSkills: skills });
-    }
-    setIsFormOpen(false);
+  const handleCloseForm = () => {
+    setShowForm(false);
     setEditingRole(null);
   };
 
   return (
     <AdminGuard>
-      <div className="min-h-screen bg-background py-12">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">Admin Panel</h1>
-              <p className="text-lg text-muted-foreground">Manage job roles and requirements</p>
+      <div className="container py-12">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <div className="rounded-full bg-primary/10 w-12 h-12 flex items-center justify-center">
+                <Shield className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold">Admin Panel</h1>
+                <p className="text-muted-foreground">Manage job roles and required skills</p>
+              </div>
             </div>
-            <Button onClick={handleAddRole} size="lg" className="font-semibold">
-              <Plus className="w-5 h-5 mr-2" />
+            <Button onClick={() => setShowForm(true)}>
+              <Plus className="mr-2 h-4 w-4" />
               Add Job Role
             </Button>
           </div>
 
-          {isFormOpen && (
-            <Card className="mb-8 border-border">
+          {showForm && (
+            <Card className="mb-8">
               <CardHeader>
-                <CardTitle className="text-xl font-semibold">
-                  {editingRole ? 'Edit Job Role' : 'Add New Job Role'}
-                </CardTitle>
+                <CardTitle>{editingRole ? 'Edit Job Role' : 'Add New Job Role'}</CardTitle>
+                <CardDescription>
+                  {editingRole ? 'Update the job role details and required skills' : 'Create a new job role with required skills'}
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <JobRoleForm
-                  initialData={editingRole || undefined}
-                  onSubmit={handleSubmit}
-                  onCancel={() => {
-                    setIsFormOpen(false);
-                    setEditingRole(null);
-                  }}
+                <JobRoleForm 
+                  existingRole={editingRole}
+                  onSuccess={handleCloseForm}
+                  onCancel={handleCloseForm}
                 />
               </CardContent>
             </Card>
           )}
 
-          {isLoading ? (
-            <div className="grid md:grid-cols-2 gap-6">
-              {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="h-64" />
-              ))}
-            </div>
-          ) : (
-            <div className="grid md:grid-cols-2 gap-6">
-              {jobRoles?.map((role) => (
-                <Card key={role.title} className="border-border hover:border-primary/50 transition-colors">
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-xl font-semibold">{role.title}</CardTitle>
-                        <CardDescription className="mt-2">
-                          {role.requiredSkills.length} required skills
-                        </CardDescription>
+          <Card>
+            <CardHeader>
+              <CardTitle>Job Roles</CardTitle>
+              <CardDescription>
+                {jobRoles?.length || 0} job role(s) configured
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                </div>
+              ) : jobRoles && jobRoles.length > 0 ? (
+                <div className="space-y-4">
+                  {jobRoles.map((role) => (
+                    <div key={role.title} className="border rounded-lg p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h3 className="font-semibold text-lg">{role.title}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {role.requiredSkills.length} required skill(s)
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEdit(role)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDelete(role.title)}
+                            disabled={removeJobRole.isPending}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleEditRole(role)}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDeleteRole(role.title)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                      <div className="flex flex-wrap gap-2">
+                        {role.requiredSkills.map((skill, idx) => (
+                          <Badge key={idx} variant="secondary">
+                            {skill.name} ({skill.level})
+                          </Badge>
+                        ))}
                       </div>
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                      {role.requiredSkills.slice(0, 6).map((skill) => (
-                        <Badge key={skill.name} variant="secondary">
-                          {skill.name}
-                        </Badge>
-                      ))}
-                      {role.requiredSkills.length > 6 && (
-                        <Badge variant="outline">+{role.requiredSkills.length - 6} more</Badge>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  No job roles configured yet. Click "Add Job Role" to create one.
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </AdminGuard>

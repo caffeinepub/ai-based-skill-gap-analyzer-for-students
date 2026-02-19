@@ -33,7 +33,7 @@ function RootComponent() {
       <Layout>
         <Outlet />
       </Layout>
-      {showProfileSetup && <ProfileSetupModal isOpen={showProfileSetup} />}
+      {showProfileSetup && <ProfileSetupModal />}
     </>
   );
 }

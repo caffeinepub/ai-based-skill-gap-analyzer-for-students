@@ -1,133 +1,156 @@
-import React, { useState } from 'react';
-import { JobRole, Skill, SkillLevel, SkillCategory } from '../backend';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect } from 'react';
+import { useAddJobRole, useUpdateJobRole } from '../hooks/useQueries';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { X, Plus } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
+import { toast } from 'sonner';
+import type { JobRole, Skill, SkillLevel, SkillCategory } from '../backend';
 
 interface JobRoleFormProps {
-  initialData?: JobRole;
-  onSubmit: (title: string, skills: Skill[]) => Promise<void>;
+  existingRole?: JobRole | null;
+  onSuccess: () => void;
   onCancel: () => void;
 }
 
-export default function JobRoleForm({ initialData, onSubmit, onCancel }: JobRoleFormProps) {
-  const [title, setTitle] = useState(initialData?.title || '');
-  const [skills, setSkills] = useState<Skill[]>(initialData?.requiredSkills || []);
-  const [newSkillName, setNewSkillName] = useState('');
-  const [newSkillLevel, setNewSkillLevel] = useState<SkillLevel>(SkillLevel.beginner);
-  const [newSkillCategory, setNewSkillCategory] = useState<SkillCategory>(SkillCategory.technical);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function JobRoleForm({ existingRole, onSuccess, onCancel }: JobRoleFormProps) {
+  const [title, setTitle] = useState('');
+  const [skills, setSkills] = useState<Skill[]>([]);
+  
+  const addJobRole = useAddJobRole();
+  const updateJobRole = useUpdateJobRole();
 
-  const handleAddSkill = () => {
-    if (newSkillName.trim()) {
-      const newSkill: Skill = {
-        name: newSkillName.trim(),
-        level: newSkillLevel,
-        category: newSkillCategory,
-      };
-      setSkills([...skills, newSkill]);
-      setNewSkillName('');
-      setNewSkillLevel(SkillLevel.beginner);
-      setNewSkillCategory(SkillCategory.technical);
+  useEffect(() => {
+    if (existingRole) {
+      setTitle(existingRole.title);
+      setSkills(existingRole.requiredSkills);
     }
+  }, [existingRole]);
+
+  const addSkill = () => {
+    setSkills([...skills, { 
+      name: '', 
+      level: 'beginner' as SkillLevel, 
+      category: 'technical' as SkillCategory 
+    }]);
   };
 
-  const handleRemoveSkill = (index: number) => {
+  const removeSkill = (index: number) => {
     setSkills(skills.filter((_, i) => i !== index));
+  };
+
+  const updateSkill = (index: number, field: keyof Skill, value: any) => {
+    const updated = [...skills];
+    updated[index] = { ...updated[index], [field]: value };
+    setSkills(updated);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (title.trim() && skills.length > 0) {
-      setIsSubmitting(true);
-      try {
-        await onSubmit(title.trim(), skills);
-      } finally {
-        setIsSubmitting(false);
+
+    if (!title.trim()) {
+      toast.error('Please enter a job title');
+      return;
+    }
+
+    if (skills.length === 0) {
+      toast.error('Please add at least one skill');
+      return;
+    }
+
+    const invalidSkills = skills.filter(s => !s.name.trim());
+    if (invalidSkills.length > 0) {
+      toast.error('Please fill in all skill names');
+      return;
+    }
+
+    try {
+      if (existingRole) {
+        await updateJobRole.mutateAsync({ title, requiredSkills: skills });
+        toast.success('Job role updated successfully');
+      } else {
+        await addJobRole.mutateAsync({ title, requiredSkills: skills });
+        toast.success('Job role added successfully');
       }
+      onSuccess();
+    } catch (error) {
+      toast.error(existingRole ? 'Failed to update job role' : 'Failed to add job role');
+      console.error('Form submission error:', error);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div>
-        <Label htmlFor="title" className="text-sm font-medium">
-          Job Role Title
-        </Label>
+      <div className="space-y-2">
+        <Label htmlFor="title">Job Title *</Label>
         <Input
           id="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="e.g., Senior Frontend Developer"
+          placeholder="e.g., Data Analyst, Web Developer"
+          disabled={!!existingRole}
           required
-          className="mt-1.5"
         />
       </div>
 
-      <div>
-        <Label className="text-sm font-medium mb-3 block">Required Skills</Label>
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-            <div className="sm:col-span-2">
-              <Input
-                value={newSkillName}
-                onChange={(e) => setNewSkillName(e.target.value)}
-                placeholder="Skill name"
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSkill())}
-              />
-            </div>
-            <Select value={newSkillLevel} onValueChange={(v) => setNewSkillLevel(v as SkillLevel)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={SkillLevel.beginner}>Beginner</SelectItem>
-                <SelectItem value={SkillLevel.intermediate}>Intermediate</SelectItem>
-                <SelectItem value={SkillLevel.advanced}>Advanced</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={newSkillCategory} onValueChange={(v) => setNewSkillCategory(v as SkillCategory)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={SkillCategory.technical}>Technical</SelectItem>
-                <SelectItem value={SkillCategory.softSkills}>Soft Skills</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <Button type="button" onClick={handleAddSkill} variant="outline" className="w-full sm:w-auto">
-            <Plus className="w-4 h-4 mr-2" />
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <Label>Required Skills *</Label>
+          <Button type="button" variant="outline" size="sm" onClick={addSkill}>
+            <Plus className="h-4 w-4 mr-2" />
             Add Skill
           </Button>
         </div>
 
-        {skills.length > 0 && (
-          <div className="mt-4 space-y-2">
+        {skills.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground border border-dashed rounded-lg">
+            No skills added yet. Click "Add Skill" to get started.
+          </div>
+        ) : (
+          <div className="space-y-3">
             {skills.map((skill, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between p-3 bg-muted rounded-lg border border-border"
-              >
-                <div className="flex items-center space-x-3">
-                  <span className="font-medium text-foreground">{skill.name}</span>
-                  <Badge variant="outline" className="text-xs">
-                    {skill.level}
-                  </Badge>
-                  <Badge variant="secondary" className="text-xs">
-                    {skill.category === SkillCategory.technical ? 'Technical' : 'Soft Skill'}
-                  </Badge>
+              <div key={index} className="flex gap-2 items-start p-3 border rounded-lg">
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2">
+                  <Input
+                    placeholder="Skill name"
+                    value={skill.name}
+                    onChange={(e) => updateSkill(index, 'name', e.target.value)}
+                    required
+                  />
+                  <Select
+                    value={skill.level}
+                    onValueChange={(value) => updateSkill(index, 'level', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="beginner">Beginner</SelectItem>
+                      <SelectItem value="intermediate">Intermediate</SelectItem>
+                      <SelectItem value="advanced">Advanced</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={skill.category}
+                    onValueChange={(value) => updateSkill(index, 'category', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="technical">Technical</SelectItem>
+                      <SelectItem value="softSkills">Soft Skills</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleRemoveSkill(index)}
+                  onClick={() => removeSkill(index)}
                 >
-                  <X className="w-4 h-4" />
+                  <X className="h-4 w-4" />
                 </Button>
               </div>
             ))}
@@ -135,12 +158,15 @@ export default function JobRoleForm({ initialData, onSubmit, onCancel }: JobRole
         )}
       </div>
 
-      <div className="flex space-x-3 pt-4">
-        <Button type="submit" disabled={isSubmitting || !title.trim() || skills.length === 0} className="flex-1">
-          {isSubmitting ? 'Saving...' : initialData ? 'Update Role' : 'Create Role'}
-        </Button>
-        <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
+      <div className="flex gap-2 justify-end">
+        <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
+        </Button>
+        <Button 
+          type="submit" 
+          disabled={addJobRole.isPending || updateJobRole.isPending}
+        >
+          {existingRole ? 'Update' : 'Create'} Job Role
         </Button>
       </div>
     </form>

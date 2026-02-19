@@ -1,62 +1,39 @@
-import React, { useState } from 'react';
-import { generateAnalysisReport } from '../services/pdfGenerator';
-import { JobRole, Skill } from '../backend';
 import { Button } from '@/components/ui/button';
 import { Download, Loader2 } from 'lucide-react';
-
-interface MatchResult {
-  percentage: number;
-  matchingSkills: Skill[];
-}
-
-interface Recommendation {
-  skill: string;
-  courses: Array<{ title: string; url: string; provider: string }>;
-  projects: Array<{ title: string; description: string }>;
-}
+import { useState } from 'react';
+import { generateAnalysisReport } from '../services/pdfGenerator';
+import { toast } from 'sonner';
 
 interface DownloadReportButtonProps {
-  jobRole: JobRole;
-  matchResult: MatchResult;
-  missingSkills: Skill[];
-  recommendations: Recommendation[];
+  analysisData: any;
 }
 
-export default function DownloadReportButton({
-  jobRole,
-  matchResult,
-  missingSkills,
-  recommendations,
-}: DownloadReportButtonProps) {
+export default function DownloadReportButton({ analysisData }: DownloadReportButtonProps) {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handleDownload = async () => {
     setIsGenerating(true);
     try {
-      await generateAnalysisReport({
-        jobRole,
-        matchPercentage: matchResult.percentage,
-        matchingSkills: matchResult.matchingSkills,
-        missingSkills,
-        recommendations,
-      });
+      await generateAnalysisReport(analysisData);
+      toast.success('Report downloaded successfully');
     } catch (error) {
-      console.error('Error generating report:', error);
+      toast.error('Failed to generate report');
+      console.error('PDF generation error:', error);
     } finally {
       setIsGenerating(false);
     }
   };
 
   return (
-    <Button onClick={handleDownload} disabled={isGenerating} size="lg" className="font-semibold">
+    <Button onClick={handleDownload} disabled={isGenerating}>
       {isGenerating ? (
         <>
-          <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-          Generating Report...
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Generating...
         </>
       ) : (
         <>
-          <Download className="w-5 h-5 mr-2" />
+          <Download className="mr-2 h-4 w-4" />
           Download Report
         </>
       )}
