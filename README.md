@@ -1,2 +1,3 @@
-# ai-based-skill-gap-analyzer-for-students
-Exported from Caffeine project: AI-Based Skill Gap Analyzer for Students
+## 
+
+To run app build and run docker image: `docker build -t app . docker run -it --network host app`

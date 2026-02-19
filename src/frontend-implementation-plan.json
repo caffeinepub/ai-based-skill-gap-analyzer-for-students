@@ -1,0 +1,293 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Update application theme to professional modern aesthetic",
+  "requirements": [
+    {
+      "id": "REQ-20",
+      "summary": "Update global CSS configuration to implement professional color palette with navy, charcoal, slate grays, and white in OKLCH format",
+      "acceptanceCriteria": [
+        "Color palette uses navy, charcoal, slate grays, and white",
+        "Colors are defined in OKLCH format for consistency",
+        "Both light and dark mode variables are updated",
+        "All CSS custom properties maintain proper naming conventions"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Replace the current warm education-focused color palette (amber, orange, teal) with professional colors: navy (#1e3a5f), charcoal (#2c2c2c), slate grays (#64748b, #475569), and white (#ffffff). Convert these hex values to OKLCH format and update all CSS custom properties for both light and dark modes. Maintain the existing OKLCH color space structure and variable naming conventions."
+        }
+      ]
+    },
+    {
+      "id": "REQ-21",
+      "summary": "Update Tailwind configuration to align with the new professional color scheme",
+      "acceptanceCriteria": [
+        "Tailwind color tokens map to the new professional CSS variables",
+        "All existing color references are updated to maintain consistency",
+        "No broken color references in the configuration"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Update the Tailwind color configuration to reference the updated CSS variables for navy, charcoal, slate, and white tones. Ensure all color tokens in the theme.extend.colors section align with the new professional palette defined in index.css. Verify that primary, secondary, accent, and other color mappings use the updated variable names."
+        }
+      ]
+    },
+    {
+      "id": "REQ-22",
+      "summary": "Refine typography to create clear visual hierarchy suitable for professional SaaS platform",
+      "acceptanceCriteria": [
+        "Typography scale creates clear visual hierarchy",
+        "Headings use appropriate font weights (600-700)",
+        "Body text maintains optimal readability",
+        "Line heights are optimized for professional layouts"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Update the typography configuration in theme.extend to create a professional hierarchy. Adjust font sizes, weights (ensuring headings use 600-700), and line heights for optimal readability. Configure heading scales (h1-h6) with clear size distinctions and ensure body text uses comfortable line-height values (1.6-1.8 for body, tighter for headings)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-23",
+      "summary": "Update Layout component with professional theme styling and refined spacing",
+      "acceptanceCriteria": [
+        "Header and navigation use the professional color scheme",
+        "Spacing is refined and consistent",
+        "Mobile menu styling matches the professional aesthetic",
+        "Footer maintains the updated theme"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/Layout.tsx",
+          "operation": "modify",
+          "description": "Apply professional theme styling to the header, navigation, mobile menu, and footer. Update background colors to use navy/charcoal from the new palette, refine spacing for better visual balance, and ensure navigation links use appropriate hover states with the professional color scheme. Update mobile menu overlay and animations to match the modern aesthetic."
+        }
+      ]
+    },
+    {
+      "id": "REQ-24",
+      "summary": "Update HomePage with polished professional styling and improved visual hierarchy",
+      "acceptanceCriteria": [
+        "Hero section uses professional colors and improved spacing",
+        "Feature cards have clean, modern appearance",
+        "Call-to-action buttons follow the new design system",
+        "Overall layout conveys trustworthiness and expertise"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/HomePage.tsx",
+          "operation": "modify",
+          "description": "Update the hero section background, headings, and descriptions to use the navy/charcoal/slate palette. Refine spacing throughout for better visual hierarchy. Update feature cards with clean borders, subtle shadows, and professional color accents. Ensure CTA buttons use the primary navy color with appropriate hover states. Apply refined typography weights and sizes for professional appearance."
+        }
+      ]
+    },
+    {
+      "id": "REQ-25",
+      "summary": "Update AnalysisFlow component with professional styling for resume upload and job role selection",
+      "acceptanceCriteria": [
+        "Step indicators use professional styling",
+        "Form elements follow the new design system",
+        "Cards have clean, business-appropriate appearance",
+        "Spacing and layout improve readability"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/AnalysisFlow.tsx",
+          "operation": "modify",
+          "description": "Apply professional theme styling to the two-step flow interface. Update step indicators with navy/slate colors, refine card backgrounds and borders to use subtle grays, improve spacing between sections, and ensure form elements use the new professional color scheme. Update heading typography with appropriate weights for clear hierarchy."
+        }
+      ]
+    },
+    {
+      "id": "REQ-26",
+      "summary": "Update AnalysisDashboard with professional theme styling for data visualization and metrics",
+      "acceptanceCriteria": [
+        "Match percentage display uses professional styling",
+        "Chart containers have clean, modern appearance",
+        "Cards and sections maintain visual consistency",
+        "Color scheme conveys business professionalism"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/AnalysisDashboard.tsx",
+          "operation": "modify",
+          "description": "Update the dashboard layout with professional styling. Apply navy/charcoal colors to card backgrounds and borders, refine the match percentage display with professional color accents, update chart container styling with clean borders and appropriate spacing, and ensure all sections use the refined typography scale. Improve visual hierarchy with consistent card patterns."
+        }
+      ]
+    },
+    {
+      "id": "REQ-27",
+      "summary": "Update chart components to use professional color palette for data visualization",
+      "acceptanceCriteria": [
+        "Chart colors use professional palette",
+        "Data remains clearly distinguishable",
+        "Color choices enhance rather than distract from insights",
+        "Charts maintain accessibility standards"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/SkillMatchChart.tsx",
+          "operation": "modify",
+          "description": "Update the pie chart colors to use professional palette: navy for matching skills, slate gray for missing skills. Ensure colors maintain sufficient contrast and meet WCAG accessibility standards. Update legend and label styling to match the professional theme."
+        },
+        {
+          "path": "frontend/src/components/SkillCategoryChart.tsx",
+          "operation": "modify",
+          "description": "Update the bar chart colors to use professional palette variations: navy and complementary slate tones for different categories. Ensure bars remain clearly distinguishable while maintaining professional appearance. Update axis labels and grid styling to use subtle slate grays."
+        },
+        {
+          "path": "frontend/src/components/ProficiencyGapChart.tsx",
+          "operation": "modify",
+          "description": "Update the bar chart colors to use professional palette with navy primary color and slate variations for different proficiency levels. Ensure color progression maintains clarity and accessibility. Update chart styling including axis labels, legends, and tooltips to match the professional aesthetic."
+        }
+      ]
+    },
+    {
+      "id": "REQ-28",
+      "summary": "Update GapAnalysisResults component with professional card styling and refined badges",
+      "acceptanceCriteria": [
+        "Skill cards use professional styling",
+        "Badge colors align with the new palette",
+        "Visual hierarchy clearly distinguishes matching from missing skills",
+        "Layout maintains professional appearance"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/GapAnalysisResults.tsx",
+          "operation": "modify",
+          "description": "Update skill cards with professional borders, backgrounds (subtle slate/white), and refined spacing. Update skill badges to use navy for matching skills and slate gray for missing skills. Improve typography with appropriate font weights and sizes. Ensure the two-column layout maintains visual balance with the professional color scheme."
+        }
+      ]
+    },
+    {
+      "id": "REQ-29",
+      "summary": "Update RecommendationsDisplay component with professional styling for course and project recommendations",
+      "acceptanceCriteria": [
+        "Recommendation cards have professional appearance",
+        "Course links are clearly styled and accessible",
+        "Project suggestions use refined typography",
+        "Overall layout maintains business aesthetic"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/RecommendationsDisplay.tsx",
+          "operation": "modify",
+          "description": "Apply professional styling to recommendation cards using subtle slate backgrounds and clean borders. Update course link styling with navy color and appropriate hover states. Refine typography for project suggestions with clear hierarchy. Ensure success message uses professional color accents when no gaps exist."
+        }
+      ]
+    },
+    {
+      "id": "REQ-30",
+      "summary": "Update AdminPanel component with professional admin interface styling",
+      "acceptanceCriteria": [
+        "Admin interface conveys authority and professionalism",
+        "Form controls use refined styling",
+        "Job role cards maintain clean appearance",
+        "Action buttons follow the professional design system"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/AdminPanel.tsx",
+          "operation": "modify",
+          "description": "Update admin panel with professional styling using navy/charcoal for headers and key sections. Apply refined card styling to job role displays with subtle slate backgrounds and clean borders. Update CRUD operation buttons to use primary navy for add/edit actions and appropriate slate tones for delete operations. Improve spacing and typography hierarchy throughout."
+        }
+      ]
+    },
+    {
+      "id": "REQ-31",
+      "summary": "Update JobRoleForm component with professional form styling",
+      "acceptanceCriteria": [
+        "Form inputs have professional appearance",
+        "Skill management UI uses clean styling",
+        "Validation errors are clearly visible but not jarring",
+        "Submit buttons follow the design system"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/JobRoleForm.tsx",
+          "operation": "modify",
+          "description": "Apply professional styling to form inputs using subtle slate borders and clean focus states with navy accents. Update skill management interface (add/remove skill buttons and skill list) with refined spacing and professional colors. Style validation error messages with appropriate color and typography that maintains professional appearance. Ensure submit button uses primary navy color."
+        }
+      ]
+    },
+    {
+      "id": "REQ-32",
+      "summary": "Update ResumeUpload component with professional styling for drag-and-drop zone",
+      "acceptanceCriteria": [
+        "Upload zone has clean, inviting appearance",
+        "Progress indicators use professional styling",
+        "Error messages maintain professional tone and appearance",
+        "Success states are clearly communicated"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ResumeUpload.tsx",
+          "operation": "modify",
+          "description": "Update drag-and-drop zone styling with subtle slate border, clean background, and navy accent on hover/active states. Apply professional styling to upload progress indicators using navy for the progress bar. Style validation error messages with appropriate slate/red tones that maintain professional appearance. Update success state styling with subtle green accent that fits the professional palette."
+        }
+      ]
+    },
+    {
+      "id": "REQ-33",
+      "summary": "Update JobRoleSelector component with professional card styling for job role options",
+      "acceptanceCriteria": [
+        "Job role cards have modern, professional appearance",
+        "Selection states are clearly indicated",
+        "Skill badges use refined styling",
+        "Loading states maintain professional aesthetic"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/JobRoleSelector.tsx",
+          "operation": "modify",
+          "description": "Apply professional styling to job role cards with clean borders, subtle slate backgrounds, and navy accents for selected states. Update skill badges with refined colors using slate tones. Improve hover states with subtle transitions. Ensure loading states use professional spinner styling with navy color. Refine typography and spacing throughout."
+        }
+      ]
+    },
+    {
+      "id": "REQ-34",
+      "summary": "Update button components with consistent professional button design system",
+      "acceptanceCriteria": [
+        "Primary buttons use navy with appropriate hover states",
+        "Secondary buttons use charcoal or slate styling",
+        "All buttons maintain consistent sizing and spacing",
+        "Interactive states (hover, active, disabled) are clearly defined"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/LoginButton.tsx",
+          "operation": "modify",
+          "description": "Update button styling to use navy for login action and slate/charcoal for logout action. Apply refined hover states with appropriate color darkening. Ensure consistent padding, border-radius, and typography. Update disabled state with professional opacity and cursor styling."
+        },
+        {
+          "path": "frontend/src/components/DownloadReportButton.tsx",
+          "operation": "modify",
+          "description": "Update button styling to use professional navy primary color with clean hover state. Ensure loading state uses appropriate spinner styling in white. Maintain consistent sizing, spacing, and typography with other primary buttons in the application."
+        }
+      ]
+    },
+    {
+      "id": "REQ-35",
+      "summary": "Update ProfileSetupModal component with professional modal styling",
+      "acceptanceCriteria": [
+        "Modal has clean, professional appearance",
+        "Form fields use refined styling",
+        "Layout maintains optimal spacing",
+        "Save button follows the design system"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ProfileSetupModal.tsx",
+          "operation": "modify",
+          "description": "Apply professional styling to the modal overlay and container using charcoal overlay with appropriate opacity. Update form fields with subtle slate borders and navy focus states. Refine spacing between form elements for optimal readability. Ensure save button uses primary navy color with appropriate hover state. Update modal header typography with professional weight and size."
+        }
+      ]
+    }
+  ]
+}

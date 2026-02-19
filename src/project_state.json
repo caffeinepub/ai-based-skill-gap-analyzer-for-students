@@ -1,0 +1,396 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 9,
+  "summary": "AI-Based Skill Gap Analyzer for Students - A full-stack web application that analyzes student resumes using NLP, compares extracted skills with industry job role requirements, identifies skill gaps, and provides personalized recommendations with downloadable PDF reports.",
+  "architectural_notes": [
+    "Frontend: React with TypeScript and Tailwind CSS for responsive UI",
+    "Backend: Motoko canisters for data storage (users, resumes, job roles, skills)",
+    "NLP Integration: Frontend TypeScript calls external NLP APIs for text extraction",
+    "Authentication: Internet Identity integration (passkeys, Google, Apple, Microsoft)",
+    "Data Storage: Resumes stored permanently in canisters with analysis history",
+    "Admin Access: Role-based access control for job role and skills management",
+    "Skills Structure: Includes proficiency levels and skill categories (Technical/Soft)",
+    "Matching Algorithm: TF-IDF with cosine similarity for skill comparison",
+    "PDF Generation: Frontend JavaScript library for report generation",
+    "REST API Architecture: Modular canister methods with proper error handling"
+  ],
+  "known_issues": [],
+  "isFixRequest": true,
+  "existing_features": [
+    {
+      "id": "feature-implement-user-authentication-system-using-internet-identity-integration-allowing-users-to-register-and-login-with-passkeys-google-apple-or-microsoft-accounts",
+      "title": "Implement user authentication system using Internet Identity integration allowing users to register and login with passkeys, Google, Apple, or Microsoft accounts",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-resume-upload-functionality-accepting-pdf-format-with-file-validation-checking-file-type-size-limits-and-proper-error-messaging-for-invalid-uploads",
+      "title": "Create resume upload functionality accepting PDF format with file validation checking file type, size limits, and proper error messaging for invalid uploads",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-resume-parsing-by-calling-external-nlp-api-from-frontend-typescript-code-to-extract-text-content-from-uploaded-pdf-files",
+      "title": "Implement resume parsing by calling external NLP API from frontend TypeScript code to extract text content from uploaded PDF files",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-skill-extraction-functionality-that-analyzes-parsed-resume-text-using-nlp-techniques-to-identify-technical-and-soft-skills-mentioned-in-the-resume",
+      "title": "Build skill extraction functionality that analyzes parsed resume text using NLP techniques to identify technical and soft skills mentioned in the resume",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-admin-interface-with-role-based-access-control-where-authorized-admin-users-can-add-edit-and-delete-job-roles-with-their-associated-required-skills",
+      "title": "Create admin interface with role-based access control where authorized admin users can add, edit, and delete job roles with their associated required skills",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-skill-matching-algorithm-using-cosine-similarity-to-compare-extracted-resume-skills-against-selected-job-role-requirements-and-calculate-match-percentage",
+      "title": "Build skill matching algorithm using cosine similarity to compare extracted resume skills against selected job role requirements and calculate match percentage",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-missing-skills-identification-feature-that-analyzes-skill-gaps-by-comparing-resume-skills-against-job-requirements-and-generates-a-list-of-skills-the-student-needs-to-acquire",
+      "title": "Create missing skills identification feature that analyzes skill gaps by comparing resume skills against job requirements and generates a list of skills the student needs to acquire",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-recommendation-engine-that-suggests-relevant-courses-and-projects-based-on-identified-skill-gaps-to-help-students-acquire-missing-skills",
+      "title": "Implement recommendation engine that suggests relevant courses and projects based on identified skill gaps to help students acquire missing skills",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-interactive-dashboard-with-graphical-visualizations-including-charts-showing-skill-match-percentage-matching-skills-breakdown-missing-skills-analysis-and-comparison-metrics",
+      "title": "Build interactive dashboard with graphical visualizations including charts showing skill match percentage, matching skills breakdown, missing skills analysis, and comparison metrics",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-pdf-report-generation-feature-allowing-users-to-download-a-comprehensive-analysis-report-containing-match-percentage-matching-skills-missing-skills-and-course-recommendations",
+      "title": "Create PDF report generation feature allowing users to download a comprehensive analysis report containing match percentage, matching skills, missing skills, and course recommendations",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-design-a-cohesive-visual-theme-with-a-professional-education-focused-aesthetic-using-clean-typography-a-modern-color-palette-avoiding-blue-and-purple-unless-specifically-requested-and-a-layout-that-emphasizes-clarity-and-data-visualization",
+      "title": "Design a cohesive visual theme with a professional, education-focused aesthetic using clean typography, a modern color palette (avoiding blue and purple unless specifically requested), and a layout that emphasizes clarity and data visualization",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-user-selection-interface-for-predefined-job-roles-including-data-analyst-web-developer-ai-engineer-and-other-roles-managed-through-the-admin-interface",
+      "title": "Implement user selection interface for predefined job roles including Data Analyst, Web Developer, AI Engineer, and other roles managed through the admin interface",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-job-role-selector-component-to-handle-the-case-where-job-roles-are-being-loaded-or-seeded-showing-an-appropriate-loading-state-instead-of-the-no-job-roles-available-error-message",
+      "title": "Update the job role selector component to handle the case where job roles are being loaded or seeded, showing an appropriate loading state instead of the 'No job roles available' error message",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-jobroleselector-component-to-show-a-loading-state-while-job-roles-are-being-fetched-or-seeded-displaying-a-spinner-or-skeleton-loader-instead-of-the-no-job-roles-available-please-contact-an-administrator-error-message-when-roles-are-still-being-initialized",
+      "title": "Update the JobRoleSelector component to show a loading state while job roles are being fetched or seeded, displaying a spinner or skeleton loader instead of the 'No job roles available. Please contact an administrator.' error message when roles are still being initialized",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-global-css-configuration-in-frontend-index-css-to-implement-a-professional-color-palette-using-navy-1e3a5f-charcoal-2c2c2c-slate-grays-64748b-475569-and-white-ffffff-for-both-light-and-dark-modes-replacing-the-current-warm-education-focused-colors-while-maintaining-the-oklch-color-space-format",
+      "title": "Update the global CSS configuration in frontend/index.css to implement a professional color palette using navy (#1e3a5f), charcoal (#2c2c2c), slate grays (#64748b, #475569), and white (#ffffff) for both light and dark modes, replacing the current warm education-focused colors while maintaining the OKLCH color space format",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-tailwind-configuration-in-frontend-tailwind-config-js-to-align-with-the-new-professional-color-scheme-ensuring-all-color-tokens-reference-the-updated-css-variables-for-navy-charcoal-slate-and-white-tones",
+      "title": "Update the Tailwind configuration in frontend/tailwind.config.js to align with the new professional color scheme, ensuring all color tokens reference the updated CSS variables for navy, charcoal, slate, and white tones",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-refine-typography-across-the-application-by-updating-font-sizes-weights-and-line-heights-in-the-tailwind-configuration-to-create-a-clear-visual-hierarchy-suitable-for-a-professional-saas-platform-ensuring-headings-are-bold-and-distinctive-while-body-text-remains-highly-readable",
+      "title": "Refine typography across the application by updating font sizes, weights, and line heights in the Tailwind configuration to create a clear visual hierarchy suitable for a professional SaaS platform, ensuring headings are bold and distinctive while body text remains highly readable",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-layout-component-frontend-src-components-layout-tsx-to-apply-the-professional-theme-styling-with-refined-spacing-modern-navigation-appearance-and-clean-header-footer-design-using-the-new-color-palette",
+      "title": "Update the Layout component (frontend/src/components/Layout.tsx) to apply the professional theme styling with refined spacing, modern navigation appearance, and clean header/footer design using the new color palette",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-homepage-component-frontend-src-pages-homepage-tsx-with-polished-professional-styling-including-refined-hero-section-clean-feature-cards-and-improved-visual-hierarchy-using-the-new-navy-charcoal-and-slate-color-palette",
+      "title": "Update the HomePage component (frontend/src/pages/HomePage.tsx) with polished professional styling including refined hero section, clean feature cards, and improved visual hierarchy using the new navy, charcoal, and slate color palette",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-analysisflow-component-frontend-src-pages-analysisflow-tsx-with-professional-styling-for-the-resume-upload-and-job-role-selection-steps-ensuring-forms-and-cards-use-the-new-color-palette-and-refined-spacing",
+      "title": "Update the AnalysisFlow component (frontend/src/pages/AnalysisFlow.tsx) with professional styling for the resume upload and job role selection steps, ensuring forms and cards use the new color palette and refined spacing",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-analysisdashboard-component-frontend-src-pages-analysisdashboard-tsx-with-professional-theme-styling-for-all-data-visualization-cards-metrics-display-and-results-sections-using-the-navy-charcoal-and-slate-color-palette",
+      "title": "Update the AnalysisDashboard component (frontend/src/pages/AnalysisDashboard.tsx) with professional theme styling for all data visualization cards, metrics display, and results sections using the navy, charcoal, and slate color palette",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-chart-components-skillmatchchart-skillcategorychart-proficiencygapchart-to-use-a-professional-color-palette-for-data-visualization-with-navy-charcoal-slate-and-complementary-accent-colors-that-maintain-clarity-and-readability",
+      "title": "Update chart components (SkillMatchChart, SkillCategoryChart, ProficiencyGapChart) to use a professional color palette for data visualization with navy, charcoal, slate, and complementary accent colors that maintain clarity and readability",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-gapanalysisresults-component-frontend-src-components-gapanalysisresults-tsx-to-display-matching-and-missing-skills-with-professional-card-styling-refined-badges-and-clear-visual-separation-using-the-new-color-scheme",
+      "title": "Update the GapAnalysisResults component (frontend/src/components/GapAnalysisResults.tsx) to display matching and missing skills with professional card styling, refined badges, and clear visual separation using the new color scheme",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-recommendationsdisplay-component-frontend-src-components-recommendationsdisplay-tsx-with-professional-styling-for-course-recommendations-and-project-suggestions-using-clean-cards-and-refined-typography",
+      "title": "Update the RecommendationsDisplay component (frontend/src/components/RecommendationsDisplay.tsx) with professional styling for course recommendations and project suggestions, using clean cards and refined typography",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-adminpanel-component-frontend-src-pages-adminpanel-tsx-with-professional-admin-interface-styling-including-refined-form-controls-clean-job-role-cards-and-polished-crud-operation-buttons-using-the-navy-and-charcoal-color-scheme",
+      "title": "Update the AdminPanel component (frontend/src/pages/AdminPanel.tsx) with professional admin interface styling including refined form controls, clean job role cards, and polished CRUD operation buttons using the navy and charcoal color scheme",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-jobroleform-component-frontend-src-components-jobroleform-tsx-with-professional-form-styling-including-refined-input-fields-clean-skill-management-interface-and-polished-validation-error-displays",
+      "title": "Update the JobRoleForm component (frontend/src/components/JobRoleForm.tsx) with professional form styling including refined input fields, clean skill management interface, and polished validation error displays",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-resumeupload-component-frontend-src-components-resumeupload-tsx-with-professional-styling-for-the-drag-and-drop-zone-upload-progress-indicator-and-file-validation-messages-using-refined-colors-and-typography",
+      "title": "Update the ResumeUpload component (frontend/src/components/ResumeUpload.tsx) with professional styling for the drag-and-drop zone, upload progress indicator, and file validation messages using refined colors and typography",
+      "reqIds": [
+        "REQ-32"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-jobroleselector-component-frontend-src-components-jobroleselector-tsx-with-professional-card-styling-for-job-role-options-refined-skill-badges-and-clean-selection-states-using-the-navy-and-slate-color-palette",
+      "title": "Update the JobRoleSelector component (frontend/src/components/JobRoleSelector.tsx) with professional card styling for job role options, refined skill badges, and clean selection states using the navy and slate color palette",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-button-components-throughout-the-application-loginbutton-downloadreportbutton-and-all-form-buttons-to-use-a-consistent-professional-button-design-system-with-navy-primary-buttons-charcoal-secondary-buttons-refined-hover-states-and-appropriate-spacing",
+      "title": "Update button components throughout the application (LoginButton, DownloadReportButton, and all form buttons) to use a consistent professional button design system with navy primary buttons, charcoal secondary buttons, refined hover states, and appropriate spacing",
+      "reqIds": [
+        "REQ-34"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-profilesetupmodal-component-frontend-src-components-profilesetupmodal-tsx-with-professional-modal-styling-including-refined-form-fields-clean-layout-and-polished-save-button-using-the-new-color-scheme",
+      "title": "Update the ProfileSetupModal component (frontend/src/components/ProfileSetupModal.tsx) with professional modal styling including refined form fields, clean layout, and polished save button using the new color scheme",
+      "reqIds": [
+        "REQ-35"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "User registration and login system with Internet Identity",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Resume upload functionality with PDF format validation",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Resume parsing using external NLP API from frontend",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Skill extraction from parsed resume text",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Admin interface with role-based access control for managing job roles and skills",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Job role and skills management system with proficiency levels and categories",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Skill matching algorithm with cosine similarity comparison",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Match percentage calculation engine",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Missing skills identification and gap analysis",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Recommendation engine for courses and projects based on skill gaps",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Interactive dashboard with graphical visualizations and charts",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Downloadable PDF analysis report generation",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Secure resume storage in canisters for future reference",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-19",
+      "summary": "Implement job role and skills management system where each job role includes required skills with proficiency levels (Beginner/Intermediate/Advanced) and skill categories (Technical/Soft Skills)",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-25",
+      "summary": "Implement secure resume storage system in backend canisters that permanently stores uploaded PDF files and links them to user profiles for future reference and reanalysis",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-26",
+      "summary": "Automatically seed database with default job roles (Data Analyst, Web Developer, AI Engineer, etc.) on first deployment to ensure users always have predefined options available",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-27",
+      "summary": "Create initialization logic in the backend main actor that automatically seeds the database with default job roles (Data Analyst, Web Developer, AI Engineer, and other common technology roles) when the canister is first deployed or when no job roles exist in the system",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-28",
+      "summary": "Add initialization logic to the backend main actor that automatically seeds the database with default job roles (Data Analyst, Web Developer, AI Engineer, DevOps Engineer, UI/UX Designer) when the canister is first deployed or when no job roles exist in the system",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-29",
+      "summary": "Define default job roles with realistic skill requirements including Data Analyst (SQL, Python, Excel, Statistics, Data Visualization, Power BI/Tableau), Web Developer (HTML, CSS, JavaScript, React, Node.js, Git, REST APIs), AI Engineer (Python, Machine Learning, TensorFlow/PyTorch, Deep Learning, NLP, Computer Vision), DevOps Engineer (Linux, Docker, Kubernetes, CI/CD, AWS/Azure/GCP, Git, Bash scripting), and UI/UX Designer (Figma/Adobe XD, User Research, Wireframing, Prototyping, Visual Design, HTML/CSS basics)",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-30",
+      "summary": "Update application theme to professional modern tech startup aesthetic with neutral color palette (navy, charcoal, slate grays, white), refined typography, improved spacing, and polished UI components across dashboard, forms, admin interface, and report pages",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "projectName": "AI-Based Skill Gap Analyzer for Students",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

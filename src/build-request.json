@@ -1,0 +1,344 @@
+{
+  "kind": "build_request",
+  "title": "Update application theme to professional modern aesthetic",
+  "projectName": "Skill Gap Analyzer",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-20",
+      "text": "Update the global CSS configuration in frontend/index.css to implement a professional color palette using navy (#1e3a5f), charcoal (#2c2c2c), slate grays (#64748b, #475569), and white (#ffffff) for both light and dark modes, replacing the current warm education-focused colors while maintaining the OKLCH color space format",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-10"
+        ],
+        "quotes": [
+          "change theme make it professional looking",
+          "Modern tech startup aesthetic with a clean, contemporary SaaS platform style",
+          "Neutral professional colors featuring navy, charcoal, and slate grays with white backgrounds"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Color palette uses navy, charcoal, slate grays, and white",
+        "Colors are defined in OKLCH format for consistency",
+        "Both light and dark mode variables are updated",
+        "All CSS custom properties maintain proper naming conventions"
+      ]
+    },
+    {
+      "id": "REQ-21",
+      "text": "Update the Tailwind configuration in frontend/tailwind.config.js to align with the new professional color scheme, ensuring all color tokens reference the updated CSS variables for navy, charcoal, slate, and white tones",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-10"
+        ],
+        "quotes": [
+          "change theme make it professional looking"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Tailwind color tokens map to the new professional CSS variables",
+        "All existing color references are updated to maintain consistency",
+        "No broken color references in the configuration"
+      ]
+    },
+    {
+      "id": "REQ-22",
+      "text": "Refine typography across the application by updating font sizes, weights, and line heights in the Tailwind configuration to create a clear visual hierarchy suitable for a professional SaaS platform, ensuring headings are bold and distinctive while body text remains highly readable",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-10"
+        ],
+        "quotes": [
+          "Professional typography with clear hierarchy",
+          "Refined spacing and layout for better readability"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Typography scale creates clear visual hierarchy",
+        "Headings use appropriate font weights (600-700)",
+        "Body text maintains optimal readability",
+        "Line heights are optimized for professional layouts"
+      ]
+    },
+    {
+      "id": "REQ-23",
+      "text": "Update the Layout component (frontend/src/components/Layout.tsx) to apply the professional theme styling with refined spacing, modern navigation appearance, and clean header/footer design using the new color palette",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-10"
+        ],
+        "quotes": [
+          "Complete application-wide theme update covering the dashboard, forms, admin interface, report pages, and all user-facing components"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Header and navigation use the professional color scheme",
+        "Spacing is refined and consistent",
+        "Mobile menu styling matches the professional aesthetic",
+        "Footer maintains the updated theme"
+      ]
+    },
+    {
+      "id": "REQ-24",
+      "text": "Update the HomePage component (frontend/src/pages/HomePage.tsx) with polished professional styling including refined hero section, clean feature cards, and improved visual hierarchy using the new navy, charcoal, and slate color palette",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-10"
+        ],
+        "quotes": [
+          "Complete application-wide theme update covering the dashboard, forms, admin interface, report pages, and all user-facing components"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Hero section uses professional colors and improved spacing",
+        "Feature cards have clean, modern appearance",
+        "Call-to-action buttons follow the new design system",
+        "Overall layout conveys trustworthiness and expertise"
+      ]
+    },
+    {
+      "id": "REQ-25",
+      "text": "Update the AnalysisFlow component (frontend/src/pages/AnalysisFlow.tsx) with professional styling for the resume upload and job role selection steps, ensuring forms and cards use the new color palette and refined spacing",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-10"
+        ],
+        "quotes": [
+          "Complete application-wide theme update covering the dashboard, forms, admin interface, report pages, and all user-facing components",
+          "Polished UI components (buttons, cards, forms, navigation)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Step indicators use professional styling",
+        "Form elements follow the new design system",
+        "Cards have clean, business-appropriate appearance",
+        "Spacing and layout improve readability"
+      ]
+    },
+    {
+      "id": "REQ-26",
+      "text": "Update the AnalysisDashboard component (frontend/src/pages/AnalysisDashboard.tsx) with professional theme styling for all data visualization cards, metrics display, and results sections using the navy, charcoal, and slate color palette",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-10"
+        ],
+        "quotes": [
+          "Dashboard and visualizations",
+          "Enhanced data visualizations that maintain professionalism"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Match percentage display uses professional styling",
+        "Chart containers have clean, modern appearance",
+        "Cards and sections maintain visual consistency",
+        "Color scheme conveys business professionalism"
+      ]
+    },
+    {
+      "id": "REQ-27",
+      "text": "Update chart components (SkillMatchChart, SkillCategoryChart, ProficiencyGapChart) to use a professional color palette for data visualization with navy, charcoal, slate, and complementary accent colors that maintain clarity and readability",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-10"
+        ],
+        "quotes": [
+          "Enhanced data visualizations that maintain professionalism"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Chart colors use professional palette",
+        "Data remains clearly distinguishable",
+        "Color choices enhance rather than distract from insights",
+        "Charts maintain accessibility standards"
+      ]
+    },
+    {
+      "id": "REQ-28",
+      "text": "Update the GapAnalysisResults component (frontend/src/components/GapAnalysisResults.tsx) to display matching and missing skills with professional card styling, refined badges, and clear visual separation using the new color scheme",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-10"
+        ],
+        "quotes": [
+          "Polished UI components across all interfaces"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Skill cards use professional styling",
+        "Badge colors align with the new palette",
+        "Visual hierarchy clearly distinguishes matching from missing skills",
+        "Layout maintains professional appearance"
+      ]
+    },
+    {
+      "id": "REQ-29",
+      "text": "Update the RecommendationsDisplay component (frontend/src/components/RecommendationsDisplay.tsx) with professional styling for course recommendations and project suggestions, using clean cards and refined typography",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-10"
+        ],
+        "quotes": [
+          "Complete application-wide theme update covering the dashboard, forms, admin interface, report pages, and all user-facing components"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Recommendation cards have professional appearance",
+        "Course links are clearly styled and accessible",
+        "Project suggestions use refined typography",
+        "Overall layout maintains business aesthetic"
+      ]
+    },
+    {
+      "id": "REQ-30",
+      "text": "Update the AdminPanel component (frontend/src/pages/AdminPanel.tsx) with professional admin interface styling including refined form controls, clean job role cards, and polished CRUD operation buttons using the navy and charcoal color scheme",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-10"
+        ],
+        "quotes": [
+          "Admin interface",
+          "Polished UI components (buttons, cards, forms, navigation)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Admin interface conveys authority and professionalism",
+        "Form controls use refined styling",
+        "Job role cards maintain clean appearance",
+        "Action buttons follow the professional design system"
+      ]
+    },
+    {
+      "id": "REQ-31",
+      "text": "Update the JobRoleForm component (frontend/src/components/JobRoleForm.tsx) with professional form styling including refined input fields, clean skill management interface, and polished validation error displays",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-10"
+        ],
+        "quotes": [
+          "Forms and input fields",
+          "Polished UI components (buttons, cards, forms, navigation)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Form inputs have professional appearance",
+        "Skill management UI uses clean styling",
+        "Validation errors are clearly visible but not jarring",
+        "Submit buttons follow the design system"
+      ]
+    },
+    {
+      "id": "REQ-32",
+      "text": "Update the ResumeUpload component (frontend/src/components/ResumeUpload.tsx) with professional styling for the drag-and-drop zone, upload progress indicator, and file validation messages using refined colors and typography",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-10"
+        ],
+        "quotes": [
+          "Forms and input fields",
+          "Polished UI components (buttons, cards, forms, navigation)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Upload zone has clean, inviting appearance",
+        "Progress indicators use professional styling",
+        "Error messages maintain professional tone and appearance",
+        "Success states are clearly communicated"
+      ]
+    },
+    {
+      "id": "REQ-33",
+      "text": "Update the JobRoleSelector component (frontend/src/components/JobRoleSelector.tsx) with professional card styling for job role options, refined skill badges, and clean selection states using the navy and slate color palette",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-10"
+        ],
+        "quotes": [
+          "Polished UI components (buttons, cards, forms, navigation)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Job role cards have modern, professional appearance",
+        "Selection states are clearly indicated",
+        "Skill badges use refined styling",
+        "Loading states maintain professional aesthetic"
+      ]
+    },
+    {
+      "id": "REQ-34",
+      "text": "Update button components throughout the application (LoginButton, DownloadReportButton, and all form buttons) to use a consistent professional button design system with navy primary buttons, charcoal secondary buttons, refined hover states, and appropriate spacing",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-10"
+        ],
+        "quotes": [
+          "Polished UI components (buttons, cards, forms, navigation)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Primary buttons use navy with appropriate hover states",
+        "Secondary buttons use charcoal or slate styling",
+        "All buttons maintain consistent sizing and spacing",
+        "Interactive states (hover, active, disabled) are clearly defined"
+      ]
+    },
+    {
+      "id": "REQ-35",
+      "text": "Update the ProfileSetupModal component (frontend/src/components/ProfileSetupModal.tsx) with professional modal styling including refined form fields, clean layout, and polished save button using the new color scheme",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-10"
+        ],
+        "quotes": [
+          "Forms and input fields",
+          "Complete application-wide theme update"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Modal has clean, professional appearance",
+        "Form fields use refined styling",
+        "Layout maintains optimal spacing",
+        "Save button follows the design system"
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify frontend/src/hooks/useInternetIdentity.ts",
+    "Do not modify frontend/src/hooks/useInternetIdentity.tsx",
+    "Do not modify frontend/src/hooks/useActor.ts",
+    "Do not modify frontend/src/main.tsx",
+    "Do not modify any files in frontend/src/components/ui directory",
+    "Maintain all existing functionality while updating visual styling only",
+    "Preserve the OKLCH color space format in CSS variable definitions",
+    "Do not change the single-actor backend architecture",
+    "Ensure all color updates maintain WCAG accessibility standards for contrast ratios"
+  ],
+  "nonGoals": [
+    "Adding new features or functionality beyond visual theme updates",
+    "Changing the application's core workflow or user experience patterns",
+    "Modifying backend logic or data structures",
+    "Implementing new UI components not currently in use",
+    "Restructuring the component hierarchy or file organization",
+    "Adding animations or transitions beyond hover states",
+    "Changing the existing responsive breakpoints or mobile layouts"
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}
