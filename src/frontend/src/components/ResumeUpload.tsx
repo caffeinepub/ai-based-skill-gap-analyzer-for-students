@@ -1,15 +1,16 @@
 import { useState, useRef } from 'react';
 import { useUploadResume } from '../hooks/useQueries';
-import { ExternalBlob } from '../backend';
+import { ExternalBlob, SkillCategory, SkillLevel } from '../backend';
+import type { WorkExperience, Education, Skill } from '../backend';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Upload, FileText, CheckCircle2, Loader2 } from 'lucide-react';
+import { Upload, FileText, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import { parseResumePDF } from '../services/nlpService';
-import { extractSkills } from '../services/skillExtraction';
+import { parseResumePDF, type ParsedResumeData } from '../services/nlpService';
+import { extractSkills, type ExtractedSkillsResult } from '../services/skillExtraction';
 
 interface ResumeUploadProps {
-  onUploadSuccess: (skills: string[]) => void;
+  onUploadSuccess: (skillsResult: ExtractedSkillsResult, resumeData: ParsedResumeData) => void;
 }
 
 export default function ResumeUpload({ onUploadSuccess }: ResumeUploadProps) {
@@ -17,6 +18,7 @@ export default function ResumeUpload({ onUploadSuccess }: ResumeUploadProps) {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const uploadResume = useUploadResume();
@@ -40,6 +42,60 @@ export default function ResumeUpload({ onUploadSuccess }: ResumeUploadProps) {
 
     setFile(selectedFile);
     setIsComplete(false);
+    setValidationError(null);
+  };
+
+  const validateResumeData = (parsedData: ParsedResumeData, skillsResult: ExtractedSkillsResult): string | null => {
+    const missingParts: string[] = [];
+
+    // Check for work experience
+    if (!parsedData.experience || parsedData.experience.length === 0) {
+      missingParts.push('work experience');
+    }
+
+    // Check for skills (must have at least one technical skill)
+    if (!skillsResult.technicalSkills || skillsResult.technicalSkills.length === 0) {
+      missingParts.push('technical skills');
+    }
+
+    // Check for education
+    if (!parsedData.education || parsedData.education.length === 0) {
+      missingParts.push('education');
+    }
+
+    if (missingParts.length > 0) {
+      return `Resume must contain: ${missingParts.join(', ')}`;
+    }
+
+    return null;
+  };
+
+  const convertToBackendFormat = (parsedData: ParsedResumeData, skillsResult: ExtractedSkillsResult) => {
+    // Convert experiences
+    const experiences: WorkExperience[] = parsedData.experience.map(exp => ({
+      company: exp.company || 'Unknown Company',
+      role: exp.title,
+      durationMonths: BigInt(24), // Default 2 years, could be improved with better parsing
+    }));
+
+    // Convert skills
+    const skills: Skill[] = skillsResult.allSkills.map(skillName => {
+      const isTechnical = skillsResult.technicalSkills.includes(skillName);
+      return {
+        name: skillName,
+        level: SkillLevel.intermediate,
+        category: isTechnical ? SkillCategory.technical : SkillCategory.softSkills,
+      };
+    });
+
+    // Convert education
+    const education: Education[] = parsedData.education.map(edu => ({
+      degree: edu.degree,
+      institution: edu.institution || 'Unknown Institution',
+      graduationYear: edu.year ? BigInt(parseInt(edu.year)) : BigInt(2020),
+    }));
+
+    return { experiences, skills, education };
   };
 
   const handleUpload = async () => {
@@ -47,12 +103,30 @@ export default function ResumeUpload({ onUploadSuccess }: ResumeUploadProps) {
 
     setIsProcessing(true);
     setUploadProgress(0);
+    setValidationError(null);
 
     try {
       // Read file as bytes
       const arrayBuffer = await file.arrayBuffer();
       const bytes = new Uint8Array(arrayBuffer);
       
+      // Parse PDF and extract structured data
+      toast.info('Analyzing resume...');
+      const parsedData = await parseResumePDF(bytes);
+      const skillsResult = extractSkills(parsedData);
+
+      // Validate resume data
+      const validationErrorMsg = validateResumeData(parsedData, skillsResult);
+      if (validationErrorMsg) {
+        setValidationError(validationErrorMsg);
+        toast.error(validationErrorMsg);
+        setIsProcessing(false);
+        return;
+      }
+
+      // Convert to backend format
+      const { experiences, skills, education } = convertToBackendFormat(parsedData, skillsResult);
+
       // Create ExternalBlob with progress tracking
       const blob = ExternalBlob.fromBytes(bytes).withUploadProgress((percentage) => {
         setUploadProgress(percentage);
@@ -60,19 +134,23 @@ export default function ResumeUpload({ onUploadSuccess }: ResumeUploadProps) {
 
       // Upload to backend
       const fileId = `resume_${Date.now()}_${file.name}`;
-      await uploadResume.mutateAsync({ fileId, blob });
-
-      // Parse PDF and extract skills
-      toast.info('Analyzing resume...');
-      const extractedText = await parseResumePDF(bytes);
-      const skills = extractSkills(extractedText);
+      await uploadResume.mutateAsync({ 
+        documentId: fileId, 
+        blob,
+        experiences,
+        skills,
+        education,
+        recommendations: []
+      });
 
       setIsComplete(true);
-      toast.success(`Resume uploaded! Found ${skills.length} skills.`);
-      onUploadSuccess(skills);
-    } catch (error) {
-      toast.error('Failed to upload resume. Please try again.');
+      toast.success(`Resume uploaded! Found ${skillsResult.allSkills.length} skills, ${parsedData.experience.length} experience entries, and ${parsedData.education.length} education entries.`);
+      onUploadSuccess(skillsResult, parsedData);
+    } catch (error: any) {
+      const errorMsg = error?.message || 'Failed to upload resume';
+      toast.error(errorMsg);
       console.error('Upload error:', error);
+      setValidationError(errorMsg);
     } finally {
       setIsProcessing(false);
     }
@@ -103,6 +181,8 @@ export default function ResumeUpload({ onUploadSuccess }: ResumeUploadProps) {
           <div>
             {isComplete ? (
               <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto mb-4" />
+            ) : validationError ? (
+              <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
             ) : (
               <FileText className="h-12 w-12 text-primary mx-auto mb-4" />
             )}
@@ -110,6 +190,12 @@ export default function ResumeUpload({ onUploadSuccess }: ResumeUploadProps) {
             <p className="text-sm text-muted-foreground mb-4">
               {(file.size / 1024 / 1024).toFixed(2)} MB
             </p>
+            
+            {validationError && (
+              <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-md">
+                <p className="text-sm text-destructive font-medium">{validationError}</p>
+              </div>
+            )}
             
             {isProcessing && (
               <div className="mb-4">
@@ -140,6 +226,7 @@ export default function ResumeUpload({ onUploadSuccess }: ResumeUploadProps) {
                   onClick={() => {
                     setFile(null);
                     setUploadProgress(0);
+                    setValidationError(null);
                   }}
                   disabled={isProcessing}
                 >
@@ -155,6 +242,7 @@ export default function ResumeUpload({ onUploadSuccess }: ResumeUploadProps) {
                   setFile(null);
                   setIsComplete(false);
                   setUploadProgress(0);
+                  setValidationError(null);
                 }}
               >
                 Upload Different Resume

@@ -7,23 +7,42 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, Shield } from 'lucide-react';
 import { toast } from 'sonner';
-import type { JobRole } from '../backend';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import type { JobRole, SkillLevel } from '../backend';
 
 export default function AdminPanel() {
   const { data: jobRoles, isLoading } = useGetJobRoles();
   const removeJobRole = useRemoveJobRole();
   const [editingRole, setEditingRole] = useState<JobRole | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [roleToDelete, setRoleToDelete] = useState<string | null>(null);
 
-  const handleDelete = async (title: string) => {
-    if (confirm(`Are you sure you want to delete the job role "${title}"?`)) {
-      try {
-        await removeJobRole.mutateAsync(title);
-        toast.success('Job role deleted successfully');
-      } catch (error) {
-        toast.error('Failed to delete job role');
-        console.error('Delete error:', error);
-      }
+  const handleDeleteClick = (title: string) => {
+    setRoleToDelete(title);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!roleToDelete) return;
+    
+    try {
+      await removeJobRole.mutateAsync(roleToDelete);
+      toast.success('Job role deleted successfully');
+      setDeleteDialogOpen(false);
+      setRoleToDelete(null);
+    } catch (error) {
+      toast.error('Failed to delete job role');
+      console.error('Delete error:', error);
     }
   };
 
@@ -35,6 +54,19 @@ export default function AdminPanel() {
   const handleCloseForm = () => {
     setShowForm(false);
     setEditingRole(null);
+  };
+
+  const getProficiencyBadgeVariant = (level: SkillLevel): string => {
+    switch (level) {
+      case 'beginner':
+        return 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800';
+      case 'intermediate':
+        return 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800';
+      case 'advanced':
+        return 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800';
+      default:
+        return '';
+    }
   };
 
   return (
@@ -92,8 +124,13 @@ export default function AdminPanel() {
                   {jobRoles.map((role) => (
                     <div key={role.title} className="border rounded-lg p-4">
                       <div className="flex items-start justify-between mb-3">
-                        <div>
+                        <div className="flex-1">
                           <h3 className="font-semibold text-lg">{role.title}</h3>
+                          {role.description && (
+                            <p className="text-sm text-muted-foreground mt-1 mb-2">
+                              {role.description}
+                            </p>
+                          )}
                           <p className="text-sm text-muted-foreground">
                             {role.requiredSkills.length} required skill(s)
                           </p>
@@ -109,7 +146,7 @@ export default function AdminPanel() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleDelete(role.title)}
+                            onClick={() => handleDeleteClick(role.title)}
                             disabled={removeJobRole.isPending}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -118,7 +155,11 @@ export default function AdminPanel() {
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {role.requiredSkills.map((skill, idx) => (
-                          <Badge key={idx} variant="secondary">
+                          <Badge 
+                            key={idx} 
+                            variant="secondary"
+                            className={getProficiencyBadgeVariant(skill.level)}
+                          >
                             {skill.name} ({skill.level})
                           </Badge>
                         ))}
@@ -135,6 +176,31 @@ export default function AdminPanel() {
           </Card>
         </div>
       </div>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Job Role</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete the job role <span className="font-semibold text-foreground">"{roleToDelete}"</span>? 
+              This action cannot be undone and will permanently remove the job role from the system.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={removeJobRole.isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                handleDeleteConfirm();
+              }}
+              disabled={removeJobRole.isPending}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {removeJobRole.isPending ? 'Deleting...' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AdminGuard>
   );
 }

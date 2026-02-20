@@ -6,7 +6,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Briefcase } from 'lucide-react';
-import type { JobRole } from '../backend';
+import type { JobRole, SkillLevel } from '../backend';
 
 interface JobRoleSelectorProps {
   onSelect: (role: JobRole | null) => void;
@@ -21,6 +21,19 @@ export default function JobRoleSelector({ onSelect, disabled }: JobRoleSelectorP
     setSelectedTitle(title);
     const role = jobRoles?.find(r => r.title === title);
     onSelect(role || null);
+  };
+
+  const getProficiencyBadgeVariant = (level: SkillLevel): string => {
+    switch (level) {
+      case 'beginner':
+        return 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800';
+      case 'intermediate':
+        return 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800';
+      case 'advanced':
+        return 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800';
+      default:
+        return '';
+    }
   };
 
   if (disabled) {
@@ -89,8 +102,12 @@ export default function JobRoleSelector({ onSelect, disabled }: JobRoleSelectorP
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {role.requiredSkills.slice(0, 5).map((skill, idx) => (
-                        <Badge key={idx} variant="secondary" className="text-xs">
-                          {skill.name}
+                        <Badge 
+                          key={idx} 
+                          variant="secondary" 
+                          className={`text-xs ${getProficiencyBadgeVariant(skill.level)}`}
+                        >
+                          {skill.name} ({skill.level})
                         </Badge>
                       ))}
                       {role.requiredSkills.length > 5 && (

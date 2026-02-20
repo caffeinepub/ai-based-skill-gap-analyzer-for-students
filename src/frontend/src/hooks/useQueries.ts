@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import type { UserProfile, JobRole, Resume, Skill } from '../backend';
+import type { UserProfile, JobRole, Resume, Skill, WorkExperience, Education } from '../backend';
+import { ExternalBlob } from '../backend';
 
 // User Profile Queries
 export function useGetCallerUserProfile() {
@@ -78,9 +79,9 @@ export function useAddJobRole() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ title, requiredSkills }: { title: string; requiredSkills: Skill[] }) => {
+    mutationFn: async ({ title, description, requiredSkills }: { title: string; description: string; requiredSkills: Skill[] }) => {
       if (!actor) throw new Error('Actor not available');
-      return actor.addJobRole(title, requiredSkills);
+      return actor.addJobRole(title, description, requiredSkills);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['jobRoles'] });
@@ -93,9 +94,9 @@ export function useUpdateJobRole() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ title, requiredSkills }: { title: string; requiredSkills: Skill[] }) => {
+    mutationFn: async ({ title, description, requiredSkills }: { title: string; description: string; requiredSkills: Skill[] }) => {
       if (!actor) throw new Error('Actor not available');
-      return actor.updateJobRole(title, requiredSkills);
+      return actor.updateJobRole(title, description, requiredSkills);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['jobRoles'] });
@@ -119,17 +120,24 @@ export function useRemoveJobRole() {
 }
 
 // Resume Queries
-export function useGetCallerResume() {
-  const { actor, isFetching } = useActor();
+export function useGetCallerResumes() {
+  const { actor, isFetching: actorFetching } = useActor();
 
-  return useQuery<Resume | null>({
-    queryKey: ['currentUserResume'],
+  const query = useQuery<Resume[]>({
+    queryKey: ['callerResumes'],
     queryFn: async () => {
       if (!actor) throw new Error('Actor not available');
-      return actor.getCallerResume();
+      return actor.getCallerResumes();
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !actorFetching,
+    retry: false,
   });
+
+  return {
+    ...query,
+    isLoading: actorFetching || query.isLoading,
+    isFetched: !!actor && query.isFetched,
+  };
 }
 
 export function useUploadResume() {
@@ -137,12 +145,41 @@ export function useUploadResume() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ fileId, blob }: { fileId: string; blob: any }) => {
+    mutationFn: async ({ 
+      documentId, 
+      blob, 
+      experiences, 
+      skills, 
+      education, 
+      recommendations 
+    }: { 
+      documentId: string; 
+      blob: ExternalBlob;
+      experiences: WorkExperience[];
+      skills: Skill[];
+      education: Education[];
+      recommendations: string[];
+    }) => {
       if (!actor) throw new Error('Actor not available');
-      return actor.uploadResume(fileId, blob);
+      return actor.uploadResume(documentId, blob, experiences, skills, education, recommendations);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['currentUserResume'] });
+      queryClient.invalidateQueries({ queryKey: ['callerResumes'] });
+    },
+  });
+}
+
+export function useDeleteResume() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (documentId: string) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.deleteResume(documentId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['callerResumes'] });
     },
   });
 }

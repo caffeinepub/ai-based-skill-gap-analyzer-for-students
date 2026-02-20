@@ -1,21 +1,60 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import ResumeUpload from '../components/ResumeUpload';
-import JobRoleSelector from '../components/JobRoleSelector';
+import ResumeList from '../components/ResumeList';
+import JobRoleMatchResults from '../components/JobRoleMatchResults';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ArrowRight, FileText, Briefcase } from 'lucide-react';
-import type { JobRole } from '../backend';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { FileText, Upload, List, Trash2, Target } from 'lucide-react';
+import { useGetCallerResumes, useGetJobRoles, useDeleteResume } from '../hooks/useQueries';
+import { calculateJobRoleMatches } from '../services/skillMatching';
+import { toast } from 'sonner';
+import ConfirmDeleteDialog from '../components/ConfirmDeleteDialog';
+import type { Resume } from '../backend';
+import type { ParsedResumeData } from '../services/nlpService';
+import type { ExtractedSkillsResult } from '../services/skillExtraction';
+import type { JobRoleMatchResult } from '../services/skillMatching';
 
 export default function AnalysisFlow() {
   const navigate = useNavigate();
   const { identity } = useInternetIdentity();
+  const { data: resumes } = useGetCallerResumes();
+  const { data: jobRoles, isLoading: jobRolesLoading } = useGetJobRoles();
+  const deleteResume = useDeleteResume();
+  
   const [resumeUploaded, setResumeUploaded] = useState(false);
-  const [selectedJobRole, setSelectedJobRole] = useState<JobRole | null>(null);
-  const [extractedSkills, setExtractedSkills] = useState<string[]>([]);
+  const [extractedSkillsResult, setExtractedSkillsResult] = useState<ExtractedSkillsResult | null>(null);
+  const [parsedResumeData, setParsedResumeData] = useState<ParsedResumeData | null>(null);
+  const [selectedResume, setSelectedResume] = useState<Resume | null>(null);
+  const [uploadTab, setUploadTab] = useState<'upload' | 'select'>('select');
+  const [jobRoleMatches, setJobRoleMatches] = useState<JobRoleMatchResult[]>([]);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const isAuthenticated = !!identity;
+
+  // Clear selected resume if it no longer exists in the resumes list
+  useEffect(() => {
+    if (selectedResume && resumes) {
+      const resumeStillExists = resumes.some(r => r.fileId === selectedResume.fileId);
+      if (!resumeStillExists) {
+        setSelectedResume(null);
+        setResumeUploaded(false);
+        setExtractedSkillsResult(null);
+        setParsedResumeData(null);
+        setJobRoleMatches([]);
+      }
+    }
+  }, [resumes, selectedResume]);
+
+  // Calculate job role matches when resume is uploaded/selected and job roles are available
+  useEffect(() => {
+    if (extractedSkillsResult && jobRoles && jobRoles.length > 0) {
+      const matches = calculateJobRoleMatches(extractedSkillsResult, jobRoles);
+      setJobRoleMatches(matches);
+    }
+  }, [extractedSkillsResult, jobRoles]);
 
   if (!isAuthenticated) {
     return (
@@ -29,15 +68,71 @@ export default function AnalysisFlow() {
     );
   }
 
-  const canProceed = resumeUploaded && selectedJobRole && extractedSkills.length > 0;
+  const handleResumeSelect = (resume: Resume) => {
+    setSelectedResume(resume);
+    
+    // Convert backend Resume to ParsedResumeData format
+    const parsedData: ParsedResumeData = {
+      rawText: '',
+      skills: resume.skills?.map(s => s.name) || [],
+      experience: resume.experiences?.map(exp => ({
+        title: exp.role,
+        company: exp.company,
+        duration: `${exp.durationMonths} months`,
+        description: exp.role
+      })) || [],
+      education: resume.education?.map(edu => ({
+        degree: edu.degree,
+        institution: edu.institution,
+        year: edu.graduationYear.toString()
+      })) || [],
+      certifications: []
+    };
 
-  const handleProceedToAnalysis = () => {
-    if (canProceed) {
+    // Create ExtractedSkillsResult from stored resume data
+    const skillsResult: ExtractedSkillsResult = {
+      allSkills: resume.skills?.map(s => s.name) || [],
+      technicalSkills: resume.skills?.filter(s => s.category === 'technical').map(s => s.name) || [],
+      softSkills: resume.skills?.filter(s => s.category === 'softSkills').map(s => s.name) || [],
+      experienceLevel: 'mid',
+      totalYearsExperience: Math.floor(Number(resume.experiences?.[0]?.durationMonths || 0) / 12)
+    };
+
+    setExtractedSkillsResult(skillsResult);
+    setParsedResumeData(parsedData);
+    setResumeUploaded(true);
+  };
+
+  const handleDeleteClick = () => {
+    setShowDeleteDialog(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!selectedResume) return;
+
+    try {
+      await deleteResume.mutateAsync(selectedResume.fileId);
+      toast.success('Resume deleted successfully');
+      setShowDeleteDialog(false);
+      setSelectedResume(null);
+      setResumeUploaded(false);
+      setExtractedSkillsResult(null);
+      setParsedResumeData(null);
+      setJobRoleMatches([]);
+    } catch (error) {
+      toast.error('Failed to delete resume');
+      console.error('Delete error:', error);
+    }
+  };
+
+  const handleViewDetails = (match: JobRoleMatchResult) => {
+    if (parsedResumeData && extractedSkillsResult) {
       navigate({ 
         to: '/dashboard',
         state: { 
-          jobRole: selectedJobRole,
-          extractedSkills 
+          jobRole: match.jobRole,
+          extractedSkillsResult,
+          parsedResumeData
         } as any
       });
     }
@@ -49,69 +144,106 @@ export default function AnalysisFlow() {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">Skill Gap Analysis</h1>
           <p className="text-lg text-muted-foreground">
-            Upload your resume and select a job role to discover your skill gaps
+            Upload your resume to discover your skill compatibility with available job roles
           </p>
         </div>
 
         <div className="space-y-8">
-          {/* Step 1: Resume Upload */}
+          {/* Step 1: Resume Upload or Selection */}
           <Card>
             <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="rounded-full bg-primary/10 w-10 h-10 flex items-center justify-center">
-                  <FileText className="h-5 w-5 text-primary" />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="rounded-full bg-primary/10 w-10 h-10 flex items-center justify-center">
+                    <FileText className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle>Step 1: Choose Your Resume</CardTitle>
+                    <CardDescription>Select a previously uploaded resume or upload a new one</CardDescription>
+                  </div>
                 </div>
-                <div>
-                  <CardTitle>Step 1: Upload Your Resume</CardTitle>
-                  <CardDescription>Upload your resume in PDF format (max 10MB)</CardDescription>
-                </div>
+                {resumeUploaded && selectedResume && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleDeleteClick}
+                    disabled={deleteResume.isPending}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete Resume
+                  </Button>
+                )}
               </div>
             </CardHeader>
             <CardContent>
-              <ResumeUpload 
-                onUploadSuccess={(skills) => {
-                  setResumeUploaded(true);
-                  setExtractedSkills(skills);
-                }}
-              />
+              <Tabs value={uploadTab} onValueChange={(v) => setUploadTab(v as 'upload' | 'select')}>
+                <TabsList className="grid w-full grid-cols-2 mb-6">
+                  <TabsTrigger value="select" className="flex items-center gap-2">
+                    <List className="h-4 w-4" />
+                    My Resumes
+                  </TabsTrigger>
+                  <TabsTrigger value="upload" className="flex items-center gap-2">
+                    <Upload className="h-4 w-4" />
+                    Upload New
+                  </TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="select">
+                  <ResumeList 
+                    onSelect={handleResumeSelect}
+                    selectedResumeId={selectedResume?.fileId}
+                  />
+                </TabsContent>
+                
+                <TabsContent value="upload">
+                  <ResumeUpload 
+                    onUploadSuccess={(skillsResult, resumeData) => {
+                      setResumeUploaded(true);
+                      setExtractedSkillsResult(skillsResult);
+                      setParsedResumeData(resumeData);
+                      setSelectedResume(null);
+                    }}
+                  />
+                </TabsContent>
+              </Tabs>
             </CardContent>
           </Card>
 
-          {/* Step 2: Job Role Selection */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="rounded-full bg-primary/10 w-10 h-10 flex items-center justify-center">
-                  <Briefcase className="h-5 w-5 text-primary" />
+          {/* Step 2: Job Role Matches */}
+          {resumeUploaded && extractedSkillsResult && (
+            <Card>
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="rounded-full bg-primary/10 w-10 h-10 flex items-center justify-center">
+                    <Target className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle>Step 2: View Job Role Matches</CardTitle>
+                    <CardDescription>See how your skills match with available job roles</CardDescription>
+                  </div>
                 </div>
-                <div>
-                  <CardTitle>Step 2: Select Target Job Role</CardTitle>
-                  <CardDescription>Choose the job role you're aiming for</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <JobRoleSelector 
-                onSelect={setSelectedJobRole}
-                disabled={!resumeUploaded}
-              />
-            </CardContent>
-          </Card>
-
-          {/* Proceed Button */}
-          <div className="flex justify-center pt-4">
-            <Button 
-              size="lg" 
-              onClick={handleProceedToAnalysis}
-              disabled={!canProceed}
-              className="px-8"
-            >
-              Proceed to Analysis
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </div>
+              </CardHeader>
+              <CardContent>
+                <JobRoleMatchResults
+                  matches={jobRoleMatches}
+                  onViewDetails={handleViewDetails}
+                  isLoading={jobRolesLoading}
+                />
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
+
+      {selectedResume && (
+        <ConfirmDeleteDialog
+          isOpen={showDeleteDialog}
+          onCancel={() => setShowDeleteDialog(false)}
+          onConfirm={handleDeleteConfirm}
+          resumeName={selectedResume.fileId}
+          isDeleting={deleteResume.isPending}
+        />
+      )}
     </div>
   );
 }

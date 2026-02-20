@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Download, Loader2 } from 'lucide-react';
 import { useState } from 'react';
-import { generateAnalysisReport } from '../services/pdfGenerator';
+import { generateAnalysisReport, type AnalysisReportData } from '../services/pdfGenerator';
 import { toast } from 'sonner';
 
 interface DownloadReportButtonProps {
@@ -14,8 +14,18 @@ export default function DownloadReportButton({ analysisData }: DownloadReportBut
   const handleDownload = async () => {
     setIsGenerating(true);
     try {
-      await generateAnalysisReport(analysisData);
-      toast.success('Report downloaded successfully');
+      // Prepare report data with all personalized information
+      const reportData: AnalysisReportData = {
+        jobRole: analysisData.jobRole,
+        matchPercentage: analysisData.matchPercentage,
+        matchingSkills: analysisData.matchingSkills,
+        missingSkills: analysisData.missingSkills,
+        recommendations: analysisData.recommendations,
+        resumeContext: analysisData.resumeContext
+      };
+      
+      await generateAnalysisReport(reportData);
+      toast.success('Personalized report downloaded successfully');
     } catch (error) {
       toast.error('Failed to generate report');
       console.error('PDF generation error:', error);

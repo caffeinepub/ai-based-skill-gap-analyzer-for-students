@@ -1,7 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { BookOpen, ExternalLink } from 'lucide-react';
+import { ExternalLink, BookOpen, Code } from 'lucide-react';
 
 interface Recommendation {
   skill: string;
@@ -17,13 +16,7 @@ export default function RecommendationsDisplay({ recommendations }: Recommendati
   if (recommendations.length === 0) {
     return (
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BookOpen className="h-5 w-5" />
-            Recommendations
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+        <CardContent className="py-12 text-center">
           <p className="text-muted-foreground">
             Great job! You have all the required skills for this role.
           </p>
@@ -35,52 +28,54 @@ export default function RecommendationsDisplay({ recommendations }: Recommendati
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <BookOpen className="h-5 w-5" />
-          Personalized Learning Recommendations
-        </CardTitle>
+        <CardTitle>Personalized Learning Recommendations</CardTitle>
+        <p className="text-sm text-muted-foreground">
+          Tailored suggestions based on your skill gaps and experience level
+        </p>
       </CardHeader>
       <CardContent className="space-y-6">
         {recommendations.map((rec, idx) => (
-          <div key={idx} className="border-l-4 border-primary pl-4 space-y-3">
+          <div key={idx} className="border rounded-lg p-4 space-y-4">
+            <h3 className="font-semibold text-lg">{rec.skill}</h3>
+            
+            {/* Courses */}
             <div>
-              <Badge className="mb-2">{rec.skill}</Badge>
+              <div className="flex items-center gap-2 mb-2">
+                <BookOpen className="h-4 w-4 text-primary" />
+                <h4 className="font-medium text-sm">Recommended Courses</h4>
+              </div>
+              <div className="space-y-2">
+                {rec.courses.map((course, cidx) => (
+                  <div key={cidx} className="flex items-center justify-between bg-secondary/20 rounded p-2">
+                    <div>
+                      <p className="text-sm font-medium">{course.title}</p>
+                      <p className="text-xs text-muted-foreground">{course.provider}</p>
+                    </div>
+                    <Button size="sm" variant="ghost" asChild>
+                      <a href={course.url} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    </Button>
+                  </div>
+                ))}
+              </div>
             </div>
             
-            {rec.courses.length > 0 && (
-              <div>
-                <h4 className="font-semibold text-sm mb-2">Recommended Courses</h4>
-                <div className="space-y-2">
-                  {rec.courses.map((course, cidx) => (
-                    <div key={cidx} className="flex items-start justify-between gap-2 p-2 rounded bg-muted/50">
-                      <div className="flex-1">
-                        <p className="font-medium text-sm">{course.title}</p>
-                        <p className="text-xs text-muted-foreground">{course.provider}</p>
-                      </div>
-                      <Button size="sm" variant="ghost" asChild>
-                        <a href={course.url} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="h-4 w-4" />
-                        </a>
-                      </Button>
-                    </div>
-                  ))}
-                </div>
+            {/* Projects */}
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Code className="h-4 w-4 text-primary" />
+                <h4 className="font-medium text-sm">Practice Projects</h4>
               </div>
-            )}
-            
-            {rec.projects.length > 0 && (
-              <div>
-                <h4 className="font-semibold text-sm mb-2">Suggested Projects</h4>
-                <div className="space-y-2">
-                  {rec.projects.map((project, pidx) => (
-                    <div key={pidx} className="p-2 rounded bg-muted/50">
-                      <p className="font-medium text-sm">{project.title}</p>
-                      <p className="text-xs text-muted-foreground">{project.description}</p>
-                    </div>
-                  ))}
-                </div>
+              <div className="space-y-2">
+                {rec.projects.map((project, pidx) => (
+                  <div key={pidx} className="bg-secondary/20 rounded p-2">
+                    <p className="text-sm font-medium">{project.title}</p>
+                    <p className="text-xs text-muted-foreground">{project.description}</p>
+                  </div>
+                ))}
               </div>
-            )}
+            </div>
           </div>
         ))}
       </CardContent>

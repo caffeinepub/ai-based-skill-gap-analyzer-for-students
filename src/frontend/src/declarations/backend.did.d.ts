@@ -10,12 +10,26 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface Education {
+  'institution' : string,
+  'graduationYear' : bigint,
+  'degree' : string,
+}
 export type ExternalBlob = Uint8Array;
-export interface JobRole { 'title' : string, 'requiredSkills' : Array<Skill> }
+export interface JobRole {
+  'title' : string,
+  'description' : string,
+  'requiredSkills' : Array<Skill>,
+}
 export interface Resume {
   'blob' : ExternalBlob,
+  'recommendations' : [] | [Array<string>],
   'user' : Principal,
+  'education' : [] | [Array<Education>],
+  'uploadTimestamp' : Time,
   'fileId' : string,
+  'experiences' : [] | [Array<WorkExperience>],
+  'skills' : [] | [Array<Skill>],
 }
 export interface Skill {
   'name' : string,
@@ -27,15 +41,24 @@ export type SkillCategory = { 'technical' : null } |
 export type SkillLevel = { 'intermediate' : null } |
   { 'beginner' : null } |
   { 'advanced' : null };
+export type Time = bigint;
 export interface UserProfile {
+  'contact' : [] | [string],
   'name' : string,
   'education' : [] | [string],
   'email' : [] | [string],
   'experience' : [] | [string],
+  'totalSkills' : [] | [bigint],
+  'isComplete' : boolean,
 }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
+export interface WorkExperience {
+  'role' : string,
+  'durationMonths' : bigint,
+  'company' : string,
+}
 export interface _CaffeineStorageCreateCertificateResult {
   'method' : string,
   'blob_hash' : string,
@@ -64,19 +87,41 @@ export interface _SERVICE {
   >,
   '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
-  'addJobRole' : ActorMethod<[string, Array<Skill>], undefined>,
+  'addJobRole' : ActorMethod<[string, string, Array<Skill>], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
-  'getCallerResume' : ActorMethod<[], [] | [Resume]>,
+  'calculateSkillGaps' : ActorMethod<[string, string], Array<string>>,
+  'deleteResume' : ActorMethod<[string], undefined>,
+  'getAllSkills' : ActorMethod<[Principal], Array<Skill>>,
+  'getCallerResumes' : ActorMethod<[], Array<Resume>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getJobRoles' : ActorMethod<[], Array<JobRole>>,
-  'getResume' : ActorMethod<[Principal], [] | [Resume]>,
+  'getResume' : ActorMethod<[string], [] | [Resume]>,
+  'getResumes' : ActorMethod<[Principal], Array<Resume>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'removeJobRole' : ActorMethod<[string], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
-  'updateJobRole' : ActorMethod<[string, Array<Skill>], undefined>,
-  'uploadResume' : ActorMethod<[string, ExternalBlob], undefined>,
+  'updateJobRole' : ActorMethod<[string, string, Array<Skill>], undefined>,
+  'uploadResume' : ActorMethod<
+    [
+      string,
+      ExternalBlob,
+      Array<WorkExperience>,
+      Array<Skill>,
+      Array<Education>,
+      Array<string>,
+    ],
+    undefined
+  >,
+  'validateResume' : ActorMethod<
+    [
+      [] | [Array<WorkExperience>],
+      [] | [Array<Skill>],
+      [] | [Array<Education>],
+    ],
+    boolean
+  >,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

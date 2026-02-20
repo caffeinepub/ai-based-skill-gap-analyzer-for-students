@@ -1,11 +1,11 @@
 /**
  * Recommendation Engine Service
- * Generates personalized course and project recommendations based on skill gaps
+ * Generates personalized course and project recommendations based on skill gaps and resume context
  */
 
 import type { Skill } from '../backend';
 
-interface Recommendation {
+export interface Recommendation {
   skill: string;
   courses: Array<{ title: string; url: string; provider: string }>;
   projects: Array<{ title: string; description: string }>;
@@ -32,6 +32,14 @@ const COURSE_DATABASE: Record<string, Array<{ title: string; url: string; provid
     { title: 'Machine Learning Specialization', url: 'https://www.coursera.org/specializations/machine-learning-introduction', provider: 'Coursera' },
     { title: 'Machine Learning A-Z', url: 'https://www.udemy.com/course/machinelearning/', provider: 'Udemy' },
   ],
+  'docker': [
+    { title: 'Docker Mastery', url: 'https://www.udemy.com/course/docker-mastery/', provider: 'Udemy' },
+    { title: 'Docker Documentation', url: 'https://docs.docker.com/get-started/', provider: 'Docker' },
+  ],
+  'kubernetes': [
+    { title: 'Kubernetes for Beginners', url: 'https://www.udemy.com/course/learn-kubernetes/', provider: 'Udemy' },
+    { title: 'Kubernetes Documentation', url: 'https://kubernetes.io/docs/tutorials/', provider: 'Kubernetes' },
+  ],
 };
 
 const PROJECT_DATABASE: Record<string, Array<{ title: string; description: string }>> = {
@@ -55,64 +63,49 @@ const PROJECT_DATABASE: Record<string, Array<{ title: string; description: strin
     { title: 'Predictive Model', description: 'Build a machine learning model to predict outcomes' },
     { title: 'Image Classification', description: 'Create an image classifier using deep learning' },
   ],
+  'docker': [
+    { title: 'Containerize an Application', description: 'Package a web application with Docker' },
+    { title: 'Multi-container Setup', description: 'Create a Docker Compose setup with multiple services' },
+  ],
+  'kubernetes': [
+    { title: 'Deploy to Kubernetes', description: 'Deploy a multi-tier application to a Kubernetes cluster' },
+    { title: 'Kubernetes Monitoring', description: 'Set up monitoring and logging for Kubernetes applications' },
+  ],
 };
 
-export function generateRecommendations(missingSkills: Skill[]): Recommendation[] {
-  const recommendations: Recommendation[] = [];
+const DEFAULT_COURSES = [
+  { title: 'Skill Development Course', url: 'https://www.coursera.org/', provider: 'Coursera' },
+  { title: 'Professional Development', url: 'https://www.udemy.com/', provider: 'Udemy' },
+];
 
+const DEFAULT_PROJECTS = [
+  { title: 'Practice Project', description: 'Build a project to practice this skill' },
+  { title: 'Portfolio Project', description: 'Create a portfolio piece demonstrating this skill' },
+];
+
+export function generateRecommendations(missingSkills: Skill[], experienceLevel: string): Recommendation[] {
+  // Validate input
+  if (!missingSkills || missingSkills.length === 0) {
+    return [];
+  }
+
+  const recommendations: Recommendation[] = [];
+  
   missingSkills.forEach(skill => {
     const skillNameLower = skill.name.toLowerCase();
     
     // Find matching courses
-    let courses = COURSE_DATABASE[skillNameLower] || [];
-    
-    // If no exact match, try partial match
-    if (courses.length === 0) {
-      Object.keys(COURSE_DATABASE).forEach(key => {
-        if (skillNameLower.includes(key) || key.includes(skillNameLower)) {
-          courses = COURSE_DATABASE[key];
-        }
-      });
-    }
+    let courses = COURSE_DATABASE[skillNameLower] || DEFAULT_COURSES;
     
     // Find matching projects
-    let projects = PROJECT_DATABASE[skillNameLower] || [];
+    let projects = PROJECT_DATABASE[skillNameLower] || DEFAULT_PROJECTS;
     
-    // If no exact match, try partial match
-    if (projects.length === 0) {
-      Object.keys(PROJECT_DATABASE).forEach(key => {
-        if (skillNameLower.includes(key) || key.includes(skillNameLower)) {
-          projects = PROJECT_DATABASE[key];
-        }
-      });
-    }
-    
-    // Add generic recommendations if none found
-    if (courses.length === 0) {
-      courses = [
-        { 
-          title: `Learn ${skill.name}`, 
-          url: `https://www.google.com/search?q=learn+${encodeURIComponent(skill.name)}+online+course`, 
-          provider: 'Search Online' 
-        },
-      ];
-    }
-    
-    if (projects.length === 0) {
-      projects = [
-        { 
-          title: `${skill.name} Practice Project`, 
-          description: `Build a project to practice ${skill.name} skills` 
-        },
-      ];
-    }
-
     recommendations.push({
       skill: skill.name,
       courses,
-      projects,
+      projects
     });
   });
-
+  
   return recommendations;
 }

@@ -1,80 +1,116 @@
 {
   "kind": "build_request",
-  "title": "Implement automatic database seeding with default job roles on deployment",
+  "title": "Add admin permission levels and skill proficiency management to existing admin panel",
   "projectName": "Skill Gap Analyzer",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-17",
-      "text": "Add initialization logic to the backend main actor that automatically seeds the database with default job roles (Data Analyst, Web Developer, AI Engineer, DevOps Engineer, UI/UX Designer) when the canister is first deployed or when no job roles exist in the system",
+      "id": "REQ-1",
+      "text": "Add admin permission levels to the backend by creating an admin registry that stores Principal IDs of users with admin access. Include methods to add, remove, and check admin status.",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-1",
-          "msg-2",
-          "msg-3"
+          "msg-5"
         ],
         "quotes": [
-          "No job roles available. Please contact an administrator. not working",
-          "Should the application automatically seed the database with predefined job roles (like Data Analyst, Web Developer, AI Engineer, etc.) when it first deploys, so users always have options available?",
-          "1"
+          "Admin permission levels for access control"
         ]
       },
       "acceptanceCriteria": [
-        "Backend automatically creates default job roles on first deployment",
-        "Seeding occurs when no job roles exist in the system",
-        "Each default job role includes a comprehensive set of required skills with appropriate proficiency levels (Beginner/Intermediate/Advanced) and categories (Technical/Soft Skills)",
-        "Seeding logic runs without requiring manual admin intervention",
-        "Existing job roles are not affected or duplicated during subsequent deployments"
+        "Backend maintains a stable map of admin Principal IDs",
+        "Provides isAdmin query method that accepts a Principal and returns boolean",
+        "Provides addAdmin and removeAdmin update methods restricted to existing admins",
+        "Initial deployment grants admin status to the deployer Principal"
       ]
     },
     {
-      "id": "REQ-18",
-      "text": "Define default job roles with realistic skill requirements including Data Analyst (SQL, Python, Excel, Statistics, Data Visualization, Power BI/Tableau), Web Developer (HTML, CSS, JavaScript, React, Node.js, Git, REST APIs), AI Engineer (Python, Machine Learning, TensorFlow/PyTorch, Deep Learning, NLP, Computer Vision), DevOps Engineer (Linux, Docker, Kubernetes, CI/CD, AWS/Azure/GCP, Git, Bash scripting), and UI/UX Designer (Figma/Adobe XD, User Research, Wireframing, Prototyping, Visual Design, HTML/CSS basics)",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-1",
-          "msg-3"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Each job role has 6-10 required skills covering both technical and soft skills",
-        "Skills include appropriate proficiency levels matching industry expectations",
-        "Skills are categorized correctly as Technical or Soft Skills",
-        "Default data reflects current industry standards for each role"
-      ]
-    },
-    {
-      "id": "REQ-19",
-      "text": "Update the JobRoleSelector component to show a loading state while job roles are being fetched or seeded, displaying a spinner or skeleton loader instead of the 'No job roles available. Please contact an administrator.' error message when roles are still being initialized",
+      "id": "REQ-2",
+      "text": "Update the JobRoleForm component to include proficiency level selection (beginner, intermediate, advanced) for each skill when adding or editing skills for a job role.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1",
-          "msg-2"
+          "msg-3"
+        ],
+        "quotes": [
+          "Skill proficiency levels (beginner, intermediate, advanced) when adding/editing skills"
         ]
       },
       "acceptanceCriteria": [
-        "Loading state displays while job roles query is in progress",
-        "User sees a spinner or skeleton loader during initialization",
-        "Error message 'No job roles available. Please contact an administrator.' only appears for genuine errors, not during loading",
-        "Smooth transition from loading state to populated job role list"
+        "JobRoleForm displays a dropdown or select input for proficiency level for each skill",
+        "Proficiency level options are beginner, intermediate, and advanced",
+        "Selected proficiency level is saved with the skill when creating or editing a job role",
+        "Existing skills display their current proficiency level when editing"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Enforce admin-only access to the AdminPanel page by verifying the user's Principal has admin permissions using the backend admin registry.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-5"
+        ],
+        "quotes": [
+          "Internet Identity authentication to protect the admin panel",
+          "Admin permission levels for access control"
+        ]
+      },
+      "acceptanceCriteria": [
+        "AdminPanel page checks if the authenticated user is an admin via backend query",
+        "Non-admin users see the AccessDeniedScreen component when attempting to access admin routes",
+        "Admin navigation link in Layout only appears for authenticated admin users",
+        "Unauthenticated users are prompted to log in before accessing admin features"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Display skill proficiency levels in the AdminPanel job role cards and in the JobRoleSelector component so users can see the required proficiency for each skill.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "Skill proficiency levels (beginner, intermediate, advanced)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "AdminPanel displays proficiency level badges next to each skill name",
+        "JobRoleSelector shows proficiency levels in the skill preview",
+        "Proficiency levels use distinct visual styling (color or badge variant) for beginner, intermediate, and advanced"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Update the skill matching and gap analysis logic to consider proficiency levels when comparing resume skills against job role requirements, matching both skill name and proficiency level.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "Skill proficiency levels"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Skill matching considers both skill name and proficiency level",
+        "A skill is marked as matching only if the resume skill meets or exceeds the required proficiency level",
+        "Gap analysis shows which skills are missing or below the required proficiency level",
+        "Match percentage calculation accounts for proficiency level matching"
       ]
     }
   ],
   "constraints": [
-    "Maintain single-actor architecture with all logic in backend/main.mo",
-    "Do not modify immutable frontend paths: useInternetIdentity.ts, useInternetIdentity.tsx, useActor.ts, main.tsx, components/ui/*",
-    "Preserve existing admin CRUD functionality for job roles",
-    "Seeding must not interfere with manually created job roles"
+    "Use the existing AdminGuard component pattern for protecting admin routes",
+    "Maintain compatibility with existing JobRole and Skill data structures in the backend",
+    "Do not modify Internet Identity authentication implementation",
+    "Preserve existing resume analysis and matching functionality"
   ],
   "nonGoals": [
-    "Modifying the admin interface for job role management",
-    "Changing the skill matching algorithm or cosine similarity calculation",
-    "Altering the resume upload or parsing functionality",
-    "Adding new job roles beyond the five specified defaults",
-    "Implementing database migration logic for existing deployments with data"
+    "Multi-level admin roles (e.g., super admin, moderator)",
+    "Admin user management UI for adding/removing other admins",
+    "Audit logging of admin actions",
+    "Custom proficiency level definitions beyond beginner/intermediate/advanced"
   ],
   "imageRequirements": {
     "required": [],

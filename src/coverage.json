@@ -1,54 +1,84 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-19T16:45:55.849Z",
+  "generatedAt": "2026-02-20T14:25:09.422Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
-    "implemented": 1,
+    "total": 5,
+    "implemented": 3,
     "items": [
       {
-        "id": "REQ-17",
-        "summary": "Add initialization logic to the backend main actor that automatically seeds the database with default job roles (Data Analyst, Web Developer, AI Engineer, DevOps Engineer, UI/UX Designer) when the canister is first deployed or when no job roles exist in the system",
+        "id": "REQ-1",
+        "summary": "Add admin permission levels to the backend by creating an admin registry that stores Principal IDs of users with admin access. Include methods to add, remove, and check admin status.",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-18",
-        "summary": "Define default job roles with realistic skill requirements including Data Analyst (SQL, Python, Excel, Statistics, Data Visualization, Power BI/Tableau), Web Developer (HTML, CSS, JavaScript, React, Node.js, Git, REST APIs), AI Engineer (Python, Machine Learning, TensorFlow/PyTorch, Deep Learning, NLP, Computer Vision), DevOps Engineer (Linux, Docker, Kubernetes, CI/CD, AWS/Azure/GCP, Git, Bash scripting), and UI/UX Designer (Figma/Adobe XD, User Research, Wireframing, Prototyping, Visual Design, HTML/CSS basics)",
-        "status": "unknown",
-        "plannedFiles": [],
+        "id": "REQ-2",
+        "summary": "Update the JobRoleForm component to include proficiency level selection (beginner, intermediate, advanced) for each skill when adding or editing skills for a job role.",
+        "status": "missing",
+        "plannedFiles": [
+          "frontend/src/components/JobRoleForm.tsx"
+        ],
         "matchedFiles": []
       },
       {
-        "id": "REQ-19",
-        "summary": "Update the JobRoleSelector component to show a loading state while job roles are being fetched or seeded, displaying a spinner or skeleton loader instead of the 'No job roles available. Please contact an administrator.' error message when roles are still being initialized",
+        "id": "REQ-3",
+        "summary": "Enforce admin-only access to the AdminPanel page by verifying the user's Principal has admin permissions using the backend admin registry.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/JobRoleSelector.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/pages/AdminPanel.tsx",
+          "frontend/src/components/Layout.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/JobRoleSelector.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/pages/AdminPanel.tsx"
+        ]
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Display skill proficiency levels in the AdminPanel job role cards and in the JobRoleSelector component so users can see the required proficiency for each skill.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/AdminPanel.tsx",
+          "frontend/src/components/JobRoleSelector.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/AdminPanel.tsx",
+          "frontend/src/components/JobRoleSelector.tsx"
+        ]
+      },
+      {
+        "id": "REQ-5",
+        "summary": "Update the skill matching and gap analysis logic to consider proficiency levels when comparing resume skills against job role requirements, matching both skill name and proficiency level.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/services/skillMatching.ts",
+          "frontend/src/services/gapAnalysis.ts",
+          "frontend/src/components/GapAnalysisResults.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/services/skillMatching.ts",
+          "frontend/src/services/gapAnalysis.ts",
+          "frontend/src/components/GapAnalysisResults.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
     "backend/main.mo",
-    "backend/migration.mo",
     "build-request.json",
-    "build-template/README.md",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
+    "frontend/src/components/GapAnalysisResults.tsx",
     "frontend/src/components/JobRoleSelector.tsx",
-    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/pages/AdminPanel.tsx",
+    "frontend/src/services/gapAnalysis.ts",
+    "frontend/src/services/skillMatching.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

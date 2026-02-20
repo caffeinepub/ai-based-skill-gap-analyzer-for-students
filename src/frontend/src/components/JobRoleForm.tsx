@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAddJobRole, useUpdateJobRole } from '../hooks/useQueries';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, X } from 'lucide-react';
@@ -16,6 +17,7 @@ interface JobRoleFormProps {
 
 export default function JobRoleForm({ existingRole, onSuccess, onCancel }: JobRoleFormProps) {
   const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [skills, setSkills] = useState<Skill[]>([]);
   
   const addJobRole = useAddJobRole();
@@ -24,6 +26,7 @@ export default function JobRoleForm({ existingRole, onSuccess, onCancel }: JobRo
   useEffect(() => {
     if (existingRole) {
       setTitle(existingRole.title);
+      setDescription(existingRole.description || '');
       setSkills(existingRole.requiredSkills);
     }
   }, [existingRole]);
@@ -54,6 +57,11 @@ export default function JobRoleForm({ existingRole, onSuccess, onCancel }: JobRo
       return;
     }
 
+    if (!description.trim()) {
+      toast.error('Please enter a job description');
+      return;
+    }
+
     if (skills.length === 0) {
       toast.error('Please add at least one skill');
       return;
@@ -67,10 +75,10 @@ export default function JobRoleForm({ existingRole, onSuccess, onCancel }: JobRo
 
     try {
       if (existingRole) {
-        await updateJobRole.mutateAsync({ title, requiredSkills: skills });
+        await updateJobRole.mutateAsync({ title, description, requiredSkills: skills });
         toast.success('Job role updated successfully');
       } else {
-        await addJobRole.mutateAsync({ title, requiredSkills: skills });
+        await addJobRole.mutateAsync({ title, description, requiredSkills: skills });
         toast.success('Job role added successfully');
       }
       onSuccess();
@@ -90,6 +98,18 @@ export default function JobRoleForm({ existingRole, onSuccess, onCancel }: JobRo
           onChange={(e) => setTitle(e.target.value)}
           placeholder="e.g., Data Analyst, Web Developer"
           disabled={!!existingRole}
+          required
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="description">Job Description *</Label>
+        <Textarea
+          id="description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Describe the job role, responsibilities, and key requirements..."
+          rows={4}
           required
         />
       </div>

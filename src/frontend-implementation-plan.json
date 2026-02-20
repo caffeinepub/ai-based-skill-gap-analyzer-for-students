@@ -1,27 +1,92 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Implement automatic database seeding with default job roles on deployment",
+  "title": "Add admin permission levels and skill proficiency management to existing admin panel",
   "requirements": [
     {
-      "id": "REQ-19",
-      "summary": "Update JobRoleSelector to show loading state during job role initialization",
+      "id": "REQ-2",
+      "summary": "Update JobRoleForm to include proficiency level selection for each skill",
       "acceptanceCriteria": [
-        "Loading state displays while job roles query is in progress",
-        "User sees a spinner or skeleton loader during initialization",
-        "Error message 'No job roles available. Please contact an administrator.' only appears for genuine errors, not during loading",
-        "Smooth transition from loading state to populated job role list"
+        "JobRoleForm displays a dropdown or select input for proficiency level for each skill",
+        "Proficiency level options are beginner, intermediate, and advanced",
+        "Selected proficiency level is saved with the skill when creating or editing a job role",
+        "Existing skills display their current proficiency level when editing"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/JobRoleSelector.tsx",
+          "path": "frontend/src/components/JobRoleForm.tsx",
           "operation": "modify",
-          "description": "Add loading state handling to display a spinner or skeleton loader while job roles are being fetched. Replace the immediate error message 'No job roles available. Please contact an administrator.' with conditional logic that checks if the query is still loading. Only show the error message when the query has completed (isLoading is false) and the jobRoles array is genuinely empty. Import and use a loading component (e.g., Spinner from shadcn/ui or a skeleton loader) to provide visual feedback during the initial fetch or seeding process."
+          "description": "Add a Select dropdown for proficiency level (beginner, intermediate, advanced) next to each skill in the dynamic skill list. The Select should be populated from SkillLevel enum values. Update the skill state management to include the selected level when adding or editing skills. Ensure existing skills display their current proficiency level in the dropdown when editing a job role."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Enforce admin-only access to AdminPanel page using backend admin registry",
+      "acceptanceCriteria": [
+        "AdminPanel page checks if the authenticated user is an admin via backend query",
+        "Non-admin users see the AccessDeniedScreen component when attempting to access admin routes",
+        "Admin navigation link in Layout only appears for authenticated admin users",
+        "Unauthenticated users are prompted to log in before accessing admin features"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/AdminPanel.tsx",
+          "operation": "modify",
+          "description": "Wrap the AdminPanel page content with the AdminGuard component to enforce admin-only access. Use the authorization component to verify the user's Principal has admin permissions via the backend isCallerAdmin query. Non-admin users will automatically see the AccessDeniedScreen component. Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/hooks/useQueries.ts",
+          "path": "frontend/src/components/Layout.tsx",
           "operation": "modify",
-          "description": "Review and ensure the useGetJobRoles hook properly exposes the isLoading state from React Query. Verify that the loading state correctly reflects both the actor initialization (actorFetching) and the actual query loading state, similar to the pattern used in useGetCallerUserProfile. This ensures JobRoleSelector can distinguish between loading and genuinely empty states."
+          "description": "Conditionally render the Admin navigation link only for authenticated admin users. Use the useIsCallerAdmin hook to check admin status and useInternetIdentity to verify authentication. Hide the Admin link when the user is not authenticated or not an admin. Ensure the mobile menu also respects this conditional rendering."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Display skill proficiency levels in AdminPanel job role cards and JobRoleSelector component",
+      "acceptanceCriteria": [
+        "AdminPanel displays proficiency level badges next to each skill name",
+        "JobRoleSelector shows proficiency levels in the skill preview",
+        "Proficiency levels use distinct visual styling (color or badge variant) for beginner, intermediate, and advanced"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/AdminPanel.tsx",
+          "operation": "modify",
+          "description": "Update the job role cards to display proficiency level badges next to each skill name. Use the Badge component with distinct variants or colors for beginner (blue/info), intermediate (amber/warning), and advanced (green/success). Map over requiredSkills and render both skill.name and skill.level with appropriate styling."
+        },
+        {
+          "path": "frontend/src/components/JobRoleSelector.tsx",
+          "operation": "modify",
+          "description": "Update the skill preview section to display proficiency levels alongside skill names. Use Badge components with color-coded variants (beginner: blue, intermediate: amber, advanced: green) to visually distinguish proficiency levels. Ensure the preview shows both skill.name and skill.level for each required skill in the job role."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Update skill matching and gap analysis logic to consider proficiency levels",
+      "acceptanceCriteria": [
+        "Skill matching considers both skill name and proficiency level",
+        "A skill is marked as matching only if the resume skill meets or exceeds the required proficiency level",
+        "Gap analysis shows which skills are missing or below the required proficiency level",
+        "Match percentage calculation accounts for proficiency level matching"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/services/skillMatching.ts",
+          "operation": "modify",
+          "description": "Update the skill matching algorithm to compare both skill name and proficiency level. Define a proficiency hierarchy (beginner < intermediate < advanced) and mark a skill as matching only if the resume skill level meets or exceeds the required level. Update the match percentage calculation to account for proficiency level matching. Treat partial level matches (e.g., beginner vs intermediate) as non-matching."
+        },
+        {
+          "path": "frontend/src/services/gapAnalysis.ts",
+          "operation": "modify",
+          "description": "Update the gap analysis logic to identify skills that are missing or below the required proficiency level. Include both completely missing skills and skills present at insufficient proficiency levels in the missing skills array. Ensure the analysis results clearly distinguish between missing skills and skills with insufficient proficiency."
+        },
+        {
+          "path": "frontend/src/components/GapAnalysisResults.tsx",
+          "operation": "modify",
+          "description": "Update the display of matching and missing skills to show proficiency level badges alongside skill names. Use color-coded Badge components for proficiency levels. For missing skills, indicate whether the skill is completely missing or present at insufficient proficiency. Ensure both technical and soft skills categories display proficiency information."
         }
       ]
     }

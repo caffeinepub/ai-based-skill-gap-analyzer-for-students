@@ -2,11 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-jobroleselector-component-to-show-a-loading-state-while-job-roles-are-being-fetched-or-seeded-displaying-a-spinner-or-skeleton-loader-instead-of-the-no-job-roles-available-please-contact-an-administrator-error-message-when-roles-are-still-being-initialized",
-      "featureTitle": "Update the JobRoleSelector component to show a loading state while job roles are being fetched or seeded, displaying a spinner or skeleton loader instead of the 'No job roles available. Please contact an administrator.' error message when roles are still being initialized",
+      "featureId": "feature-enforce-admin-only-access-to-the-adminpanel-page-by-verifying-the-user-s-principal-has-admin-permissions-using-the-backend-admin-registry",
+      "featureTitle": "Enforce admin-only access to the AdminPanel page by verifying the user's Principal has admin permissions using the backend admin registry.",
       "files": [
-        "frontend/src/components/JobRoleSelector.tsx",
-        "frontend/src/hooks/useQueries.ts"
+        "frontend/src/pages/AdminPanel.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -19,7 +18,52 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-19"
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-display-skill-proficiency-levels-in-the-adminpanel-job-role-cards-and-in-the-jobroleselector-component-so-users-can-see-the-required-proficiency-for-each-skill",
+      "featureTitle": "Display skill proficiency levels in the AdminPanel job role cards and in the JobRoleSelector component so users can see the required proficiency for each skill.",
+      "files": [
+        "frontend/src/components/JobRoleSelector.tsx",
+        "frontend/src/pages/AdminPanel.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "http-outcalls@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-skill-matching-and-gap-analysis-logic-to-consider-proficiency-levels-when-comparing-resume-skills-against-job-role-requirements-matching-both-skill-name-and-proficiency-level",
+      "featureTitle": "Update the skill matching and gap analysis logic to consider proficiency levels when comparing resume skills against job role requirements, matching both skill name and proficiency level.",
+      "files": [
+        "frontend/src/components/GapAnalysisResults.tsx",
+        "frontend/src/services/gapAnalysis.ts",
+        "frontend/src/services/skillMatching.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "http-outcalls@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
       ],
       "confidence": "high"
     }

@@ -1,17 +1,19 @@
 import Array "mo:core/Array";
 import Iter "mo:core/Iter";
 import Map "mo:core/Map";
-import Runtime "mo:core/Runtime";
+import Nat "mo:core/Nat";
+import List "mo:core/List";
 import Order "mo:core/Order";
 import Principal "mo:core/Principal";
+import Runtime "mo:core/Runtime";
+import Time "mo:core/Time";
 import Storage "blob-storage/Storage";
 import MixinAuthorization "authorization/MixinAuthorization";
 import MixinStorage "blob-storage/Mixin";
 import AccessControl "authorization/access-control";
-import Migration "migration";
+import Text "mo:core/Text";
+import Int "mo:core/Int";
 
-// Apply migration if needed
-(with migration = Migration.run)
 actor {
   // Mixins
   let accessControlState = AccessControl.initState();
@@ -19,6 +21,18 @@ actor {
   include MixinStorage();
 
   // Data Types
+  public type WorkExperience = {
+    company : Text;
+    role : Text;
+    durationMonths : Nat;
+  };
+
+  public type Education = {
+    degree : Text;
+    institution : Text;
+    graduationYear : Int;
+  };
+
   public type SkillLevel = {
     #beginner;
     #intermediate;
@@ -38,6 +52,7 @@ actor {
 
   public type JobRole = {
     title : Text;
+    description : Text;
     requiredSkills : [Skill];
   };
 
@@ -45,11 +60,19 @@ actor {
     user : Principal;
     fileId : Text;
     blob : Storage.ExternalBlob;
+    uploadTimestamp : Time.Time;
+    experiences : ?[WorkExperience];
+    skills : ?[Skill];
+    education : ?[Education];
+    recommendations : ?[Text];
   };
 
   public type UserProfile = {
     name : Text;
+    contact : ?Text;
     email : ?Text;
+    isComplete : Bool;
+    totalSkills : ?Nat;
     education : ?Text;
     experience : ?Text;
   };
@@ -62,9 +85,57 @@ actor {
 
   // Persistent State
   let jobRoles = Map.empty<Text, JobRole>();
-  let resumes = Map.empty<Principal, Resume>();
+  let resumes = Map.empty<Principal, List.List<Resume>>();
   let userProfiles = Map.empty<Principal, UserProfile>();
   var initialized = false;
+
+  // Helper Functions
+  func ensureInitialized() {
+    if (not initialized and jobRoles.size() == 0) {
+      initializeDefaultJobRoles();
+    };
+  };
+
+  public shared ({ caller }) func validateResume(
+    experiences : ?[WorkExperience],
+    skills : ?[Skill],
+    education : ?[Education],
+  ) : async Bool {
+    if (not AccessControl.hasPermission(accessControlState, caller, #user)) {
+      Runtime.trap("Unauthorized: Only users can validate resumes");
+    };
+
+    switch (experiences) {
+      case (null) {
+        Runtime.trap("Experiences cannot be null");
+      };
+      case (?expArray) {
+        if (expArray.size() == 0) { Runtime.trap("Invalid experience section") };
+      };
+    };
+
+    switch (skills) {
+      case (null) {
+        Runtime.trap("Skills cannot be null");
+      };
+      case (?skillArray) {
+        if (skillArray.size() == 0) { return false };
+        let hasTechnical = skillArray.find(func(skill) { skill.category == #technical });
+        if (hasTechnical == null) { return false };
+      };
+    };
+
+    switch (education) {
+      case (null) {
+        Runtime.trap("Education cannot be null");
+      };
+      case (?eduArray) {
+        if (eduArray.size() == 0) { return false };
+      };
+    };
+
+    true;
+  };
 
   // Initialization (Default Job Roles)
   func initializeDefaultJobRoles() {
@@ -72,6 +143,7 @@ actor {
       // Data Analyst
       {
         title = "Data Analyst";
+        description = "Data Analysts interpret data and turn it into information which can offer ways to improve a business...";
         requiredSkills = [
           { name = "SQL"; level = #advanced; category = #technical },
           { name = "Python"; level = #advanced; category = #technical },
@@ -85,6 +157,7 @@ actor {
       // Web Developer
       {
         title = "Web Developer";
+        description = "Web Developers design, build, and maintain websites and web applications, focusing on both function and appearance...";
         requiredSkills = [
           { name = "HTML"; level = #intermediate; category = #technical },
           { name = "CSS"; level = #intermediate; category = #technical },
@@ -98,6 +171,7 @@ actor {
       // AI Engineer
       {
         title = "AI Engineer";
+        description = "AI Engineers develop, test, and implement AI models, specializing in machine learning techniques to automate tasks and enhance data analysis.";
         requiredSkills = [
           { name = "Python"; level = #advanced; category = #technical },
           { name = "Machine Learning"; level = #intermediate; category = #technical },
@@ -111,6 +185,7 @@ actor {
       // DevOps Engineer
       {
         title = "DevOps Engineer";
+        description = "DevOps Engineers streamline software development and infrastructure operations by implementing automation tools and managing continuous integration and deployment systems.";
         requiredSkills = [
           { name = "Linux"; level = #advanced; category = #technical },
           { name = "Docker"; level = #advanced; category = #technical },
@@ -126,6 +201,7 @@ actor {
       // UI/UX Designer
       {
         title = "UI/UX Designer";
+        description = "UI/UX Designers create visually appealing and user-friendly interfaces, ensuring optimal usability and engagement across digital products.";
         requiredSkills = [
           { name = "Figma"; level = #advanced; category = #technical },
           { name = "Adobe XD"; level = #intermediate; category = #technical },
@@ -136,18 +212,25 @@ actor {
           { name = "HTML/CSS basics"; level = #beginner; category = #technical },
         ];
       },
+      // AI Consultant
+      {
+        title = "AI Consultant";
+        description = "AI Consultants provide expert guidance on implementing and optimizing AI solutions to advance business objectives and enhance digital transformation initiatives.";
+        requiredSkills = [
+          { name = "Machine Learning"; level = #advanced; category = #technical },
+          { name = "Data Analysis"; level = #advanced; category = #technical },
+          { name = "Project Management"; level = #intermediate; category = #technical },
+          { name = "Python"; level = #intermediate; category = #technical },
+          { name = "Consulting"; level = #advanced; category = #softSkills },
+          { name = "Communication"; level = #advanced; category = #softSkills },
+        ];
+      },
     ];
 
     for (jobRole in defaultJobRoles.values()) {
       jobRoles.add(jobRole.title, jobRole);
     };
     initialized := true;
-  };
-
-  func ensureInitialized() {
-    if (not initialized and jobRoles.size() == 0) {
-      initializeDefaultJobRoles();
-    };
   };
 
   // User Profile Management
@@ -173,16 +256,16 @@ actor {
   };
 
   // Job Role Management (Admin Only)
-  public shared ({ caller }) func addJobRole(title : Text, requiredSkills : [Skill]) : async () {
+  public shared ({ caller }) func addJobRole(title : Text, description : Text, requiredSkills : [Skill]) : async () {
     if (not AccessControl.hasPermission(accessControlState, caller, #admin)) {
       Runtime.trap("Unauthorized: Only admins can add job roles");
     };
 
-    let jobRole = { title; requiredSkills };
+    let jobRole = { title; description; requiredSkills };
     jobRoles.add(title, jobRole);
   };
 
-  public shared ({ caller }) func updateJobRole(title : Text, requiredSkills : [Skill]) : async () {
+  public shared ({ caller }) func updateJobRole(title : Text, description : Text, requiredSkills : [Skill]) : async () {
     if (not AccessControl.hasPermission(accessControlState, caller, #admin)) {
       Runtime.trap("Unauthorized: Only admins can update job roles");
     };
@@ -190,7 +273,7 @@ actor {
     switch (jobRoles.get(title)) {
       case (null) { Runtime.trap("Job role does not exist") };
       case (?_) {
-        let jobRole = { title; requiredSkills };
+        let jobRole = { title; description; requiredSkills };
         jobRoles.add(title, jobRole);
       };
     };
@@ -218,29 +301,181 @@ actor {
   };
 
   // Resume Management
-  public shared ({ caller }) func uploadResume(fileId : Text, blob : Storage.ExternalBlob) : async () {
+  public shared ({ caller }) func uploadResume(
+    documentId : Text,
+    blob : Storage.ExternalBlob,
+    experiences : [WorkExperience],
+    skills : [Skill],
+    education : [Education],
+    recommendations : [Text],
+  ) : async () {
     if (not AccessControl.hasPermission(accessControlState, caller, #user)) {
       Runtime.trap("Unauthorized: Only registered users can upload resumes");
     };
 
-    // File validation logic handled in frontend with fileId and blob
-    let resume = { user = caller; fileId; blob };
-    resumes.add(caller, resume);
-  };
-
-  public query ({ caller }) func getResume(user : Principal) : async ?Resume {
-    if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Can only view your own resume");
+    if (experiences.size() == 0 or skills.size() == 0 or education.size() == 0) {
+      Runtime.trap("Resume must have at least one experience, skill, and education entry");
     };
 
-    resumes.get(user);
+    let inMemoryResume : Resume = {
+      user = caller;
+      fileId = documentId;
+      blob;
+      uploadTimestamp = Time.now();
+      experiences = ?experiences;
+      skills = ?skills;
+      education = ?education;
+      recommendations = ?recommendations;
+    };
+
+    let userResumes = switch (resumes.get(caller)) {
+      case (null) { List.empty<Resume>() };
+      case (?existing) { existing };
+    };
+    userResumes.add(inMemoryResume);
+
+    resumes.add(caller, userResumes);
   };
 
-  public query ({ caller }) func getCallerResume() : async ?Resume {
+  public shared ({ caller }) func deleteResume(documentId : Text) : async () {
+    if (not AccessControl.hasPermission(accessControlState, caller, #user)) {
+      Runtime.trap("Unauthorized: Only registered users can delete resumes");
+    };
+
+    switch (resumes.get(caller)) {
+      case (null) {
+        Runtime.trap("No resumes found for user");
+      };
+      case (?userResumes) {
+        let initialSize = userResumes.size();
+
+        let filteredResumes = userResumes.filter(
+          func(resume) {
+            resume.fileId != documentId;
+          }
+        );
+
+        if (filteredResumes.size() == initialSize) {
+          Runtime.trap("Resume with document ID " # documentId # " not found");
+        };
+
+        if (filteredResumes.isEmpty()) {
+          resumes.remove(caller);
+        } else {
+          resumes.add(caller, filteredResumes);
+        };
+      };
+    };
+  };
+
+  public query ({ caller }) func getResumes(user : Principal) : async [Resume] {
+    if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Can only view your own resumes");
+    };
+
+    switch (resumes.get(user)) {
+      case (null) {
+        Runtime.trap("No resumes found for user");
+      };
+      case (?userResumes) {
+        userResumes.toArray();
+      };
+    };
+  };
+
+  public query ({ caller }) func getCallerResumes() : async [Resume] {
     if (not AccessControl.hasPermission(accessControlState, caller, #user)) {
       Runtime.trap("Unauthorized: Only registered users can access resumes");
     };
 
-    resumes.get(caller);
+    switch (resumes.get(caller)) {
+      case (null) { [] };
+      case (?userResumes) {
+        userResumes.toArray();
+      };
+    };
+  };
+
+  public query ({ caller }) func getResume(documentId : Text) : async ?Resume {
+    if (not AccessControl.hasPermission(accessControlState, caller, #user)) {
+      Runtime.trap("Unauthorized: Only registered users can access resumes");
+    };
+
+    switch (resumes.get(caller)) {
+      case (null) { null };
+      case (?userResumes) {
+        userResumes.find(func(resume) { resume.fileId == documentId });
+      };
+    };
+  };
+
+  public shared ({ caller }) func calculateSkillGaps(documentId : Text, jobRole : Text) : async [Text] {
+    if (not AccessControl.hasPermission(accessControlState, caller, #user)) {
+      Runtime.trap("Unauthorized: Only registered users can access resumes");
+    };
+
+    switch (resumes.get(caller)) {
+      case (null) { Runtime.trap("No resumes found for user") };
+      case (?userResumes) {
+        switch (userResumes.toArray().find(func(resume) { resume.fileId == documentId })) {
+          case (null) { Runtime.trap("Resume not found") };
+          case (?resume) {
+            let resumeSkills = switch (resume.skills) {
+              case (null) { [] };
+              case (?s) { s };
+            };
+            let jobRoleDetails = switch (jobRoles.get(jobRole)) {
+              case (null) { Runtime.trap("Job role does not exist") };
+              case (?details) { details };
+            };
+            let requiredSkills = jobRoleDetails.requiredSkills;
+
+            let resumeGapSkills = requiredSkills.filter(
+              func(requiredSkill) {
+                let hasSkill = resumeSkills.find(
+                  func(skill) { skill.name == requiredSkill.name }
+                );
+                hasSkill == null;
+              }
+            );
+
+            resumeGapSkills.map(func(skill) { skill.name });
+          };
+        };
+      };
+    };
+  };
+
+  public query ({ caller }) func getAllSkills(user : Principal) : async [Skill] {
+    if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Can only view your own skills");
+    };
+
+    switch (resumes.get(user)) {
+      case (null) {
+        Runtime.trap("No resumes found for user");
+      };
+      case (?userResumes) {
+        let allSkills = List.empty<Skill>();
+
+        userResumes.toArray().forEach(
+          func(resume) {
+            switch (resume.skills) {
+              case (null) {};
+              case (?skills) {
+                for (skill in skills.values()) {
+                  allSkills.add(skill);
+                };
+              };
+            };
+          }
+        );
+
+        let skillsArray = allSkills.toArray();
+        if (skillsArray.size() > 0) {
+          skillsArray;
+        } else { [] };
+      };
+    };
   };
 };

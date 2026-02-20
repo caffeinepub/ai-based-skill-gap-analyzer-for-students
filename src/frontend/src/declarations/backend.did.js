@@ -39,19 +39,39 @@ export const UserRole = IDL.Variant({
   'guest' : IDL.Null,
 });
 export const ExternalBlob = IDL.Vec(IDL.Nat8);
+export const Education = IDL.Record({
+  'institution' : IDL.Text,
+  'graduationYear' : IDL.Int,
+  'degree' : IDL.Text,
+});
+export const Time = IDL.Int;
+export const WorkExperience = IDL.Record({
+  'role' : IDL.Text,
+  'durationMonths' : IDL.Nat,
+  'company' : IDL.Text,
+});
 export const Resume = IDL.Record({
   'blob' : ExternalBlob,
+  'recommendations' : IDL.Opt(IDL.Vec(IDL.Text)),
   'user' : IDL.Principal,
+  'education' : IDL.Opt(IDL.Vec(Education)),
+  'uploadTimestamp' : Time,
   'fileId' : IDL.Text,
+  'experiences' : IDL.Opt(IDL.Vec(WorkExperience)),
+  'skills' : IDL.Opt(IDL.Vec(Skill)),
 });
 export const UserProfile = IDL.Record({
+  'contact' : IDL.Opt(IDL.Text),
   'name' : IDL.Text,
   'education' : IDL.Opt(IDL.Text),
   'email' : IDL.Opt(IDL.Text),
   'experience' : IDL.Opt(IDL.Text),
+  'totalSkills' : IDL.Opt(IDL.Nat),
+  'isComplete' : IDL.Bool,
 });
 export const JobRole = IDL.Record({
   'title' : IDL.Text,
+  'description' : IDL.Text,
   'requiredSkills' : IDL.Vec(Skill),
 });
 
@@ -83,13 +103,21 @@ export const idlService = IDL.Service({
     ),
   '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
-  'addJobRole' : IDL.Func([IDL.Text, IDL.Vec(Skill)], [], []),
+  'addJobRole' : IDL.Func([IDL.Text, IDL.Text, IDL.Vec(Skill)], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
-  'getCallerResume' : IDL.Func([], [IDL.Opt(Resume)], ['query']),
+  'calculateSkillGaps' : IDL.Func(
+      [IDL.Text, IDL.Text],
+      [IDL.Vec(IDL.Text)],
+      [],
+    ),
+  'deleteResume' : IDL.Func([IDL.Text], [], []),
+  'getAllSkills' : IDL.Func([IDL.Principal], [IDL.Vec(Skill)], ['query']),
+  'getCallerResumes' : IDL.Func([], [IDL.Vec(Resume)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getJobRoles' : IDL.Func([], [IDL.Vec(JobRole)], ['query']),
-  'getResume' : IDL.Func([IDL.Principal], [IDL.Opt(Resume)], ['query']),
+  'getResume' : IDL.Func([IDL.Text], [IDL.Opt(Resume)], ['query']),
+  'getResumes' : IDL.Func([IDL.Principal], [IDL.Vec(Resume)], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
@@ -98,8 +126,28 @@ export const idlService = IDL.Service({
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'removeJobRole' : IDL.Func([IDL.Text], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
-  'updateJobRole' : IDL.Func([IDL.Text, IDL.Vec(Skill)], [], []),
-  'uploadResume' : IDL.Func([IDL.Text, ExternalBlob], [], []),
+  'updateJobRole' : IDL.Func([IDL.Text, IDL.Text, IDL.Vec(Skill)], [], []),
+  'uploadResume' : IDL.Func(
+      [
+        IDL.Text,
+        ExternalBlob,
+        IDL.Vec(WorkExperience),
+        IDL.Vec(Skill),
+        IDL.Vec(Education),
+        IDL.Vec(IDL.Text),
+      ],
+      [],
+      [],
+    ),
+  'validateResume' : IDL.Func(
+      [
+        IDL.Opt(IDL.Vec(WorkExperience)),
+        IDL.Opt(IDL.Vec(Skill)),
+        IDL.Opt(IDL.Vec(Education)),
+      ],
+      [IDL.Bool],
+      [],
+    ),
 });
 
 export const idlInitArgs = [];
@@ -136,19 +184,39 @@ export const idlFactory = ({ IDL }) => {
     'guest' : IDL.Null,
   });
   const ExternalBlob = IDL.Vec(IDL.Nat8);
+  const Education = IDL.Record({
+    'institution' : IDL.Text,
+    'graduationYear' : IDL.Int,
+    'degree' : IDL.Text,
+  });
+  const Time = IDL.Int;
+  const WorkExperience = IDL.Record({
+    'role' : IDL.Text,
+    'durationMonths' : IDL.Nat,
+    'company' : IDL.Text,
+  });
   const Resume = IDL.Record({
     'blob' : ExternalBlob,
+    'recommendations' : IDL.Opt(IDL.Vec(IDL.Text)),
     'user' : IDL.Principal,
+    'education' : IDL.Opt(IDL.Vec(Education)),
+    'uploadTimestamp' : Time,
     'fileId' : IDL.Text,
+    'experiences' : IDL.Opt(IDL.Vec(WorkExperience)),
+    'skills' : IDL.Opt(IDL.Vec(Skill)),
   });
   const UserProfile = IDL.Record({
+    'contact' : IDL.Opt(IDL.Text),
     'name' : IDL.Text,
     'education' : IDL.Opt(IDL.Text),
     'email' : IDL.Opt(IDL.Text),
     'experience' : IDL.Opt(IDL.Text),
+    'totalSkills' : IDL.Opt(IDL.Nat),
+    'isComplete' : IDL.Bool,
   });
   const JobRole = IDL.Record({
     'title' : IDL.Text,
+    'description' : IDL.Text,
     'requiredSkills' : IDL.Vec(Skill),
   });
   
@@ -180,13 +248,21 @@ export const idlFactory = ({ IDL }) => {
       ),
     '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
-    'addJobRole' : IDL.Func([IDL.Text, IDL.Vec(Skill)], [], []),
+    'addJobRole' : IDL.Func([IDL.Text, IDL.Text, IDL.Vec(Skill)], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
-    'getCallerResume' : IDL.Func([], [IDL.Opt(Resume)], ['query']),
+    'calculateSkillGaps' : IDL.Func(
+        [IDL.Text, IDL.Text],
+        [IDL.Vec(IDL.Text)],
+        [],
+      ),
+    'deleteResume' : IDL.Func([IDL.Text], [], []),
+    'getAllSkills' : IDL.Func([IDL.Principal], [IDL.Vec(Skill)], ['query']),
+    'getCallerResumes' : IDL.Func([], [IDL.Vec(Resume)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getJobRoles' : IDL.Func([], [IDL.Vec(JobRole)], ['query']),
-    'getResume' : IDL.Func([IDL.Principal], [IDL.Opt(Resume)], ['query']),
+    'getResume' : IDL.Func([IDL.Text], [IDL.Opt(Resume)], ['query']),
+    'getResumes' : IDL.Func([IDL.Principal], [IDL.Vec(Resume)], ['query']),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(UserProfile)],
@@ -195,8 +271,28 @@ export const idlFactory = ({ IDL }) => {
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'removeJobRole' : IDL.Func([IDL.Text], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
-    'updateJobRole' : IDL.Func([IDL.Text, IDL.Vec(Skill)], [], []),
-    'uploadResume' : IDL.Func([IDL.Text, ExternalBlob], [], []),
+    'updateJobRole' : IDL.Func([IDL.Text, IDL.Text, IDL.Vec(Skill)], [], []),
+    'uploadResume' : IDL.Func(
+        [
+          IDL.Text,
+          ExternalBlob,
+          IDL.Vec(WorkExperience),
+          IDL.Vec(Skill),
+          IDL.Vec(Education),
+          IDL.Vec(IDL.Text),
+        ],
+        [],
+        [],
+      ),
+    'validateResume' : IDL.Func(
+        [
+          IDL.Opt(IDL.Vec(WorkExperience)),
+          IDL.Opt(IDL.Vec(Skill)),
+          IDL.Opt(IDL.Vec(Education)),
+        ],
+        [IDL.Bool],
+        [],
+      ),
   });
 };
 

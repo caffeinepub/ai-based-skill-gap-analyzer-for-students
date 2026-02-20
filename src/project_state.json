@@ -1,131 +1,38 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 7,
-  "summary": "AI-Based Skill Gap Analyzer for Students - A full-stack web application that analyzes student resumes using NLP, compares extracted skills with industry job role requirements, identifies skill gaps, and provides personalized recommendations with downloadable PDF reports.",
+  "projectStateVersion": 3,
+  "summary": "Admin Panel for Job Role & Skill Management with Internet Identity authentication, admin permission levels, and full CRUD operations for managing job roles and their required skills with proficiency levels",
   "architectural_notes": [
-    "Frontend: React with TypeScript and Tailwind CSS for responsive UI",
-    "Backend: Motoko canisters for data storage (users, resumes, job roles, skills)",
-    "NLP Integration: Frontend TypeScript calls external NLP APIs for text extraction",
-    "Authentication: Internet Identity integration (passkeys, Google, Apple, Microsoft)",
-    "Data Storage: Resumes stored permanently in canisters with analysis history",
-    "Admin Access: Role-based access control for job role and skills management",
-    "Skills Structure: Includes proficiency levels and skill categories (Technical/Soft)",
-    "Matching Algorithm: TF-IDF with cosine similarity for skill comparison",
-    "PDF Generation: Frontend JavaScript library for report generation",
-    "REST API Architecture: Modular canister methods with proper error handling"
+    "Backend: Motoko for data storage and management of job roles and skills",
+    "Frontend: React with TypeScript and Tailwind CSS for admin UI",
+    "Authentication: Internet Identity integration for secure admin access",
+    "Data model: Job roles contain multiple skills, each with proficiency levels (beginner/intermediate/advanced)",
+    "Access control: Permission-based system to restrict admin panel access"
   ],
   "known_issues": [],
-  "isFixRequest": true,
+  "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-implement-user-authentication-system-using-internet-identity-integration-allowing-users-to-register-and-login-with-passkeys-google-apple-or-microsoft-accounts",
-      "title": "Implement user authentication system using Internet Identity integration allowing users to register and login with passkeys, Google, Apple, or Microsoft accounts",
-      "reqIds": [
-        "REQ-1"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-create-resume-upload-functionality-accepting-pdf-format-with-file-validation-checking-file-type-size-limits-and-proper-error-messaging-for-invalid-uploads",
-      "title": "Create resume upload functionality accepting PDF format with file validation checking file type, size limits, and proper error messaging for invalid uploads",
-      "reqIds": [
-        "REQ-2"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-resume-parsing-by-calling-external-nlp-api-from-frontend-typescript-code-to-extract-text-content-from-uploaded-pdf-files",
-      "title": "Implement resume parsing by calling external NLP API from frontend TypeScript code to extract text content from uploaded PDF files",
+      "id": "feature-enforce-admin-only-access-to-the-adminpanel-page-by-verifying-the-user-s-principal-has-admin-permissions-using-the-backend-admin-registry",
+      "title": "Enforce admin-only access to the AdminPanel page by verifying the user's Principal has admin permissions using the backend admin registry.",
       "reqIds": [
         "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-build-skill-extraction-functionality-that-analyzes-parsed-resume-text-using-nlp-techniques-to-identify-technical-and-soft-skills-mentioned-in-the-resume",
-      "title": "Build skill extraction functionality that analyzes parsed resume text using NLP techniques to identify technical and soft skills mentioned in the resume",
+      "id": "feature-display-skill-proficiency-levels-in-the-adminpanel-job-role-cards-and-in-the-jobroleselector-component-so-users-can-see-the-required-proficiency-for-each-skill",
+      "title": "Display skill proficiency levels in the AdminPanel job role cards and in the JobRoleSelector component so users can see the required proficiency for each skill.",
       "reqIds": [
         "REQ-4"
       ],
       "version": 1
     },
     {
-      "id": "feature-create-admin-interface-with-role-based-access-control-where-authorized-admin-users-can-add-edit-and-delete-job-roles-with-their-associated-required-skills",
-      "title": "Create admin interface with role-based access control where authorized admin users can add, edit, and delete job roles with their associated required skills",
+      "id": "feature-update-the-skill-matching-and-gap-analysis-logic-to-consider-proficiency-levels-when-comparing-resume-skills-against-job-role-requirements-matching-both-skill-name-and-proficiency-level",
+      "title": "Update the skill matching and gap analysis logic to consider proficiency levels when comparing resume skills against job role requirements, matching both skill name and proficiency level.",
       "reqIds": [
         "REQ-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-build-skill-matching-algorithm-using-cosine-similarity-to-compare-extracted-resume-skills-against-selected-job-role-requirements-and-calculate-match-percentage",
-      "title": "Build skill matching algorithm using cosine similarity to compare extracted resume skills against selected job role requirements and calculate match percentage",
-      "reqIds": [
-        "REQ-7"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-create-missing-skills-identification-feature-that-analyzes-skill-gaps-by-comparing-resume-skills-against-job-requirements-and-generates-a-list-of-skills-the-student-needs-to-acquire",
-      "title": "Create missing skills identification feature that analyzes skill gaps by comparing resume skills against job requirements and generates a list of skills the student needs to acquire",
-      "reqIds": [
-        "REQ-8"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-recommendation-engine-that-suggests-relevant-courses-and-projects-based-on-identified-skill-gaps-to-help-students-acquire-missing-skills",
-      "title": "Implement recommendation engine that suggests relevant courses and projects based on identified skill gaps to help students acquire missing skills",
-      "reqIds": [
-        "REQ-9"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-build-interactive-dashboard-with-graphical-visualizations-including-charts-showing-skill-match-percentage-matching-skills-breakdown-missing-skills-analysis-and-comparison-metrics",
-      "title": "Build interactive dashboard with graphical visualizations including charts showing skill match percentage, matching skills breakdown, missing skills analysis, and comparison metrics",
-      "reqIds": [
-        "REQ-10"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-create-pdf-report-generation-feature-allowing-users-to-download-a-comprehensive-analysis-report-containing-match-percentage-matching-skills-missing-skills-and-course-recommendations",
-      "title": "Create PDF report generation feature allowing users to download a comprehensive analysis report containing match percentage, matching skills, missing skills, and course recommendations",
-      "reqIds": [
-        "REQ-11"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-design-a-cohesive-visual-theme-with-a-professional-education-focused-aesthetic-using-clean-typography-a-modern-color-palette-avoiding-blue-and-purple-unless-specifically-requested-and-a-layout-that-emphasizes-clarity-and-data-visualization",
-      "title": "Design a cohesive visual theme with a professional, education-focused aesthetic using clean typography, a modern color palette (avoiding blue and purple unless specifically requested), and a layout that emphasizes clarity and data visualization",
-      "reqIds": [
-        "REQ-13"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-user-selection-interface-for-predefined-job-roles-including-data-analyst-web-developer-ai-engineer-and-other-roles-managed-through-the-admin-interface",
-      "title": "Implement user selection interface for predefined job roles including Data Analyst, Web Developer, AI Engineer, and other roles managed through the admin interface",
-      "reqIds": [
-        "REQ-14"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-job-role-selector-component-to-handle-the-case-where-job-roles-are-being-loaded-or-seeded-showing-an-appropriate-loading-state-instead-of-the-no-job-roles-available-error-message",
-      "title": "Update the job role selector component to handle the case where job roles are being loaded or seeded, showing an appropriate loading state instead of the 'No job roles available' error message",
-      "reqIds": [
-        "REQ-16"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-jobroleselector-component-to-show-a-loading-state-while-job-roles-are-being-fetched-or-seeded-displaying-a-spinner-or-skeleton-loader-instead-of-the-no-job-roles-available-please-contact-an-administrator-error-message-when-roles-are-still-being-initialized",
-      "title": "Update the JobRoleSelector component to show a loading state while job roles are being fetched or seeded, displaying a spinner or skeleton loader instead of the 'No job roles available. Please contact an administrator.' error message when roles are still being initialized",
-      "reqIds": [
-        "REQ-19"
       ],
       "version": 1
     }
@@ -133,130 +40,53 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "User registration and login system with Internet Identity",
+      "summary": "Admin Panel with full CRUD operations for job roles and skills",
       "reqIds": [],
-      "status": "pending"
+      "status": "in_progress"
     },
     {
       "id": "AR-2",
-      "summary": "Resume upload functionality with PDF format validation",
-      "reqIds": [],
+      "summary": "Skill proficiency level management (beginner, intermediate, advanced)",
+      "reqIds": [
+        "AR-1"
+      ],
       "status": "pending"
     },
     {
       "id": "AR-3",
-      "summary": "Resume parsing using external NLP API from frontend",
-      "reqIds": [],
+      "summary": "Internet Identity authentication for admin panel",
+      "reqIds": [
+        "AR-1"
+      ],
       "status": "pending"
     },
     {
       "id": "AR-4",
-      "summary": "Skill extraction from parsed resume text",
-      "reqIds": [],
+      "summary": "Admin permission levels for access control",
+      "reqIds": [
+        "AR-1",
+        "AR-3"
+      ],
       "status": "pending"
     },
     {
       "id": "AR-5",
-      "summary": "Admin interface with role-based access control for managing job roles and skills",
-      "reqIds": [],
+      "summary": "Add admin permission levels to the backend by creating an admin registry that stores Principal IDs of users with admin access. Include methods to add, remove, and check admin status.",
+      "reqIds": [
+        "REQ-1"
+      ],
       "status": "pending"
     },
     {
       "id": "AR-6",
-      "summary": "Job role and skills management system with proficiency levels and categories",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-7",
-      "summary": "Skill matching algorithm with cosine similarity comparison",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-8",
-      "summary": "Match percentage calculation engine",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-9",
-      "summary": "Missing skills identification and gap analysis",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-10",
-      "summary": "Recommendation engine for courses and projects based on skill gaps",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-11",
-      "summary": "Interactive dashboard with graphical visualizations and charts",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-12",
-      "summary": "Downloadable PDF analysis report generation",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-13",
-      "summary": "Secure resume storage in canisters for future reference",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-19",
-      "summary": "Implement job role and skills management system where each job role includes required skills with proficiency levels (Beginner/Intermediate/Advanced) and skill categories (Technical/Soft Skills)",
+      "summary": "Update the JobRoleForm component to include proficiency level selection (beginner, intermediate, advanced) for each skill when adding or editing skills for a job role.",
       "reqIds": [
-        "REQ-6"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-25",
-      "summary": "Implement secure resume storage system in backend canisters that permanently stores uploaded PDF files and links them to user profiles for future reference and reanalysis",
-      "reqIds": [
-        "REQ-12"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-26",
-      "summary": "Automatically seed database with default job roles (Data Analyst, Web Developer, AI Engineer, etc.) on first deployment to ensure users always have predefined options available",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-27",
-      "summary": "Create initialization logic in the backend main actor that automatically seeds the database with default job roles (Data Analyst, Web Developer, AI Engineer, and other common technology roles) when the canister is first deployed or when no job roles exist in the system",
-      "reqIds": [
-        "REQ-15"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-28",
-      "summary": "Add initialization logic to the backend main actor that automatically seeds the database with default job roles (Data Analyst, Web Developer, AI Engineer, DevOps Engineer, UI/UX Designer) when the canister is first deployed or when no job roles exist in the system",
-      "reqIds": [
-        "REQ-17"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-29",
-      "summary": "Define default job roles with realistic skill requirements including Data Analyst (SQL, Python, Excel, Statistics, Data Visualization, Power BI/Tableau), Web Developer (HTML, CSS, JavaScript, React, Node.js, Git, REST APIs), AI Engineer (Python, Machine Learning, TensorFlow/PyTorch, Deep Learning, NLP, Computer Vision), DevOps Engineer (Linux, Docker, Kubernetes, CI/CD, AWS/Azure/GCP, Git, Bash scripting), and UI/UX Designer (Figma/Adobe XD, User Research, Wireframing, Prototyping, Visual Design, HTML/CSS basics)",
-      "reqIds": [
-        "REQ-18"
+        "REQ-2"
       ],
       "status": "pending"
     }
   ],
-  "projectName": "AI-Based Skill Gap Analyzer for Students",
+  "projectName": "Skill Gap Analyzer",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

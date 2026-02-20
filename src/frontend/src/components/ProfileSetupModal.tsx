@@ -26,9 +26,12 @@ export default function ProfileSetupModal() {
     try {
       await saveProfile.mutateAsync({
         name: name.trim(),
+        contact: undefined,
         email: email.trim() || undefined,
         education: education.trim() || undefined,
         experience: experience.trim() || undefined,
+        totalSkills: undefined,
+        isComplete: true,
       });
       toast.success('Profile created successfully!');
     } catch (error) {
