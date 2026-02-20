@@ -7,6 +7,8 @@ import HomePage from './pages/HomePage';
 import AnalysisFlow from './pages/AnalysisFlow';
 import AnalysisDashboard from './pages/AnalysisDashboard';
 import AdminPanel from './pages/AdminPanel';
+import ResumeUploadPage from './pages/ResumeUploadPage';
+import ResumeResultsPage from './pages/ResumeResultsPage';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from 'next-themes';
 
@@ -66,7 +68,26 @@ const adminRoute = createRoute({
   component: AdminPanel,
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, analyzeRoute, dashboardRoute, adminRoute]);
+const resumeUploadRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/admin/resume-upload',
+  component: ResumeUploadPage,
+});
+
+const resumeResultsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/admin/resume-results',
+  component: ResumeResultsPage,
+});
+
+const routeTree = rootRoute.addChildren([
+  indexRoute,
+  analyzeRoute,
+  dashboardRoute,
+  adminRoute,
+  resumeUploadRoute,
+  resumeResultsRoute,
+]);
 
 const router = createRouter({ routeTree });
 

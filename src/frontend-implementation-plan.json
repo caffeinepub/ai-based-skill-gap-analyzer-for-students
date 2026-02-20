@@ -1,92 +1,173 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add admin permission levels and skill proficiency management to existing admin panel",
+  "title": "Enhance resume analyzer with comprehensive extraction and advanced features",
   "requirements": [
     {
-      "id": "REQ-2",
-      "summary": "Update JobRoleForm to include proficiency level selection for each skill",
+      "id": "REQ-1",
+      "summary": "Replace mock AI parsing with comprehensive extraction capturing contact information, professional summary, certifications with issuing organizations and dates, and languages with proficiency levels",
       "acceptanceCriteria": [
-        "JobRoleForm displays a dropdown or select input for proficiency level for each skill",
-        "Proficiency level options are beginner, intermediate, and advanced",
-        "Selected proficiency level is saved with the skill when creating or editing a job role",
-        "Existing skills display their current proficiency level when editing"
+        "Contact information section displays phone, email, LinkedIn URL, and location when present in resume",
+        "Professional summary is extracted and displayed as a separate section",
+        "Certifications include issuing organization and date fields",
+        "Languages are extracted with proficiency levels (Basic, Intermediate, Fluent, Native)"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/JobRoleForm.tsx",
+          "path": "frontend/src/services/aiResumeParser.ts",
           "operation": "modify",
-          "description": "Add a Select dropdown for proficiency level (beginner, intermediate, advanced) next to each skill in the dynamic skill list. The Select should be populated from SkillLevel enum values. Update the skill state management to include the selected level when adding or editing skills. Ensure existing skills display their current proficiency level in the dropdown when editing a job role."
+          "description": "Remove mock data generation and implement comprehensive extraction logic that parses resume content to capture: contact information (phone regex patterns, email patterns, LinkedIn URL patterns, location extraction), professional summary (typically first paragraph or section labeled 'Summary'/'Objective'), certifications with structured fields (name, issuing organization, issue date, expiration date), and languages with proficiency levels mapped to standardized levels (Basic, Intermediate, Fluent, Native)"
+        },
+        {
+          "path": "frontend/src/services/nlpService.ts",
+          "operation": "modify",
+          "description": "Enhance pattern matching to identify and extract: contact information patterns (phone numbers with international formats, email addresses, LinkedIn URLs, location/address patterns), professional summary section (common headers like 'Summary', 'Profile', 'Objective'), certifications section with organization and date patterns, and languages section with proficiency indicators"
+        },
+        {
+          "path": "frontend/src/pages/ResumeResultsPage.tsx",
+          "operation": "modify",
+          "description": "Add new sections to display: Contact Information card with phone, email, LinkedIn link, and location fields; Professional Summary card showing extracted summary text; enhanced Certifications section displaying certification name, issuing organization, and dates in a structured format; Languages section with proficiency level badges (Basic, Intermediate, Fluent, Native) using color coding"
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Enhance work experience parsing to extract detailed information including job titles, company names, employment dates with start and end, location, and bullet-point descriptions",
+      "acceptanceCriteria": [
+        "Each work experience entry displays company name, job title, location, and date range",
+        "Employment dates are parsed into structured start and end date fields",
+        "Job descriptions are extracted as an array of bullet points",
+        "Work experience entries are displayed in reverse chronological order"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/services/nlpService.ts",
+          "operation": "modify",
+          "description": "Enhance work experience extraction to capture: job title patterns (typically bold or prominent text), company names (often followed by location or date ranges), employment dates with start and end parsing (handle formats like 'Jan 2020 - Dec 2022', '2020-2022', 'Present', 'Current'), location extraction for each position, and bullet-point descriptions (identify lines starting with bullets, dashes, or similar markers)"
+        },
+        {
+          "path": "frontend/src/services/aiResumeParser.ts",
+          "operation": "modify",
+          "description": "Update work experience data structure to include: company name, job title, location, startDate and endDate as separate fields (parse into month/year format), and descriptions as an array of bullet-point strings. Sort entries by start date in descending order for reverse chronological display"
+        },
+        {
+          "path": "frontend/src/pages/ResumeResultsPage.tsx",
+          "operation": "modify",
+          "description": "Redesign work experience section to display each entry with: company name as primary heading, job title as secondary heading, location and date range on a single line, and bullet-point descriptions rendered as an unordered list. Ensure entries are displayed in reverse chronological order"
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Enforce admin-only access to AdminPanel page using backend admin registry",
+      "summary": "Implement resume scoring and analysis system evaluating completeness, content quality, formatting consistency, and skill relevance, displaying overall score out of 100 with category breakdown",
       "acceptanceCriteria": [
-        "AdminPanel page checks if the authenticated user is an admin via backend query",
-        "Non-admin users see the AccessDeniedScreen component when attempting to access admin routes",
-        "Admin navigation link in Layout only appears for authenticated admin users",
-        "Unauthenticated users are prompted to log in before accessing admin features"
+        "Overall resume score is calculated and displayed as a percentage out of 100",
+        "Score breakdown shows individual category scores: Completeness, Content Quality, Formatting, and Skill Relevance",
+        "Each category includes specific feedback explaining the score",
+        "Scoring algorithm awards points for complete sections, detailed descriptions, quantifiable achievements, and in-demand skills"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/AdminPanel.tsx",
-          "operation": "modify",
-          "description": "Wrap the AdminPanel page content with the AdminGuard component to enforce admin-only access. Use the authorization component to verify the user's Principal has admin permissions via the backend isCallerAdmin query. Non-admin users will automatically see the AccessDeniedScreen component. Verify the component's usage instructions before implementing."
+          "path": "frontend/src/services/resumeScoring.ts",
+          "operation": "create",
+          "description": "Create scoring service that evaluates: Completeness (25 points - checks presence of all major sections: contact, summary, experience, education, skills), Content Quality (25 points - analyzes description detail length, identifies quantifiable achievements using regex patterns for numbers/percentages/metrics), Formatting (25 points - checks consistency in date formats, bullet point usage, section structure), and Skill Relevance (25 points - matches skills against in-demand skill database or categories). Return overall score and per-category breakdown with specific feedback strings"
         },
         {
-          "path": "frontend/src/components/Layout.tsx",
+          "path": "frontend/src/pages/ResumeResultsPage.tsx",
           "operation": "modify",
-          "description": "Conditionally render the Admin navigation link only for authenticated admin users. Use the useIsCallerAdmin hook to check admin status and useInternetIdentity to verify authentication. Hide the Admin link when the user is not authenticated or not an admin. Ensure the mobile menu also respects this conditional rendering."
+          "description": "Add Resume Score section at the top of the results page displaying: large circular or bar progress indicator for overall score out of 100, four category cards showing Completeness, Content Quality, Formatting, and Skill Relevance scores with individual progress bars, and specific feedback text for each category explaining why points were awarded or deducted"
+        },
+        {
+          "path": "frontend/src/services/aiResumeParser.ts",
+          "operation": "modify",
+          "description": "Integrate resumeScoring service to calculate scores after parsing resume data and include score results in the parsed resume object returned to components"
         }
       ]
     },
     {
       "id": "REQ-4",
-      "summary": "Display skill proficiency levels in AdminPanel job role cards and JobRoleSelector component",
+      "summary": "Redesign results display page with modern, professional UI featuring card-based layout, clear visual hierarchy, section headers with icons, improved typography, color-coded skill tags, and responsive design",
       "acceptanceCriteria": [
-        "AdminPanel displays proficiency level badges next to each skill name",
-        "JobRoleSelector shows proficiency levels in the skill preview",
-        "Proficiency levels use distinct visual styling (color or badge variant) for beginner, intermediate, and advanced"
+        "Results page uses a clean card-based layout with consistent spacing and shadows",
+        "Each major section (Contact, Summary, Experience, Education, Skills, Certifications) has a clear header with an appropriate icon",
+        "Skills are displayed as color-coded tags grouped by category",
+        "Layout is fully responsive and usable on mobile devices",
+        "Typography follows a clear hierarchy with appropriate font sizes and weights"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/AdminPanel.tsx",
+          "path": "frontend/src/pages/ResumeResultsPage.tsx",
           "operation": "modify",
-          "description": "Update the job role cards to display proficiency level badges next to each skill name. Use the Badge component with distinct variants or colors for beginner (blue/info), intermediate (amber/warning), and advanced (green/success). Map over requiredSkills and render both skill.name and skill.level with appropriate styling."
+          "description": "Completely redesign the layout with: Card component from shadcn/ui for each major section with consistent padding and shadow, section headers using Heading components with imported icons from lucide-react (User for Contact, FileText for Summary, Briefcase for Experience, GraduationCap for Education, Code for Skills, Award for Certifications), responsive grid layout using Tailwind CSS classes (stack on mobile, multi-column on desktop), improved typography hierarchy with text-2xl for page title, text-xl for section headers, text-base for content, and proper font-weight classes"
         },
         {
-          "path": "frontend/src/components/JobRoleSelector.tsx",
+          "path": "frontend/src/components/SkillTagDisplay.tsx",
+          "operation": "create",
+          "description": "Create reusable component for displaying skills as color-coded tags: Technical skills use blue badges, Soft skills use green badges, Domain skills use purple badges. Group skills by category with category headers. Use Badge component from shadcn/ui with appropriate variant classes. Include proficiency level indicator (dot or mini-badge) within each skill tag"
+        },
+        {
+          "path": "frontend/src/pages/ResumeResultsPage.tsx",
           "operation": "modify",
-          "description": "Update the skill preview section to display proficiency levels alongside skill names. Use Badge components with color-coded variants (beginner: blue, intermediate: amber, advanced: green) to visually distinguish proficiency levels. Ensure the preview shows both skill.name and skill.level for each required skill in the job role."
+          "description": "Replace current skills display with SkillTagDisplay component, passing categorized skills data. Ensure the component is responsive and wraps tags properly on smaller screens"
+        },
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Add or refine CSS custom properties for the results page theme if needed, ensuring sufficient contrast for accessibility and professional appearance. Verify existing card shadow and spacing variables are appropriate for the redesigned layout"
         }
       ]
     },
     {
       "id": "REQ-5",
-      "summary": "Update skill matching and gap analysis logic to consider proficiency levels",
+      "summary": "Enhance education section extraction to capture degree type, field of study, institution name, graduation date, GPA, and relevant coursework or honors",
       "acceptanceCriteria": [
-        "Skill matching considers both skill name and proficiency level",
-        "A skill is marked as matching only if the resume skill meets or exceeds the required proficiency level",
-        "Gap analysis shows which skills are missing or below the required proficiency level",
-        "Match percentage calculation accounts for proficiency level matching"
+        "Each education entry displays degree type and field of study",
+        "Institution name and graduation date are extracted and displayed",
+        "GPA is captured and displayed when present in the resume",
+        "Relevant coursework and honors are extracted as separate fields when available"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/services/skillMatching.ts",
+          "path": "frontend/src/services/nlpService.ts",
           "operation": "modify",
-          "description": "Update the skill matching algorithm to compare both skill name and proficiency level. Define a proficiency hierarchy (beginner < intermediate < advanced) and mark a skill as matching only if the resume skill level meets or exceeds the required level. Update the match percentage calculation to account for proficiency level matching. Treat partial level matches (e.g., beginner vs intermediate) as non-matching."
+          "description": "Enhance education extraction patterns to identify: degree type (Bachelor, Master, PhD, Associate, etc.), field of study (often follows degree type, e.g., 'Bachelor of Science in Computer Science'), institution name (university/college name), graduation date (year or month/year format), GPA (patterns like '3.8/4.0', 'GPA: 3.8'), relevant coursework (section labeled 'Relevant Coursework' or bullet points under education), and honors (Dean's List, Cum Laude, scholarships)"
         },
         {
-          "path": "frontend/src/services/gapAnalysis.ts",
+          "path": "frontend/src/services/aiResumeParser.ts",
           "operation": "modify",
-          "description": "Update the gap analysis logic to identify skills that are missing or below the required proficiency level. Include both completely missing skills and skills present at insufficient proficiency levels in the missing skills array. Ensure the analysis results clearly distinguish between missing skills and skills with insufficient proficiency."
+          "description": "Update education data structure to include fields: degreeType, fieldOfStudy, institution, graduationDate, gpa (optional), coursework (array of strings, optional), and honors (array of strings, optional). Parse and structure these fields from extracted text"
         },
         {
-          "path": "frontend/src/components/GapAnalysisResults.tsx",
+          "path": "frontend/src/pages/ResumeResultsPage.tsx",
           "operation": "modify",
-          "description": "Update the display of matching and missing skills to show proficiency level badges alongside skill names. Use color-coded Badge components for proficiency levels. For missing skills, indicate whether the skill is completely missing or present at insufficient proficiency. Ensure both technical and soft skills categories display proficiency information."
+          "description": "Redesign education section to display each entry with: degree type and field of study as main heading (e.g., 'Bachelor of Science in Computer Science'), institution name and graduation date on the next line, GPA displayed prominently if present, relevant coursework shown as a comma-separated list or bullet points, and honors displayed with badge or emphasized text styling"
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Improve skills extraction to categorize skills into Technical, Soft, and Domain categories, with automatic proficiency level inference based on years of experience and context",
+      "acceptanceCriteria": [
+        "Skills are automatically categorized into Technical, Soft, and Domain categories",
+        "Proficiency levels (Beginner, Intermediate, Advanced) are inferred from context and experience duration",
+        "Skills display includes visual indicators for proficiency level",
+        "Each skill category is displayed in a separate, clearly labeled section"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/services/skillExtraction.ts",
+          "operation": "modify",
+          "description": "Enhance skill categorization logic: maintain predefined lists or pattern matching for Technical skills (programming languages, frameworks, tools), Soft skills (communication, leadership, teamwork, problem-solving), and Domain skills (industry-specific knowledge like finance, healthcare, marketing). Implement proficiency inference: parse years of experience from work history, map experience duration to proficiency levels (0-2 years = Beginner, 2-5 years = Intermediate, 5+ years = Advanced), look for context clues in descriptions (e.g., 'proficient in', 'expert in', 'familiar with')"
+        },
+        {
+          "path": "frontend/src/components/SkillTagDisplay.tsx",
+          "operation": "modify",
+          "description": "Enhance component to display proficiency levels: add a small badge or colored dot within each skill tag indicating proficiency (green dot for Advanced, yellow for Intermediate, gray for Beginner). Ensure each category (Technical, Soft, Domain) is displayed in a separate section with a clear category header and appropriate icon"
+        },
+        {
+          "path": "frontend/src/pages/ResumeResultsPage.tsx",
+          "operation": "modify",
+          "description": "Ensure SkillTagDisplay component receives categorized skills with proficiency levels and is integrated into the redesigned layout. Verify that Technical, Soft, and Domain skills are visually separated and clearly labeled"
         }
       ]
     }

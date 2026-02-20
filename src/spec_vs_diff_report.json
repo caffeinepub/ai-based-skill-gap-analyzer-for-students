@@ -1,19 +1,62 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-20T14:25:09.420Z",
-  "summary": "The diff implements all five requirements with comprehensive coverage of admin permissions, proficiency level management, access control, UI display, and skill matching logic. The implementation includes backend admin registry with access control methods, frontend components with proficiency level selection and display, and updated matching/gap analysis logic that considers proficiency hierarchies.",
-  "missing_requirements": [],
+  "generatedAt": "2026-02-20T15:21:12.571Z",
+  "summary": "The diff implements most requested features including comprehensive resume extraction (contact info, professional summary, languages, certifications), enhanced work experience parsing, education section enhancements, skills categorization, resume scoring system, and a redesigned results display page with card-based UI. However, some specific acceptance criteria are partially implemented or lack explicit evidence in the diff.",
+  "missing_requirements": [
+    {
+      "id": "REQ-1",
+      "requirement": "Languages are extracted with proficiency levels (Basic, Intermediate, Fluent, Native)",
+      "reason": "The extractLanguages function in nlpService.ts extracts languages, but the proficiency level detection uses generic levels (beginner/intermediate/advanced/expert) rather than the specifically requested levels (Basic, Intermediate, Fluent, Native). No evidence of mapping between these level systems.",
+      "evidence": [
+        "frontend/src/services/nlpService.ts"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "requirement": "Employment dates are parsed into structured start and end date fields",
+      "reason": "The DetailedWorkExperience interface includes startDate and endDate fields as optional strings, but the extractWorkExperience function shows limited extraction logic (truncated). No clear evidence that these dates are reliably populated or that date parsing is comprehensive.",
+      "evidence": [
+        "frontend/src/services/nlpService.ts"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "requirement": "Job descriptions are extracted as an array of bullet points",
+      "reason": "DetailedWorkExperience interface has a descriptions array field, but the implementation of extractWorkExperience is truncated. No visible evidence of bullet-point parsing logic in the diff.",
+      "evidence": [
+        "frontend/src/services/nlpService.ts"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "requirement": "Layout is fully responsive and usable on mobile devices",
+      "reason": "While ResumeResultsPage.tsx uses responsive classes and Tailwind CSS, there is no explicit evidence of mobile-specific testing, breakpoints, or mobile usability validation in the diff.",
+      "evidence": [
+        "frontend/src/pages/ResumeResultsPage.tsx"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "requirement": "Relevant coursework and honors are extracted as separate fields when available",
+      "reason": "The DetailedEducation interface includes coursework and honors as optional arrays, but the extractEducation function implementation is not visible in the truncated diff. No evidence of actual extraction logic.",
+      "evidence": [
+        "frontend/src/services/nlpService.ts"
+      ]
+    }
+  ],
   "hallucinated_features": [],
-  "confidence": 0.95,
+  "confidence": 0.75,
   "changed_files": [
     "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/components/GapAnalysisResults.tsx",
-    "frontend/src/components/JobRoleSelector.tsx",
-    "frontend/src/pages/AdminPanel.tsx",
-    "frontend/src/services/gapAnalysis.ts",
-    "frontend/src/services/skillMatching.ts",
+    "frontend/src/components/SkillTagDisplay.tsx",
+    "frontend/src/pages/AnalysisFlow.tsx",
+    "frontend/src/pages/ResumeResultsPage.tsx",
+    "frontend/src/services/aiResumeParser.ts",
+    "frontend/src/services/nlpService.ts",
+    "frontend/src/services/resumeScoring.ts",
+    "frontend/src/services/skillExtraction.ts",
     "project_state.json"
   ]
 }

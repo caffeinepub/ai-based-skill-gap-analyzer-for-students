@@ -1,38 +1,60 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Admin Panel for Job Role & Skill Management with Internet Identity authentication, admin permission levels, and full CRUD operations for managing job roles and their required skills with proficiency levels",
+  "summary": "Resume analyzer web application with advanced features including comprehensive data extraction, work experience parsing, skills/education/certifications extraction, and resume scoring",
   "architectural_notes": [
-    "Backend: Motoko for data storage and management of job roles and skills",
-    "Frontend: React with TypeScript and Tailwind CSS for admin UI",
-    "Authentication: Internet Identity integration for secure admin access",
-    "Data model: Job roles contain multiple skills, each with proficiency levels (beginner/intermediate/advanced)",
-    "Access control: Permission-based system to restrict admin panel access"
+    "PDF processing and text extraction for resume parsing",
+    "Data extraction pipeline for structured resume information",
+    "Resume scoring algorithm implementation"
   ],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-enforce-admin-only-access-to-the-adminpanel-page-by-verifying-the-user-s-principal-has-admin-permissions-using-the-backend-admin-registry",
-      "title": "Enforce admin-only access to the AdminPanel page by verifying the user's Principal has admin permissions using the backend admin registry.",
+      "id": "feature-replace-the-mock-ai-parsing-in-airesumeparser-ts-with-comprehensive-extraction-that-captures-contact-information-phone-email-linkedin-location-professional-summary-certifications-with-issuing-organizations-and-dates-and-languages-with-proficiency-levels",
+      "title": "Replace the mock AI parsing in aiResumeParser.ts with comprehensive extraction that captures contact information (phone, email, LinkedIn, location), professional summary, certifications with issuing organizations and dates, and languages with proficiency levels",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-enhance-work-experience-parsing-to-extract-detailed-information-including-job-titles-company-names-employment-dates-start-and-end-location-and-bullet-point-descriptions-of-responsibilities-and-achievements-for-each-position",
+      "title": "Enhance work experience parsing to extract detailed information including job titles, company names, employment dates (start and end), location, and bullet-point descriptions of responsibilities and achievements for each position",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-resume-scoring-and-analysis-system-that-evaluates-resumes-based-on-completeness-presence-of-all-sections-content-quality-description-detail-quantifiable-achievements-formatting-consistency-and-skill-relevance-to-common-job-requirements-displaying-an-overall-score-out-of-100-with-breakdown-by-category",
+      "title": "Implement a resume scoring and analysis system that evaluates resumes based on completeness (presence of all sections), content quality (description detail, quantifiable achievements), formatting consistency, and skill relevance to common job requirements, displaying an overall score out of 100 with breakdown by category",
       "reqIds": [
         "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-display-skill-proficiency-levels-in-the-adminpanel-job-role-cards-and-in-the-jobroleselector-component-so-users-can-see-the-required-proficiency-for-each-skill",
-      "title": "Display skill proficiency levels in the AdminPanel job role cards and in the JobRoleSelector component so users can see the required proficiency for each skill.",
+      "id": "feature-redesign-the-results-display-page-with-a-modern-professional-ui-featuring-a-card-based-layout-with-clear-visual-hierarchy-section-headers-with-icons-improved-typography-and-spacing-color-coded-skill-tags-and-responsive-design-that-adapts-gracefully-to-mobile-devices",
+      "title": "Redesign the results display page with a modern, professional UI featuring a card-based layout with clear visual hierarchy, section headers with icons, improved typography and spacing, color-coded skill tags, and responsive design that adapts gracefully to mobile devices",
       "reqIds": [
         "REQ-4"
       ],
       "version": 1
     },
     {
-      "id": "feature-update-the-skill-matching-and-gap-analysis-logic-to-consider-proficiency-levels-when-comparing-resume-skills-against-job-role-requirements-matching-both-skill-name-and-proficiency-level",
-      "title": "Update the skill matching and gap analysis logic to consider proficiency levels when comparing resume skills against job role requirements, matching both skill name and proficiency level.",
+      "id": "feature-enhance-the-education-section-extraction-to-capture-degree-type-field-of-study-institution-name-graduation-date-gpa-if-present-and-relevant-coursework-or-honors",
+      "title": "Enhance the education section extraction to capture degree type, field of study, institution name, graduation date, GPA (if present), and relevant coursework or honors",
       "reqIds": [
         "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-improve-skills-extraction-to-categorize-skills-into-technical-skills-programming-languages-frameworks-tools-soft-skills-communication-leadership-teamwork-and-domain-skills-industry-specific-knowledge-with-automatic-proficiency-level-inference-based-on-years-of-experience-and-context",
+      "title": "Improve skills extraction to categorize skills into Technical Skills (programming languages, frameworks, tools), Soft Skills (communication, leadership, teamwork), and Domain Skills (industry-specific knowledge), with automatic proficiency level inference based on years of experience and context",
+      "reqIds": [
+        "REQ-6"
       ],
       "version": 1
     }
@@ -40,53 +62,42 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Admin Panel with full CRUD operations for job roles and skills",
+      "summary": "Comprehensive data extraction from resume PDFs",
       "reqIds": [],
-      "status": "in_progress"
+      "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "Skill proficiency level management (beginner, intermediate, advanced)",
-      "reqIds": [
-        "AR-1"
-      ],
+      "summary": "Detailed work experience parsing with job titles, companies, dates, and descriptions",
+      "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-3",
-      "summary": "Internet Identity authentication for admin panel",
-      "reqIds": [
-        "AR-1"
-      ],
+      "summary": "Skills, education, and certifications extraction",
+      "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-4",
-      "summary": "Admin permission levels for access control",
-      "reqIds": [
-        "AR-1",
-        "AR-3"
-      ],
+      "summary": "Contact information capture from resumes",
+      "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-5",
-      "summary": "Add admin permission levels to the backend by creating an admin registry that stores Principal IDs of users with admin access. Include methods to add, remove, and check admin status.",
-      "reqIds": [
-        "REQ-1"
-      ],
+      "summary": "Resume scoring and analysis feature",
+      "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-6",
-      "summary": "Update the JobRoleForm component to include proficiency level selection (beginner, intermediate, advanced) for each skill when adding or editing skills for a job role.",
-      "reqIds": [
-        "REQ-2"
-      ],
+      "summary": "Clean, professional results display UI",
+      "reqIds": [],
       "status": "pending"
     }
   ],
-  "projectName": "Skill Gap Analyzer",
+  "projectName": "Resume Analyzer Pro",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

@@ -31,6 +31,23 @@ export interface Resume {
   'experiences' : [] | [Array<WorkExperience>],
   'skills' : [] | [Array<Skill>],
 }
+export interface ResumeData {
+  'yearsOfExperience' : bigint,
+  'contactInfo' : [] | [string],
+  'name' : string,
+  'education' : [] | [Array<Education>],
+  'workExperience' : [] | [Array<WorkExperience>],
+  'certifications' : [] | [Array<string>],
+  'skills' : [] | [Array<string>],
+}
+export interface ResumeScore {
+  'completenessScore' : bigint,
+  'feedback' : string,
+  'totalScore' : bigint,
+  'skillRelevanceScore' : bigint,
+  'contentQualityScore' : bigint,
+  'formattingScore' : bigint,
+}
 export interface Skill {
   'name' : string,
   'level' : SkillLevel,
@@ -88,6 +105,10 @@ export interface _SERVICE {
   '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'addJobRole' : ActorMethod<[string, string, Array<Skill>], undefined>,
+  'analyzeResume' : ActorMethod<
+    [bigint, bigint, bigint, bigint, string],
+    ResumeScore
+  >,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'calculateSkillGaps' : ActorMethod<[string, string], Array<string>>,
   'deleteResume' : ActorMethod<[string], undefined>,
@@ -97,11 +118,24 @@ export interface _SERVICE {
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getJobRoles' : ActorMethod<[], Array<JobRole>>,
   'getResume' : ActorMethod<[string], [] | [Resume]>,
+  'getResumeData' : ActorMethod<[], [] | [ResumeData]>,
   'getResumes' : ActorMethod<[Principal], Array<Resume>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'removeJobRole' : ActorMethod<[string], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'setResumeData' : ActorMethod<
+    [
+      string,
+      [] | [string],
+      [] | [Array<string>],
+      [] | [Array<WorkExperience>],
+      [] | [Array<Education>],
+      bigint,
+      [] | [Array<string>],
+    ],
+    undefined
+  >,
   'updateJobRole' : ActorMethod<[string, string, Array<Skill>], undefined>,
   'uploadResume' : ActorMethod<
     [

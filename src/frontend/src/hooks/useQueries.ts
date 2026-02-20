@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import type { UserProfile, JobRole, Resume, Skill, WorkExperience, Education } from '../backend';
+import type { UserProfile, JobRole, Resume, Skill, WorkExperience, Education, ResumeData } from '../backend';
 import { ExternalBlob } from '../backend';
 
 // User Profile Queries
@@ -182,4 +182,25 @@ export function useDeleteResume() {
       queryClient.invalidateQueries({ queryKey: ['callerResumes'] });
     },
   });
+}
+
+// Resume Data Queries
+export function useGetResumeData() {
+  const { actor, isFetching: actorFetching } = useActor();
+
+  const query = useQuery<ResumeData | null>({
+    queryKey: ['resumeData'],
+    queryFn: async () => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.getResumeData();
+    },
+    enabled: !!actor && !actorFetching,
+    retry: false,
+  });
+
+  return {
+    ...query,
+    isLoading: actorFetching || query.isLoading,
+    isFetched: !!actor && query.isFetched,
+  };
 }

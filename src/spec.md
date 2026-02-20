@@ -1,13 +1,14 @@
 # Specification
 
 ## Summary
-**Goal:** Add admin permission levels and skill proficiency management to the existing admin panel.
+**Goal:** Enhance the resume analyzer with comprehensive data extraction, intelligent scoring, and a professional redesigned UI.
 
 **Planned changes:**
-- Implement backend admin registry to control access based on Principal IDs
-- Add proficiency level selection (beginner, intermediate, advanced) when adding/editing skills in job roles
-- Enforce admin-only access to the AdminPanel using authentication checks
-- Display skill proficiency levels in admin panel and job role selector
-- Update skill matching logic to consider proficiency levels when analyzing gaps
+- Extract complete contact information (phone, email, LinkedIn, location), professional summary, certifications with organizations/dates, and languages with proficiency levels
+- Parse detailed work experience including job titles, companies, employment dates, locations, and bullet-point descriptions
+- Extract comprehensive education details including degree type, field of study, institution, graduation date, GPA, and coursework/honors
+- Categorize skills into Technical, Soft, and Domain categories with automatic proficiency level inference
+- Implement resume scoring system (0-100) with breakdown by completeness, content quality, formatting, and skill relevance
+- Redesign results display with card-based layout, section icons, improved typography, color-coded skill tags, and responsive mobile design
 
-**User-visible outcome:** Admins can securely access the admin panel with permission-based authentication, assign proficiency levels to job role skills, and users see more accurate skill gap analysis that accounts for proficiency requirements.
+**User-visible outcome:** Users upload a resume and receive comprehensive parsed information across all sections (contact, summary, experience, education, skills, certifications, languages), an overall score with detailed feedback, and results displayed in a modern, professional, mobile-responsive interface.

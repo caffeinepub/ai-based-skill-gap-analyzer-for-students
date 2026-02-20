@@ -45,6 +45,15 @@ export interface Resume {
     experiences?: Array<WorkExperience>;
     skills?: Array<Skill>;
 }
+export interface ResumeData {
+    yearsOfExperience: bigint;
+    contactInfo?: string;
+    name: string;
+    education?: Array<Education>;
+    workExperience?: Array<WorkExperience>;
+    certifications?: Array<string>;
+    skills?: Array<string>;
+}
 export interface UserProfile {
     contact?: string;
     name: string;
@@ -53,6 +62,14 @@ export interface UserProfile {
     experience?: string;
     totalSkills?: bigint;
     isComplete: boolean;
+}
+export interface ResumeScore {
+    completenessScore: bigint;
+    feedback: string;
+    totalScore: bigint;
+    skillRelevanceScore: bigint;
+    contentQualityScore: bigint;
+    formattingScore: bigint;
 }
 export enum SkillCategory {
     technical = "technical",
@@ -70,6 +87,7 @@ export enum UserRole {
 }
 export interface backendInterface {
     addJobRole(title: string, description: string, requiredSkills: Array<Skill>): Promise<void>;
+    analyzeResume(completenessScore: bigint, contentQualityScore: bigint, formattingScore: bigint, skillRelevanceScore: bigint, feedback: string): Promise<ResumeScore>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     calculateSkillGaps(documentId: string, jobRole: string): Promise<Array<string>>;
     deleteResume(documentId: string): Promise<void>;
@@ -79,11 +97,13 @@ export interface backendInterface {
     getCallerUserRole(): Promise<UserRole>;
     getJobRoles(): Promise<Array<JobRole>>;
     getResume(documentId: string): Promise<Resume | null>;
+    getResumeData(): Promise<ResumeData | null>;
     getResumes(user: Principal): Promise<Array<Resume>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     removeJobRole(title: string): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    setResumeData(name: string, contactInfo: string | null, skills: Array<string> | null, workExperience: Array<WorkExperience> | null, education: Array<Education> | null, yearsOfExperience: bigint, certifications: Array<string> | null): Promise<void>;
     updateJobRole(title: string, description: string, requiredSkills: Array<Skill>): Promise<void>;
     uploadResume(documentId: string, blob: ExternalBlob, experiences: Array<WorkExperience>, skills: Array<Skill>, education: Array<Education>, recommendations: Array<string>): Promise<void>;
     validateResume(experiences: Array<WorkExperience> | null, skills: Array<Skill> | null, education: Array<Education> | null): Promise<boolean>;

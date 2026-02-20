@@ -2,10 +2,58 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-enforce-admin-only-access-to-the-adminpanel-page-by-verifying-the-user-s-principal-has-admin-permissions-using-the-backend-admin-registry",
-      "featureTitle": "Enforce admin-only access to the AdminPanel page by verifying the user's Principal has admin permissions using the backend admin registry.",
+      "featureId": "feature-replace-the-mock-ai-parsing-in-airesumeparser-ts-with-comprehensive-extraction-that-captures-contact-information-phone-email-linkedin-location-professional-summary-certifications-with-issuing-organizations-and-dates-and-languages-with-proficiency-levels",
+      "featureTitle": "Replace the mock AI parsing in aiResumeParser.ts with comprehensive extraction that captures contact information (phone, email, LinkedIn, location), professional summary, certifications with issuing organizations and dates, and languages with proficiency levels",
       "files": [
-        "frontend/src/pages/AdminPanel.tsx"
+        "frontend/src/pages/ResumeResultsPage.tsx",
+        "frontend/src/services/aiResumeParser.ts",
+        "frontend/src/services/nlpService.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "http-outcalls@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-enhance-work-experience-parsing-to-extract-detailed-information-including-job-titles-company-names-employment-dates-start-and-end-location-and-bullet-point-descriptions-of-responsibilities-and-achievements-for-each-position",
+      "featureTitle": "Enhance work experience parsing to extract detailed information including job titles, company names, employment dates (start and end), location, and bullet-point descriptions of responsibilities and achievements for each position",
+      "files": [
+        "frontend/src/pages/ResumeResultsPage.tsx",
+        "frontend/src/services/aiResumeParser.ts",
+        "frontend/src/services/nlpService.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "http-outcalls@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-a-resume-scoring-and-analysis-system-that-evaluates-resumes-based-on-completeness-presence-of-all-sections-content-quality-description-detail-quantifiable-achievements-formatting-consistency-and-skill-relevance-to-common-job-requirements-displaying-an-overall-score-out-of-100-with-breakdown-by-category",
+      "featureTitle": "Implement a resume scoring and analysis system that evaluates resumes based on completeness (presence of all sections), content quality (description detail, quantifiable achievements), formatting consistency, and skill relevance to common job requirements, displaying an overall score out of 100 with breakdown by category",
+      "files": [
+        "frontend/src/pages/ResumeResultsPage.tsx",
+        "frontend/src/services/aiResumeParser.ts",
+        "frontend/src/services/resumeScoring.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -23,11 +71,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-display-skill-proficiency-levels-in-the-adminpanel-job-role-cards-and-in-the-jobroleselector-component-so-users-can-see-the-required-proficiency-for-each-skill",
-      "featureTitle": "Display skill proficiency levels in the AdminPanel job role cards and in the JobRoleSelector component so users can see the required proficiency for each skill.",
+      "featureId": "feature-redesign-the-results-display-page-with-a-modern-professional-ui-featuring-a-card-based-layout-with-clear-visual-hierarchy-section-headers-with-icons-improved-typography-and-spacing-color-coded-skill-tags-and-responsive-design-that-adapts-gracefully-to-mobile-devices",
+      "featureTitle": "Redesign the results display page with a modern, professional UI featuring a card-based layout with clear visual hierarchy, section headers with icons, improved typography and spacing, color-coded skill tags, and responsive design that adapts gracefully to mobile devices",
       "files": [
-        "frontend/src/components/JobRoleSelector.tsx",
-        "frontend/src/pages/AdminPanel.tsx"
+        "frontend/src/components/SkillTagDisplay.tsx",
+        "frontend/src/pages/ResumeResultsPage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -45,12 +93,12 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-the-skill-matching-and-gap-analysis-logic-to-consider-proficiency-levels-when-comparing-resume-skills-against-job-role-requirements-matching-both-skill-name-and-proficiency-level",
-      "featureTitle": "Update the skill matching and gap analysis logic to consider proficiency levels when comparing resume skills against job role requirements, matching both skill name and proficiency level.",
+      "featureId": "feature-enhance-the-education-section-extraction-to-capture-degree-type-field-of-study-institution-name-graduation-date-gpa-if-present-and-relevant-coursework-or-honors",
+      "featureTitle": "Enhance the education section extraction to capture degree type, field of study, institution name, graduation date, GPA (if present), and relevant coursework or honors",
       "files": [
-        "frontend/src/components/GapAnalysisResults.tsx",
-        "frontend/src/services/gapAnalysis.ts",
-        "frontend/src/services/skillMatching.ts"
+        "frontend/src/pages/ResumeResultsPage.tsx",
+        "frontend/src/services/aiResumeParser.ts",
+        "frontend/src/services/nlpService.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -64,6 +112,29 @@
       ],
       "testIds": [
         "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-improve-skills-extraction-to-categorize-skills-into-technical-skills-programming-languages-frameworks-tools-soft-skills-communication-leadership-teamwork-and-domain-skills-industry-specific-knowledge-with-automatic-proficiency-level-inference-based-on-years-of-experience-and-context",
+      "featureTitle": "Improve skills extraction to categorize skills into Technical Skills (programming languages, frameworks, tools), Soft Skills (communication, leadership, teamwork), and Domain Skills (industry-specific knowledge), with automatic proficiency level inference based on years of experience and context",
+      "files": [
+        "frontend/src/components/SkillTagDisplay.tsx",
+        "frontend/src/pages/ResumeResultsPage.tsx",
+        "frontend/src/services/skillExtraction.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "http-outcalls@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
       ],
       "confidence": "high"
     }

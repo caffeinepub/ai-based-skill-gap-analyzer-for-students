@@ -1,69 +1,104 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-20T14:25:09.422Z",
+  "generatedAt": "2026-02-20T15:21:12.575Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 5,
-    "implemented": 3,
+    "total": 6,
+    "implemented": 6,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Add admin permission levels to the backend by creating an admin registry that stores Principal IDs of users with admin access. Include methods to add, remove, and check admin status.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
+        "summary": "Replace the mock AI parsing in aiResumeParser.ts with comprehensive extraction that captures contact information (phone, email, LinkedIn, location), professional summary, certifications with issuing organizations and dates, and languages with proficiency levels",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/services/aiResumeParser.ts",
+          "frontend/src/services/nlpService.ts",
+          "frontend/src/pages/ResumeResultsPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/services/aiResumeParser.ts",
+          "frontend/src/services/nlpService.ts",
+          "frontend/src/pages/ResumeResultsPage.tsx"
+        ]
       },
       {
         "id": "REQ-2",
-        "summary": "Update the JobRoleForm component to include proficiency level selection (beginner, intermediate, advanced) for each skill when adding or editing skills for a job role.",
-        "status": "missing",
+        "summary": "Enhance work experience parsing to extract detailed information including job titles, company names, employment dates (start and end), location, and bullet-point descriptions of responsibilities and achievements for each position",
+        "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/JobRoleForm.tsx"
+          "frontend/src/services/nlpService.ts",
+          "frontend/src/services/aiResumeParser.ts",
+          "frontend/src/pages/ResumeResultsPage.tsx"
         ],
-        "matchedFiles": []
+        "matchedFiles": [
+          "frontend/src/services/nlpService.ts",
+          "frontend/src/services/aiResumeParser.ts",
+          "frontend/src/pages/ResumeResultsPage.tsx"
+        ]
       },
       {
         "id": "REQ-3",
-        "summary": "Enforce admin-only access to the AdminPanel page by verifying the user's Principal has admin permissions using the backend admin registry.",
+        "summary": "Implement a resume scoring and analysis system that evaluates resumes based on completeness (presence of all sections), content quality (description detail, quantifiable achievements), formatting consistency, and skill relevance to common job requirements, displaying an overall score out of 100 with breakdown by category",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/AdminPanel.tsx",
-          "frontend/src/components/Layout.tsx"
+          "frontend/src/services/resumeScoring.ts",
+          "frontend/src/pages/ResumeResultsPage.tsx",
+          "frontend/src/services/aiResumeParser.ts"
         ],
         "matchedFiles": [
-          "frontend/src/pages/AdminPanel.tsx"
+          "frontend/src/services/resumeScoring.ts",
+          "frontend/src/pages/ResumeResultsPage.tsx",
+          "frontend/src/services/aiResumeParser.ts"
         ]
       },
       {
         "id": "REQ-4",
-        "summary": "Display skill proficiency levels in the AdminPanel job role cards and in the JobRoleSelector component so users can see the required proficiency for each skill.",
+        "summary": "Redesign the results display page with a modern, professional UI featuring a card-based layout with clear visual hierarchy, section headers with icons, improved typography and spacing, color-coded skill tags, and responsive design that adapts gracefully to mobile devices",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/AdminPanel.tsx",
-          "frontend/src/components/JobRoleSelector.tsx"
+          "frontend/src/pages/ResumeResultsPage.tsx",
+          "frontend/src/components/SkillTagDisplay.tsx",
+          "frontend/src/pages/ResumeResultsPage.tsx",
+          "frontend/src/index.css"
         ],
         "matchedFiles": [
-          "frontend/src/pages/AdminPanel.tsx",
-          "frontend/src/components/JobRoleSelector.tsx"
+          "frontend/src/pages/ResumeResultsPage.tsx",
+          "frontend/src/components/SkillTagDisplay.tsx",
+          "frontend/src/pages/ResumeResultsPage.tsx"
         ]
       },
       {
         "id": "REQ-5",
-        "summary": "Update the skill matching and gap analysis logic to consider proficiency levels when comparing resume skills against job role requirements, matching both skill name and proficiency level.",
+        "summary": "Enhance the education section extraction to capture degree type, field of study, institution name, graduation date, GPA (if present), and relevant coursework or honors",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/services/skillMatching.ts",
-          "frontend/src/services/gapAnalysis.ts",
-          "frontend/src/components/GapAnalysisResults.tsx"
+          "frontend/src/services/nlpService.ts",
+          "frontend/src/services/aiResumeParser.ts",
+          "frontend/src/pages/ResumeResultsPage.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/services/skillMatching.ts",
-          "frontend/src/services/gapAnalysis.ts",
-          "frontend/src/components/GapAnalysisResults.tsx"
+          "frontend/src/services/nlpService.ts",
+          "frontend/src/services/aiResumeParser.ts",
+          "frontend/src/pages/ResumeResultsPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-6",
+        "summary": "Improve skills extraction to categorize skills into Technical Skills (programming languages, frameworks, tools), Soft Skills (communication, leadership, teamwork), and Domain Skills (industry-specific knowledge), with automatic proficiency level inference based on years of experience and context",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/services/skillExtraction.ts",
+          "frontend/src/components/SkillTagDisplay.tsx",
+          "frontend/src/pages/ResumeResultsPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/services/skillExtraction.ts",
+          "frontend/src/components/SkillTagDisplay.tsx",
+          "frontend/src/pages/ResumeResultsPage.tsx"
         ]
       }
     ]
@@ -74,11 +109,17 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/components/GapAnalysisResults.tsx",
-    "frontend/src/components/JobRoleSelector.tsx",
-    "frontend/src/pages/AdminPanel.tsx",
-    "frontend/src/services/gapAnalysis.ts",
-    "frontend/src/services/skillMatching.ts",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/SkillTagDisplay.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/pages/AnalysisFlow.tsx",
+    "frontend/src/pages/ResumeResultsPage.tsx",
+    "frontend/src/services/aiResumeParser.ts",
+    "frontend/src/services/nlpService.ts",
+    "frontend/src/services/resumeScoring.ts",
+    "frontend/src/services/skillExtraction.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

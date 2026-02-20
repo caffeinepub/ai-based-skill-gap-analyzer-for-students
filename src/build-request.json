@@ -1,116 +1,149 @@
 {
   "kind": "build_request",
-  "title": "Add admin permission levels and skill proficiency management to existing admin panel",
-  "projectName": "Skill Gap Analyzer",
+  "title": "Enhance resume analyzer with comprehensive extraction and advanced features",
+  "projectName": "Resume Analyzer Pro",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Add admin permission levels to the backend by creating an admin registry that stores Principal IDs of users with admin access. Include methods to add, remove, and check admin status.",
-      "target": "backend",
+      "text": "Replace the mock AI parsing in aiResumeParser.ts with comprehensive extraction that captures contact information (phone, email, LinkedIn, location), professional summary, certifications with issuing organizations and dates, and languages with proficiency levels",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-5"
+          "msg-10",
+          "msg-12"
         ],
         "quotes": [
-          "Admin permission levels for access control"
+          "More comprehensive data extraction (skills, education, certifications, contact information)",
+          "Contact information capture"
         ]
       },
       "acceptanceCriteria": [
-        "Backend maintains a stable map of admin Principal IDs",
-        "Provides isAdmin query method that accepts a Principal and returns boolean",
-        "Provides addAdmin and removeAdmin update methods restricted to existing admins",
-        "Initial deployment grants admin status to the deployer Principal"
+        "Contact information section displays phone, email, LinkedIn URL, and location when present in resume",
+        "Professional summary is extracted and displayed as a separate section",
+        "Certifications include issuing organization and date fields",
+        "Languages are extracted with proficiency levels (Basic, Intermediate, Fluent, Native)"
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Update the JobRoleForm component to include proficiency level selection (beginner, intermediate, advanced) for each skill when adding or editing skills for a job role.",
+      "text": "Enhance work experience parsing to extract detailed information including job titles, company names, employment dates (start and end), location, and bullet-point descriptions of responsibilities and achievements for each position",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-10",
+          "msg-12"
         ],
         "quotes": [
-          "Skill proficiency levels (beginner, intermediate, advanced) when adding/editing skills"
+          "Better work experience parsing with job titles, companies, dates, and descriptions",
+          "Detailed work experience parsing with job titles, companies, dates, and descriptions"
         ]
       },
       "acceptanceCriteria": [
-        "JobRoleForm displays a dropdown or select input for proficiency level for each skill",
-        "Proficiency level options are beginner, intermediate, and advanced",
-        "Selected proficiency level is saved with the skill when creating or editing a job role",
-        "Existing skills display their current proficiency level when editing"
+        "Each work experience entry displays company name, job title, location, and date range",
+        "Employment dates are parsed into structured start and end date fields",
+        "Job descriptions are extracted as an array of bullet points",
+        "Work experience entries are displayed in reverse chronological order"
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Enforce admin-only access to the AdminPanel page by verifying the user's Principal has admin permissions using the backend admin registry.",
+      "text": "Implement a resume scoring and analysis system that evaluates resumes based on completeness (presence of all sections), content quality (description detail, quantifiable achievements), formatting consistency, and skill relevance to common job requirements, displaying an overall score out of 100 with breakdown by category",
       "target": "both",
       "source": {
         "messageIds": [
-          "msg-5"
+          "msg-10",
+          "msg-12"
         ],
         "quotes": [
-          "Internet Identity authentication to protect the admin panel",
-          "Admin permission levels for access control"
+          "Resume scoring and analysis",
+          "Resume scoring/rating system"
         ]
       },
       "acceptanceCriteria": [
-        "AdminPanel page checks if the authenticated user is an admin via backend query",
-        "Non-admin users see the AccessDeniedScreen component when attempting to access admin routes",
-        "Admin navigation link in Layout only appears for authenticated admin users",
-        "Unauthenticated users are prompted to log in before accessing admin features"
+        "Overall resume score is calculated and displayed as a percentage out of 100",
+        "Score breakdown shows individual category scores: Completeness, Content Quality, Formatting, and Skill Relevance",
+        "Each category includes specific feedback explaining the score",
+        "Scoring algorithm awards points for complete sections, detailed descriptions, quantifiable achievements, and in-demand skills"
       ]
     },
     {
       "id": "REQ-4",
-      "text": "Display skill proficiency levels in the AdminPanel job role cards and in the JobRoleSelector component so users can see the required proficiency for each skill.",
+      "text": "Redesign the results display page with a modern, professional UI featuring a card-based layout with clear visual hierarchy, section headers with icons, improved typography and spacing, color-coded skill tags, and responsive design that adapts gracefully to mobile devices",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-10",
+          "msg-12"
         ],
         "quotes": [
-          "Skill proficiency levels (beginner, intermediate, advanced)"
+          "Cleaner, more professional UI",
+          "Clean, professional results display"
         ]
       },
       "acceptanceCriteria": [
-        "AdminPanel displays proficiency level badges next to each skill name",
-        "JobRoleSelector shows proficiency levels in the skill preview",
-        "Proficiency levels use distinct visual styling (color or badge variant) for beginner, intermediate, and advanced"
+        "Results page uses a clean card-based layout with consistent spacing and shadows",
+        "Each major section (Contact, Summary, Experience, Education, Skills, Certifications) has a clear header with an appropriate icon",
+        "Skills are displayed as color-coded tags grouped by category",
+        "Layout is fully responsive and usable on mobile devices",
+        "Typography follows a clear hierarchy with appropriate font sizes and weights"
       ]
     },
     {
       "id": "REQ-5",
-      "text": "Update the skill matching and gap analysis logic to consider proficiency levels when comparing resume skills against job role requirements, matching both skill name and proficiency level.",
+      "text": "Enhance the education section extraction to capture degree type, field of study, institution name, graduation date, GPA (if present), and relevant coursework or honors",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-10",
+          "msg-12"
         ],
         "quotes": [
-          "Skill proficiency levels"
+          "Skills, education, and certifications extraction"
         ]
       },
       "acceptanceCriteria": [
-        "Skill matching considers both skill name and proficiency level",
-        "A skill is marked as matching only if the resume skill meets or exceeds the required proficiency level",
-        "Gap analysis shows which skills are missing or below the required proficiency level",
-        "Match percentage calculation accounts for proficiency level matching"
+        "Each education entry displays degree type and field of study",
+        "Institution name and graduation date are extracted and displayed",
+        "GPA is captured and displayed when present in the resume",
+        "Relevant coursework and honors are extracted as separate fields when available"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Improve skills extraction to categorize skills into Technical Skills (programming languages, frameworks, tools), Soft Skills (communication, leadership, teamwork), and Domain Skills (industry-specific knowledge), with automatic proficiency level inference based on years of experience and context",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-10",
+          "msg-12"
+        ],
+        "quotes": [
+          "More comprehensive data extraction (skills, education, certifications, contact information)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Skills are automatically categorized into Technical, Soft, and Domain categories",
+        "Proficiency levels (Beginner, Intermediate, Advanced) are inferred from context and experience duration",
+        "Skills display includes visual indicators for proficiency level",
+        "Each skill category is displayed in a separate, clearly labeled section"
       ]
     }
   ],
   "constraints": [
-    "Use the existing AdminGuard component pattern for protecting admin routes",
-    "Maintain compatibility with existing JobRole and Skill data structures in the backend",
-    "Do not modify Internet Identity authentication implementation",
-    "Preserve existing resume analysis and matching functionality"
+    "Maintain the existing single-actor Motoko backend architecture",
+    "Do not modify immutable frontend paths: useInternetIdentity.ts, useInternetIdentity.tsx, useActor.ts, main.tsx, and components/ui directory",
+    "Keep the existing Resume data type structure in backend/main.mo and extend it rather than replacing it",
+    "Preserve the current authentication flow using Internet Identity",
+    "Maintain compatibility with existing resume upload and job role matching features"
   ],
   "nonGoals": [
-    "Multi-level admin roles (e.g., super admin, moderator)",
-    "Admin user management UI for adding/removing other admins",
-    "Audit logging of admin actions",
-    "Custom proficiency level definitions beyond beginner/intermediate/advanced"
+    "Integration with external resume parsing APIs or third-party services",
+    "Real-time collaboration features or multi-user editing",
+    "Resume builder or editor functionality",
+    "Integration with job boards or applicant tracking systems",
+    "Machine learning model training or custom NLP model implementation",
+    "Support for resume formats other than PDF"
   ],
   "imageRequirements": {
     "required": [],

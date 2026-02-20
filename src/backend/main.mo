@@ -77,6 +77,25 @@ actor {
     experience : ?Text;
   };
 
+  public type ResumeData = {
+    name : Text;
+    contactInfo : ?Text;
+    skills : ?[Text];
+    workExperience : ?[WorkExperience];
+    education : ?[Education];
+    yearsOfExperience : Nat;
+    certifications : ?[Text];
+  };
+
+  public type ResumeScore = {
+    totalScore : Nat;
+    completenessScore : Nat;
+    contentQualityScore : Nat;
+    formattingScore : Nat;
+    skillRelevanceScore : Nat;
+    feedback : Text;
+  };
+
   module JobRole {
     public func compare(role1 : JobRole, role2 : JobRole) : Order.Order {
       role1.title.compare(role2.title);
@@ -86,6 +105,7 @@ actor {
   // Persistent State
   let jobRoles = Map.empty<Text, JobRole>();
   let resumes = Map.empty<Principal, List.List<Resume>>();
+  let resumeDataMap = Map.empty<Principal, ResumeData>();
   let userProfiles = Map.empty<Principal, UserProfile>();
   var initialized = false;
 
@@ -96,15 +116,13 @@ actor {
     };
   };
 
+  // Public function - accessible to all users including guests
+  // No authorization needed as it only validates data structure without accessing user data
   public shared ({ caller }) func validateResume(
     experiences : ?[WorkExperience],
     skills : ?[Skill],
     education : ?[Education],
   ) : async Bool {
-    if (not AccessControl.hasPermission(accessControlState, caller, #user)) {
-      Runtime.trap("Unauthorized: Only users can validate resumes");
-    };
-
     switch (experiences) {
       case (null) {
         Runtime.trap("Experiences cannot be null");
@@ -135,6 +153,33 @@ actor {
     };
 
     true;
+  };
+
+  // Administrators and users can analyze resume quality
+  public shared ({ caller }) func analyzeResume(completenessScore : Nat, contentQualityScore : Nat, formattingScore : Nat, skillRelevanceScore : Nat, feedback : Text) : async ResumeScore {
+    if (not AccessControl.hasPermission(accessControlState, caller, #user)) {
+      Runtime.trap("Unauthorized: Only registered users or admins can access resume scores");
+    };
+    
+    calculateResumeScore(completenessScore, contentQualityScore, formattingScore, skillRelevanceScore, feedback);
+  };
+
+  func calculateResumeScore(
+    completenessScore : Nat,
+    contentQualityScore : Nat,
+    formattingScore : Nat,
+    skillRelevanceScore : Nat,
+    feedback : Text,
+  ) : ResumeScore {
+    let totalScore = (completenessScore + contentQualityScore + formattingScore + skillRelevanceScore) / 4;
+    {
+      totalScore;
+      completenessScore;
+      contentQualityScore;
+      formattingScore;
+      skillRelevanceScore;
+      feedback;
+    };
   };
 
   // Initialization (Default Job Roles)
@@ -292,10 +337,9 @@ actor {
     };
   };
 
+  // Public query - accessible to all users including guests
+  // Job roles are general information that helps users understand requirements
   public query ({ caller }) func getJobRoles() : async [JobRole] {
-    if (not AccessControl.hasPermission(accessControlState, caller, #user)) {
-      Runtime.trap("Unauthorized: Only authenticated users can view job roles");
-    };
     ensureInitialized();
     jobRoles.values().toArray().sort();
   };
@@ -407,6 +451,44 @@ actor {
         userResumes.find(func(resume) { resume.fileId == documentId });
       };
     };
+  };
+
+  public query ({ caller }) func getResumeData() : async ?ResumeData {
+    if (not AccessControl.hasPermission(accessControlState, caller, #user)) {
+      Runtime.trap("Unauthorized: Only registered users can access resumes");
+    };
+
+    resumeDataMap.get(caller);
+  };
+
+  public shared ({ caller }) func setResumeData(
+    name : Text,
+    contactInfo : ?Text,
+    skills : ?[Text],
+    workExperience : ?[WorkExperience],
+    education : ?[Education],
+    yearsOfExperience : Nat,
+    certifications : ?[Text],
+  ) : async () {
+    if (not AccessControl.hasPermission(accessControlState, caller, #user)) {
+      Runtime.trap("Unauthorized: Only registered users can upload resumes");
+    };
+
+    if (name.isEmpty()) {
+      Runtime.trap("Name cannot be empty");
+    };
+
+    let resumeData : ResumeData = {
+      name;
+      contactInfo;
+      skills;
+      workExperience;
+      education;
+      yearsOfExperience;
+      certifications;
+    };
+
+    resumeDataMap.add(caller, resumeData);
   };
 
   public shared ({ caller }) func calculateSkillGaps(documentId : Text, jobRole : Text) : async [Text] {

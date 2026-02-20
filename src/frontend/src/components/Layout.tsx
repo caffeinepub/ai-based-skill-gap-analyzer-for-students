@@ -2,7 +2,7 @@ import { Link, useNavigate } from '@tanstack/react-router';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { useIsCallerAdmin } from '../hooks/useQueries';
 import LoginButton from './LoginButton';
-import { Menu, X, GraduationCap, BarChart3, Shield } from 'lucide-react';
+import { Menu, X, GraduationCap, BarChart3, Shield, Upload } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -36,16 +36,28 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   </div>
                 </Link>
                 {isAdmin && (
-                  <Link
-                    to="/admin"
-                    className="text-sm font-medium transition-colors hover:text-primary"
-                    activeProps={{ className: 'text-primary' }}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Shield className="h-4 w-4" />
-                      Admin
-                    </div>
-                  </Link>
+                  <>
+                    <Link
+                      to="/admin"
+                      className="text-sm font-medium transition-colors hover:text-primary"
+                      activeProps={{ className: 'text-primary' }}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Shield className="h-4 w-4" />
+                        Admin
+                      </div>
+                    </Link>
+                    <Link
+                      to="/admin/resume-upload"
+                      className="text-sm font-medium transition-colors hover:text-primary"
+                      activeProps={{ className: 'text-primary' }}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Upload className="h-4 w-4" />
+                        Resume Upload
+                      </div>
+                    </Link>
+                  </>
                 )}
               </nav>
             )}
@@ -78,14 +90,24 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 Analyze
               </Link>
               {isAdmin && (
-                <Link
-                  to="/admin"
-                  className="flex items-center gap-2 text-sm font-medium py-2 transition-colors hover:text-primary"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <Shield className="h-4 w-4" />
-                  Admin
-                </Link>
+                <>
+                  <Link
+                    to="/admin"
+                    className="flex items-center gap-2 text-sm font-medium py-2 transition-colors hover:text-primary"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Shield className="h-4 w-4" />
+                    Admin
+                  </Link>
+                  <Link
+                    to="/admin/resume-upload"
+                    className="flex items-center gap-2 text-sm font-medium py-2 transition-colors hover:text-primary"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Upload className="h-4 w-4" />
+                    Resume Upload
+                  </Link>
+                </>
               )}
             </nav>
           </div>

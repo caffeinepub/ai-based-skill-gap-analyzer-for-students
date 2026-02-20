@@ -71,6 +71,16 @@ export default function AnalysisFlow() {
   const handleResumeSelect = (resume: Resume) => {
     setSelectedResume(resume);
     
+    // Calculate total years of experience from all experiences
+    const totalMonths = resume.experiences?.reduce((sum, exp) => sum + Number(exp.durationMonths), 0) || 0;
+    const totalYears = Math.floor(totalMonths / 12);
+    
+    // Determine experience level
+    let experienceLevel = 'entry';
+    if (totalYears >= 10) experienceLevel = 'expert';
+    else if (totalYears >= 5) experienceLevel = 'senior';
+    else if (totalYears >= 2) experienceLevel = 'mid';
+    
     // Convert backend Resume to ParsedResumeData format
     const parsedData: ParsedResumeData = {
       rawText: '',
@@ -94,8 +104,8 @@ export default function AnalysisFlow() {
       allSkills: resume.skills?.map(s => s.name) || [],
       technicalSkills: resume.skills?.filter(s => s.category === 'technical').map(s => s.name) || [],
       softSkills: resume.skills?.filter(s => s.category === 'softSkills').map(s => s.name) || [],
-      experienceLevel: 'mid',
-      totalYearsExperience: Math.floor(Number(resume.experiences?.[0]?.durationMonths || 0) / 12)
+      experienceLevel,
+      totalYearsExperience: totalYears
     };
 
     setExtractedSkillsResult(skillsResult);
