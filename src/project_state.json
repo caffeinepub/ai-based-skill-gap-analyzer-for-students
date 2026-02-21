@@ -7,42 +7,18 @@
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-create-a-new-frontend-page-at-route-admin-add-job-role-that-allows-admins-to-add-new-job-roles-using-the-existing-jobroleform-component",
-      "title": "Create a new frontend page at route '/admin/add-job-role' that allows admins to add new job roles using the existing JobRoleForm component",
+      "id": "feature-remove-any-caffeine-ai-branding-watermarks-or-attribution-text-from-all-frontend-pages-and-components",
+      "title": "Remove any Caffeine.ai branding, watermarks, or attribution text from all frontend pages and components",
       "reqIds": [
-        "REQ-2"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-navigation-link-or-button-in-the-adminpanel-page-that-directs-users-to-the-new-job-role-creation-page",
-      "title": "Add a navigation link or button in the AdminPanel page that directs users to the new job role creation page",
-      "reqIds": [
-        "REQ-3"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-app-tsx-routing-configuration-to-include-the-new-job-role-creation-page-route",
-      "title": "Update the App.tsx routing configuration to include the new job role creation page route",
-      "reqIds": [
-        "REQ-4"
+        "REQ-1"
       ],
       "version": 1
     }
   ],
   "new_feature_requests": [
     {
-      "id": "AR-1",
-      "summary": "Rebuild and redeploy the application with all existing features and functionality intact",
-      "reqIds": [
-        "REQ-1"
-      ],
-      "status": "pending"
-    },
-    {
       "id": "AR-2",
-      "summary": "Add a page for adding job roles",
+      "summary": "Remove caffeine.ai watermark from the application",
       "reqIds": [],
       "status": "pending"
     }

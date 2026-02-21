@@ -1,70 +1,36 @@
 {
   "kind": "build_request",
-  "title": "Add job role creation page",
+  "title": "Remove Caffeine.ai watermark",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-2",
-      "text": "Create a new frontend page at route '/admin/add-job-role' that allows admins to add new job roles using the existing JobRoleForm component",
+      "id": "REQ-1",
+      "text": "Remove any Caffeine.ai branding, watermarks, or attribution text from all frontend pages and components",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-last"
         ],
         "quotes": [
-          "add a page to adding job roles"
+          "remove watermark of caffeine.ai"
         ]
       },
       "acceptanceCriteria": [
-        "New route '/admin/add-job-role' is accessible from the admin navigation",
-        "Page uses the existing JobRoleForm component in create mode",
-        "Page is protected with AdminGuard component",
-        "Successful job role creation redirects to the admin panel",
-        "Page has appropriate header and layout consistent with existing admin pages"
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "text": "Add a navigation link or button in the AdminPanel page that directs users to the new job role creation page",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Navigation element is clearly labeled (e.g., 'Add New Job Role' or 'Create Job Role')",
-        "Link/button is visually prominent and easy to find",
-        "Clicking the element navigates to '/admin/add-job-role'"
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "text": "Update the App.tsx routing configuration to include the new job role creation page route",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Route is properly registered in the router configuration",
-        "Route follows existing admin route patterns",
-        "Route is accessible only when authenticated and authorized as admin"
+        "No visible Caffeine.ai text, logos, or branding appears anywhere in the application",
+        "Footer, header, and all page components are checked and cleaned of Caffeine.ai references",
+        "Application maintains its existing functionality after watermark removal"
       ]
     }
   ],
   "constraints": [
-    "Do not modify the existing JobRoleForm component implementation",
-    "Must use AdminGuard to protect the new page from unauthorized access",
-    "Follow the existing routing patterns in App.tsx",
-    "Maintain consistency with current admin panel styling and layout"
+    "Do not modify backend functionality",
+    "Preserve all existing features and user workflows",
+    "Maintain current styling and layout structure"
   ],
   "nonGoals": [
-    "Modifying the JobRoleForm component functionality",
-    "Changing the backend job role creation logic",
-    "Adding bulk job role import features",
-    "Implementing job role templates or presets"
+    "Adding new branding to replace the watermark",
+    "Redesigning the UI or layout",
+    "Changing color schemes or visual themes"
   ],
   "imageRequirements": {
     "required": [],

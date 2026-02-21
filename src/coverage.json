@@ -1,46 +1,24 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-21T13:17:53.153Z",
+  "generatedAt": "2026-02-21T14:29:19.539Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
-    "implemented": 3,
+    "total": 1,
+    "implemented": 1,
     "items": [
       {
-        "id": "REQ-2",
-        "summary": "Create a new frontend page at route '/admin/add-job-role' that allows admins to add new job roles using the existing JobRoleForm component",
+        "id": "REQ-1",
+        "summary": "Remove any Caffeine.ai branding, watermarks, or attribution text from all frontend pages and components",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/AddJobRolePage.tsx"
+          "frontend/src/components/Layout.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/AddJobRolePage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-3",
-        "summary": "Add a navigation link or button in the AdminPanel page that directs users to the new job role creation page",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/AdminPanel.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/AdminPanel.tsx"
-        ]
-      },
-      {
-        "id": "REQ-4",
-        "summary": "Update the App.tsx routing configuration to include the new job role creation page route",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/App.tsx"
+          "frontend/src/components/Layout.tsx"
         ]
       }
     ]
@@ -50,9 +28,7 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/App.tsx",
-    "frontend/src/pages/AddJobRolePage.tsx",
-    "frontend/src/pages/AdminPanel.tsx",
+    "frontend/src/components/Layout.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

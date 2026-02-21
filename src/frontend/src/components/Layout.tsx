@@ -122,20 +122,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* Footer */}
       <footer className="border-t border-border/40 bg-muted/30">
         <div className="container py-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex flex-col md:flex-row justify-center items-center gap-4">
             <div className="text-sm text-muted-foreground">
               © {new Date().getFullYear()} SkillGap Analyzer. All rights reserved.
-            </div>
-            <div className="text-sm text-muted-foreground">
-              Built with ❤️ using{' '}
-              <a
-                href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-medium hover:text-foreground transition-colors"
-              >
-                caffeine.ai
-              </a>
             </div>
           </div>
         </div>

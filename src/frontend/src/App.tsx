@@ -7,7 +7,6 @@ import HomePage from './pages/HomePage';
 import AnalysisFlow from './pages/AnalysisFlow';
 import AnalysisDashboard from './pages/AnalysisDashboard';
 import AdminPanel from './pages/AdminPanel';
-import AddJobRolePage from './pages/AddJobRolePage';
 import ResumeUploadPage from './pages/ResumeUploadPage';
 import ResumeResultsPage from './pages/ResumeResultsPage';
 import ComprehensiveResultPage from './pages/ComprehensiveResultPage';
@@ -70,12 +69,6 @@ const adminRoute = createRoute({
   component: AdminPanel,
 });
 
-const addJobRoleRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/admin/add-job-role',
-  component: AddJobRolePage,
-});
-
 const resumeUploadRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/admin/resume-upload',
@@ -99,7 +92,6 @@ const routeTree = rootRoute.addChildren([
   analyzeRoute,
   dashboardRoute,
   adminRoute,
-  addJobRoleRoute,
   resumeUploadRoute,
   resumeResultsRoute,
   comprehensiveResultRoute,

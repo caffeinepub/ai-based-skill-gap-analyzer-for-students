@@ -1,55 +1,21 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add job role creation page",
+  "title": "Remove Caffeine.ai watermark",
   "requirements": [
     {
-      "id": "REQ-2",
-      "summary": "Create a new frontend page at route '/admin/add-job-role' that allows admins to add new job roles using the existing JobRoleForm component",
+      "id": "REQ-1",
+      "summary": "Remove any Caffeine.ai branding, watermarks, or attribution text from all frontend pages and components",
       "acceptanceCriteria": [
-        "New route '/admin/add-job-role' is accessible from the admin navigation",
-        "Page uses the existing JobRoleForm component in create mode",
-        "Page is protected with AdminGuard component",
-        "Successful job role creation redirects to the admin panel",
-        "Page has appropriate header and layout consistent with existing admin pages"
+        "No visible Caffeine.ai text, logos, or branding appears anywhere in the application",
+        "Footer, header, and all page components are checked and cleaned of Caffeine.ai references",
+        "Application maintains its existing functionality after watermark removal"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/AddJobRolePage.tsx",
-          "operation": "create",
-          "description": "Create a new page component for adding job roles. The page must use the AdminGuard component to protect access, render a header consistent with AdminPanel.tsx styling, include the existing JobRoleForm component in create mode (no initialData prop), and handle successful creation by navigating to '/admin' using the router. Use the authorization component to ensure only admins can access this page."
-        }
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "summary": "Add a navigation link or button in the AdminPanel page that directs users to the new job role creation page",
-      "acceptanceCriteria": [
-        "Navigation element is clearly labeled (e.g., 'Add New Job Role' or 'Create Job Role')",
-        "Link/button is visually prominent and easy to find",
-        "Clicking the element navigates to '/admin/add-job-role'"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/AdminPanel.tsx",
+          "path": "frontend/src/components/Layout.tsx",
           "operation": "modify",
-          "description": "Add a prominent button or link element labeled 'Add New Job Role' near the top of the admin panel page. Use React Router's Link or navigate function to direct users to '/admin/add-job-role' when clicked. Position the button consistently with the existing admin panel layout and styling (e.g., next to the page header or above the job roles list)."
-        }
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "summary": "Update the App.tsx routing configuration to include the new job role creation page route",
-      "acceptanceCriteria": [
-        "Route is properly registered in the router configuration",
-        "Route follows existing admin route patterns",
-        "Route is accessible only when authenticated and authorized as admin"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Register a new route for '/admin/add-job-role' in the router configuration. Follow the existing pattern used for the '/admin' route, ensuring the new route imports and renders the AddJobRolePage component. The route protection is handled by the AdminGuard component within AddJobRolePage itself, so no additional route-level guards are needed beyond what already exists for admin routes."
+          "description": "Remove the footer section containing 'Caffeine.ai' text and the 'Made with ❤️ by Caffeine.ai' attribution from the Layout component while preserving the header navigation and main content structure"
         }
       ]
     }

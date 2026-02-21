@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from '@tanstack/react-router';
 import AdminGuard from '../components/AdminGuard';
 import JobRoleForm from '../components/JobRoleForm';
 import { useGetJobRoles, useRemoveJobRole } from '../hooks/useQueries';
@@ -21,7 +20,6 @@ import {
 import type { JobRole, SkillLevel } from '../backend';
 
 export default function AdminPanel() {
-  const navigate = useNavigate();
   const { data: jobRoles, isLoading } = useGetJobRoles();
   const removeJobRole = useRemoveJobRole();
   const [editingRole, setEditingRole] = useState<JobRole | null>(null);
@@ -58,10 +56,6 @@ export default function AdminPanel() {
     setEditingRole(null);
   };
 
-  const handleAddNewJobRole = () => {
-    navigate({ to: '/admin/add-job-role' });
-  };
-
   const getProficiencyBadgeVariant = (level: SkillLevel): string => {
     switch (level) {
       case 'beginner':
@@ -89,9 +83,9 @@ export default function AdminPanel() {
                 <p className="text-muted-foreground">Manage job roles and required skills</p>
               </div>
             </div>
-            <Button onClick={handleAddNewJobRole}>
+            <Button onClick={() => setShowForm(true)}>
               <Plus className="mr-2 h-4 w-4" />
-              Add New Job Role
+              Add Job Role
             </Button>
           </div>
 
@@ -175,7 +169,7 @@ export default function AdminPanel() {
                 </div>
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
-                  No job roles configured yet. Click "Add New Job Role" to create one.
+                  No job roles configured yet. Click "Add Job Role" to create one.
                 </div>
               )}
             </CardContent>

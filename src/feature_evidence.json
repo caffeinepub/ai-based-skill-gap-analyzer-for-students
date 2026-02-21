@@ -2,10 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-create-a-new-frontend-page-at-route-admin-add-job-role-that-allows-admins-to-add-new-job-roles-using-the-existing-jobroleform-component",
-      "featureTitle": "Create a new frontend page at route '/admin/add-job-role' that allows admins to add new job roles using the existing JobRoleForm component",
+      "featureId": "feature-remove-any-caffeine-ai-branding-watermarks-or-attribution-text-from-all-frontend-pages-and-components",
+      "featureTitle": "Remove any Caffeine.ai branding, watermarks, or attribution text from all frontend pages and components",
       "files": [
-        "frontend/src/pages/AddJobRolePage.tsx"
+        "frontend/src/components/Layout.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -18,49 +18,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-2"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-a-navigation-link-or-button-in-the-adminpanel-page-that-directs-users-to-the-new-job-role-creation-page",
-      "featureTitle": "Add a navigation link or button in the AdminPanel page that directs users to the new job role creation page",
-      "files": [
-        "frontend/src/pages/AdminPanel.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "http-outcalls@3.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-3"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-the-app-tsx-routing-configuration-to-include-the-new-job-role-creation-page-route",
-      "featureTitle": "Update the App.tsx routing configuration to include the new job role creation page route",
-      "files": [
-        "frontend/src/App.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "http-outcalls@3.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-4"
+        "REQ-1"
       ],
       "confidence": "high"
     }
