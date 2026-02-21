@@ -1,17 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Create a comprehensive result page that displays resume analysis with editing, download, and comparison features.
+**Goal:** Add a dedicated page for admins to create new job roles.
 
 **Planned changes:**
-- Add new result page route displaying parsed resume data (contact info, work experience, education, skills, certifications)
-- Show scoring breakdown with overall score and dimension scores (completeness, content quality, formatting, skill relevance)
-- Display skill matches and gaps with color-coded indicators (green for matches, red for missing, yellow for insufficient proficiency)
-- Show personalized recommendations with learning resources and practice projects
-- Implement inline editing for all resume data fields with backend save functionality
-- Add PDF report download button that generates comprehensive analysis report
-- Implement compare feature to analyze multiple resumes side-by-side with comparative metrics
-- Configure automatic navigation to result page after successful resume analysis
-- Design responsive UI with warm education-focused color palette (coral, teal, amber)
+- Create a new frontend page at route '/admin/add-job-role' that uses the existing JobRoleForm component
+- Protect the new page with AdminGuard component
+- Add navigation link/button in the AdminPanel to access the job role creation page
+- Update App.tsx routing configuration to include the new route
+- Implement redirect to admin panel after successful job role creation
 
-**User-visible outcome:** After uploading a resume, users automatically see a comprehensive result page with their analysis, can edit extracted data, download a PDF report, and compare multiple resumes side-by-side.
+**User-visible outcome:** Admins can navigate to a dedicated page to create new job roles, with a clear path from the admin panel to the creation form.

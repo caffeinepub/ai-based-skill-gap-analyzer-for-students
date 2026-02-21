@@ -1,217 +1,70 @@
 {
   "kind": "build_request",
-  "title": "Add comprehensive result page with editing, download, and comparison features",
-  "projectName": "Resume Analyzer Pro",
+  "title": "Add job role creation page",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-1",
-      "text": "Create a new comprehensive result page route that displays all parsed resume data including contact information, work experience with durations and descriptions, education history, skills categorized by type (technical, soft, domain) with proficiency levels, and certifications",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-13",
-          "msg-15"
-        ],
-        "quotes": [
-          "Display parsed resume data, scoring breakdown, skill matches, and recommendations"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Route is accessible after resume analysis completes",
-        "All extracted resume fields are displayed in organized sections",
-        "Contact information section shows name, email, phone, and location",
-        "Work experience section displays each position with company, title, duration, and description",
-        "Education section shows degrees, institutions, and graduation dates",
-        "Skills are grouped by category with proficiency badges",
-        "Certifications are listed with issuing organization and dates"
-      ]
-    },
-    {
       "id": "REQ-2",
-      "text": "Display the comprehensive scoring breakdown on the result page showing the overall resume score, completeness score (name, contact, experience, education, skills), content quality score (experience duration, career progression), formatting score, and skill relevance score with detailed feedback for each dimension",
+      "text": "Create a new frontend page at route '/admin/add-job-role' that allows admins to add new job roles using the existing JobRoleForm component",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-13",
-          "msg-15"
+          "msg-latest"
         ],
         "quotes": [
-          "scoring breakdown with visual indicators"
+          "add a page to adding job roles"
         ]
       },
       "acceptanceCriteria": [
-        "Overall score is prominently displayed with a progress indicator or chart",
-        "Each scoring dimension (completeness, content quality, formatting, skill relevance) shows its individual score",
-        "Visual indicators (progress bars, color coding) distinguish score levels",
-        "Detailed feedback text explains strengths and areas for improvement in each dimension"
+        "New route '/admin/add-job-role' is accessible from the admin navigation",
+        "Page uses the existing JobRoleForm component in create mode",
+        "Page is protected with AdminGuard component",
+        "Successful job role creation redirects to the admin panel",
+        "Page has appropriate header and layout consistent with existing admin pages"
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Show skill matches and gaps on the result page by comparing resume skills against the selected job role requirements, highlighting matching skills with green styling and missing or insufficient proficiency skills with red/yellow styling, categorized by technical and soft skills",
+      "text": "Add a navigation link or button in the AdminPanel page that directs users to the new job role creation page",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-13",
-          "msg-15"
-        ],
-        "quotes": [
-          "Highlight skill matches and gaps"
+          "msg-latest"
         ]
       },
       "acceptanceCriteria": [
-        "Matching skills are displayed with green indicators",
-        "Missing skills are highlighted in red",
-        "Skills with insufficient proficiency are shown in yellow/orange",
-        "Skills are grouped into technical and soft skill categories",
-        "Each skill shows the required vs. current proficiency level"
+        "Navigation element is clearly labeled (e.g., 'Add New Job Role' or 'Create Job Role')",
+        "Link/button is visually prominent and easy to find",
+        "Clicking the element navigates to '/admin/add-job-role'"
       ]
     },
     {
       "id": "REQ-4",
-      "text": "Display actionable recommendations on the result page including personalized learning resources (courses from Udemy, Coursera, freeCodeCamp) and practice projects for each skill gap identified in the analysis",
+      "text": "Update the App.tsx routing configuration to include the new job role creation page route",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-13",
-          "msg-15"
-        ],
-        "quotes": [
-          "Provide actionable recommendations"
+          "msg-latest"
         ]
       },
       "acceptanceCriteria": [
-        "Recommendations section is clearly visible on the result page",
-        "Each missing skill has associated course recommendations with external links",
-        "Practice projects are suggested for hands-on skill development",
-        "Recommendations are personalized based on the specific skill gaps identified"
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "text": "Implement inline editing functionality on the result page allowing users to modify extracted resume data fields (contact info, work experience, education, skills) with save functionality that updates the backend resume record",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-13",
-          "msg-15"
-        ],
-        "quotes": [
-          "Allow editing of extracted data inline"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Each editable field has an edit button or inline edit capability",
-        "Users can modify text fields, dates, and skill proficiency levels",
-        "Changes are validated before saving",
-        "Save button persists changes to the backend",
-        "Success/error feedback is shown after save attempts",
-        "The page reflects updated data immediately after successful save"
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "text": "Add a download report button on the result page that generates and downloads a comprehensive PDF report containing the resume analysis including job role match percentage, matching and missing skills, personalized recommendations, and candidate profile data (experience, education, certifications)",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-13",
-          "msg-15"
-        ],
-        "quotes": [
-          "Add download report functionality (PDF format)"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Download button is prominently displayed on the result page",
-        "Clicking the button generates a PDF report",
-        "PDF includes all key analysis data: scores, skills, gaps, recommendations",
-        "PDF is formatted professionally with clear sections",
-        "Download initiates automatically after generation",
-        "Loading indicator shows during PDF generation"
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "text": "Implement a compare feature on the result page that allows users to select and analyze multiple resumes side-by-side, displaying comparative metrics such as overall scores, skill overlap, experience levels, and education backgrounds for all selected candidates",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-13",
-          "msg-15"
-        ],
-        "quotes": [
-          "Include compare feature to analyze multiple resumes side-by-side"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Compare button or interface element is available on the result page",
-        "Users can select multiple resumes (at least 2) for comparison",
-        "Comparison view displays resumes in a side-by-side or tabular layout",
-        "Comparative metrics include scores, skills, experience years, and education",
-        "Visual indicators highlight differences and strengths across candidates",
-        "Users can easily switch between individual and comparison views"
-      ]
-    },
-    {
-      "id": "REQ-8",
-      "text": "Configure automatic navigation to the result page after a user successfully uploads and analyzes a resume, passing the resume ID and analysis data through URL parameters or application state",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-13",
-          "msg-15"
-        ],
-        "quotes": [
-          "Appears automatically after analyzing a resume",
-          "The page will automatically appear after a user uploads and analyzes a resume"
-        ]
-      },
-      "acceptanceCriteria": [
-        "After successful resume analysis, user is automatically redirected to the result page",
-        "Resume ID is passed to the result page for data retrieval",
-        "No manual navigation is required from the user",
-        "Transition is smooth with appropriate loading states",
-        "If analysis fails, user remains on the upload page with error feedback"
-      ]
-    },
-    {
-      "id": "REQ-9",
-      "text": "Design the result page UI to match the existing application style with warm education-focused color palette (coral primary, teal secondary, amber accent), ensuring responsive layout, proper spacing, and visual hierarchy that highlights key information like scores and recommendations",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-15"
-        ],
-        "quotes": [
-          "polished UI matching your existing design"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Result page uses the same color scheme as other pages (coral, teal, amber)",
-        "Layout is responsive and works on mobile, tablet, and desktop",
-        "Visual hierarchy emphasizes important elements (scores, gaps, recommendations)",
-        "Spacing and typography are consistent with the rest of the application",
-        "Interactive elements have appropriate hover and focus states",
-        "Loading states are smooth and informative"
+        "Route is properly registered in the router configuration",
+        "Route follows existing admin route patterns",
+        "Route is accessible only when authenticated and authorized as admin"
       ]
     }
   ],
   "constraints": [
-    "Use existing resumeScoring.ts service for score calculations without modification",
-    "Use existing gapAnalysis.ts service for skill matching without modification",
-    "Use existing recommendationEngine.ts service for generating recommendations without modification",
-    "Use existing pdfGenerator.ts service for PDF report generation without modification",
-    "Maintain single-actor backend architecture in backend/main.mo",
-    "Do not modify immutable frontend paths: useInternetIdentity.ts, useInternetIdentity.tsx, useActor.ts, main.tsx, components/ui/*"
+    "Do not modify the existing JobRoleForm component implementation",
+    "Must use AdminGuard to protect the new page from unauthorized access",
+    "Follow the existing routing patterns in App.tsx",
+    "Maintain consistency with current admin panel styling and layout"
   ],
   "nonGoals": [
-    "Changing the existing analysis algorithms or scoring logic",
-    "Redesigning existing pages or components outside the result page",
-    "Adding new authentication mechanisms beyond Internet Identity",
-    "Implementing real-time collaboration features",
-    "Adding email notification functionality"
+    "Modifying the JobRoleForm component functionality",
+    "Changing the backend job role creation logic",
+    "Adding bulk job role import features",
+    "Implementing job role templates or presets"
   ],
   "imageRequirements": {
     "required": [],

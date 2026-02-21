@@ -12,11 +12,11 @@ import MixinAuthorization "authorization/MixinAuthorization";
 import MixinStorage "blob-storage/Mixin";
 import AccessControl "authorization/access-control";
 import Int "mo:core/Int";
-import Migration "migration";
+
 import Nat64 "mo:core/Nat64";
 import Float "mo:core/Float";
 
-(with migration = Migration.run)
+
 actor {
   // Mixins
   let accessControlState = AccessControl.initState();
@@ -710,4 +710,5 @@ actor {
     };
   };
 };
+
 
