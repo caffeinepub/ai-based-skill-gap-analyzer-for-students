@@ -10,6 +10,17 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface ComparisonMetrics {
+  'experienceLevel' : number,
+  'overallScore' : number,
+  'certificationsCount' : bigint,
+  'educationCount' : bigint,
+  'skillOverlap' : bigint,
+}
+export interface ComparisonResult {
+  'metrics' : Array<ComparisonMetrics>,
+  'resumes' : Array<ResumeData>,
+}
 export interface Education {
   'institution' : string,
   'graduationYear' : bigint,
@@ -111,6 +122,7 @@ export interface _SERVICE {
   >,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'calculateSkillGaps' : ActorMethod<[string, string], Array<string>>,
+  'compareResumes' : ActorMethod<[Array<Principal>], ComparisonResult>,
   'deleteResume' : ActorMethod<[string], undefined>,
   'getAllSkills' : ActorMethod<[Principal], Array<Skill>>,
   'getCallerResumes' : ActorMethod<[], Array<Resume>>,
@@ -137,6 +149,7 @@ export interface _SERVICE {
     undefined
   >,
   'updateJobRole' : ActorMethod<[string, string, Array<Skill>], undefined>,
+  'updateResumeData' : ActorMethod<[ResumeData], undefined>,
   'uploadResume' : ActorMethod<
     [
       string,

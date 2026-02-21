@@ -2,7 +2,7 @@ import { Link, useNavigate } from '@tanstack/react-router';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { useIsCallerAdmin } from '../hooks/useQueries';
 import LoginButton from './LoginButton';
-import { Menu, X, GraduationCap, BarChart3, Shield, Upload } from 'lucide-react';
+import { Menu, X, GraduationCap, BarChart3, Shield, Upload, FileCheck } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Layout({ children }: { children: React.ReactNode }) {

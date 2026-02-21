@@ -34,7 +34,6 @@ export default function AnalysisFlow() {
 
   const isAuthenticated = !!identity;
 
-  // Clear selected resume if it no longer exists in the resumes list
   useEffect(() => {
     if (selectedResume && resumes) {
       const resumeStillExists = resumes.some(r => r.fileId === selectedResume.fileId);
@@ -48,7 +47,6 @@ export default function AnalysisFlow() {
     }
   }, [resumes, selectedResume]);
 
-  // Calculate job role matches when resume is uploaded/selected and job roles are available
   useEffect(() => {
     if (extractedSkillsResult && jobRoles && jobRoles.length > 0) {
       const matches = calculateJobRoleMatches(extractedSkillsResult, jobRoles);
@@ -71,17 +69,14 @@ export default function AnalysisFlow() {
   const handleResumeSelect = (resume: Resume) => {
     setSelectedResume(resume);
     
-    // Calculate total years of experience from all experiences
     const totalMonths = resume.experiences?.reduce((sum, exp) => sum + Number(exp.durationMonths), 0) || 0;
     const totalYears = Math.floor(totalMonths / 12);
     
-    // Determine experience level
     let experienceLevel = 'entry';
     if (totalYears >= 10) experienceLevel = 'expert';
     else if (totalYears >= 5) experienceLevel = 'senior';
     else if (totalYears >= 2) experienceLevel = 'mid';
     
-    // Convert backend Resume to ParsedResumeData format
     const parsedData: ParsedResumeData = {
       rawText: '',
       skills: resume.skills?.map(s => s.name) || [],
@@ -99,7 +94,6 @@ export default function AnalysisFlow() {
       certifications: []
     };
 
-    // Create ExtractedSkillsResult from stored resume data
     const skillsResult: ExtractedSkillsResult = {
       allSkills: resume.skills?.map(s => s.name) || [],
       technicalSkills: resume.skills?.filter(s => s.category === 'technical').map(s => s.name) || [],
@@ -136,14 +130,14 @@ export default function AnalysisFlow() {
   };
 
   const handleViewDetails = (match: JobRoleMatchResult) => {
-    if (parsedResumeData && extractedSkillsResult) {
+    if (parsedResumeData && extractedSkillsResult && selectedResume) {
+      // Store job role in session storage for result page
+      sessionStorage.setItem('selectedJobRole', JSON.stringify(match.jobRole));
+      
+      // Navigate to comprehensive result page
       navigate({ 
-        to: '/dashboard',
-        state: { 
-          jobRole: match.jobRole,
-          extractedSkillsResult,
-          parsedResumeData
-        } as any
+        to: '/result/$documentId',
+        params: { documentId: selectedResume.fileId }
       });
     }
   };
@@ -159,7 +153,6 @@ export default function AnalysisFlow() {
         </div>
 
         <div className="space-y-8">
-          {/* Step 1: Resume Upload or Selection */}
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -219,7 +212,6 @@ export default function AnalysisFlow() {
             </CardContent>
           </Card>
 
-          {/* Step 2: Job Role Matches */}
           {resumeUploaded && extractedSkillsResult && (
             <Card>
               <CardHeader>
@@ -243,17 +235,15 @@ export default function AnalysisFlow() {
             </Card>
           )}
         </div>
-      </div>
 
-      {selectedResume && (
         <ConfirmDeleteDialog
           isOpen={showDeleteDialog}
           onCancel={() => setShowDeleteDialog(false)}
           onConfirm={handleDeleteConfirm}
-          resumeName={selectedResume.fileId}
+          resumeName={selectedResume?.fileId || 'this resume'}
           isDeleting={deleteResume.isPending}
         />
-      )}
+      </div>
     </div>
   );
 }

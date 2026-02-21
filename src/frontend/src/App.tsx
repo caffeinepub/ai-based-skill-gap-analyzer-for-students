@@ -9,6 +9,7 @@ import AnalysisDashboard from './pages/AnalysisDashboard';
 import AdminPanel from './pages/AdminPanel';
 import ResumeUploadPage from './pages/ResumeUploadPage';
 import ResumeResultsPage from './pages/ResumeResultsPage';
+import ComprehensiveResultPage from './pages/ComprehensiveResultPage';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from 'next-themes';
 
@@ -80,6 +81,12 @@ const resumeResultsRoute = createRoute({
   component: ResumeResultsPage,
 });
 
+const comprehensiveResultRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/result/$documentId',
+  component: ComprehensiveResultPage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   analyzeRoute,
@@ -87,6 +94,7 @@ const routeTree = rootRoute.addChildren([
   adminRoute,
   resumeUploadRoute,
   resumeResultsRoute,
+  comprehensiveResultRoute,
 ]);
 
 const router = createRouter({ routeTree });

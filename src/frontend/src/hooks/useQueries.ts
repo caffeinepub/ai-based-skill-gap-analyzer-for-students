@@ -1,7 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import type { UserProfile, JobRole, Resume, Skill, WorkExperience, Education, ResumeData } from '../backend';
+import { useInternetIdentity } from './useInternetIdentity';
+import type { UserProfile, JobRole, Resume, ResumeData, Skill, WorkExperience, Education, ComparisonResult } from '../backend';
 import { ExternalBlob } from '../backend';
+import { toast } from 'sonner';
 
 // User Profile Queries
 export function useGetCallerUserProfile() {
@@ -55,23 +57,16 @@ export function useIsCallerAdmin() {
 
 // Job Role Queries
 export function useGetJobRoles() {
-  const { actor, isFetching: actorFetching } = useActor();
+  const { actor, isFetching } = useActor();
 
-  const query = useQuery<JobRole[]>({
+  return useQuery<JobRole[]>({
     queryKey: ['jobRoles'],
     queryFn: async () => {
       if (!actor) throw new Error('Actor not available');
       return actor.getJobRoles();
     },
-    enabled: !!actor && !actorFetching,
-    retry: false,
+    enabled: !!actor && !isFetching,
   });
-
-  return {
-    ...query,
-    isLoading: actorFetching || query.isLoading,
-    isFetched: !!actor && query.isFetched,
-  };
 }
 
 export function useAddJobRole() {
@@ -85,6 +80,10 @@ export function useAddJobRole() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['jobRoles'] });
+      toast.success('Job role added successfully');
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to add job role');
     },
   });
 }
@@ -100,6 +99,10 @@ export function useUpdateJobRole() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['jobRoles'] });
+      toast.success('Job role updated successfully');
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to update job role');
     },
   });
 }
@@ -115,29 +118,39 @@ export function useRemoveJobRole() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['jobRoles'] });
+      toast.success('Job role removed successfully');
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to remove job role');
     },
   });
 }
 
 // Resume Queries
 export function useGetCallerResumes() {
-  const { actor, isFetching: actorFetching } = useActor();
+  const { actor, isFetching } = useActor();
 
-  const query = useQuery<Resume[]>({
-    queryKey: ['callerResumes'],
+  return useQuery<Resume[]>({
+    queryKey: ['resumes'],
     queryFn: async () => {
       if (!actor) throw new Error('Actor not available');
       return actor.getCallerResumes();
     },
-    enabled: !!actor && !actorFetching,
-    retry: false,
+    enabled: !!actor && !isFetching,
   });
+}
 
-  return {
-    ...query,
-    isLoading: actorFetching || query.isLoading,
-    isFetched: !!actor && query.isFetched,
-  };
+export function useGetResume(documentId: string) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<Resume | null>({
+    queryKey: ['resume', documentId],
+    queryFn: async () => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.getResume(documentId);
+    },
+    enabled: !!actor && !isFetching && !!documentId,
+  });
 }
 
 export function useUploadResume() {
@@ -145,15 +158,15 @@ export function useUploadResume() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ 
-      documentId, 
-      blob, 
-      experiences, 
-      skills, 
-      education, 
-      recommendations 
-    }: { 
-      documentId: string; 
+    mutationFn: async ({
+      documentId,
+      blob,
+      experiences,
+      skills,
+      education,
+      recommendations,
+    }: {
+      documentId: string;
       blob: ExternalBlob;
       experiences: WorkExperience[];
       skills: Skill[];
@@ -164,7 +177,7 @@ export function useUploadResume() {
       return actor.uploadResume(documentId, blob, experiences, skills, education, recommendations);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['callerResumes'] });
+      queryClient.invalidateQueries({ queryKey: ['resumes'] });
     },
   });
 }
@@ -179,28 +192,36 @@ export function useDeleteResume() {
       return actor.deleteResume(documentId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['callerResumes'] });
+      queryClient.invalidateQueries({ queryKey: ['resumes'] });
     },
   });
 }
 
-// Resume Data Queries
 export function useGetResumeData() {
-  const { actor, isFetching: actorFetching } = useActor();
+  const { actor, isFetching } = useActor();
 
-  const query = useQuery<ResumeData | null>({
+  return useQuery<ResumeData | null>({
     queryKey: ['resumeData'],
     queryFn: async () => {
       if (!actor) throw new Error('Actor not available');
       return actor.getResumeData();
     },
-    enabled: !!actor && !actorFetching,
-    retry: false,
+    enabled: !!actor && !isFetching,
   });
+}
 
-  return {
-    ...query,
-    isLoading: actorFetching || query.isLoading,
-    isFetched: !!actor && query.isFetched,
-  };
+export function useUpdateResumeData() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (updatedData: ResumeData) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.updateResumeData(updatedData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['resumeData'] });
+      queryClient.invalidateQueries({ queryKey: ['resumes'] });
+    },
+  });
 }

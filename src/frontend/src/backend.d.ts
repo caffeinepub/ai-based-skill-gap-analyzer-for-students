@@ -20,6 +20,17 @@ export interface Education {
     graduationYear: bigint;
     degree: string;
 }
+export interface ComparisonMetrics {
+    experienceLevel: number;
+    overallScore: number;
+    certificationsCount: bigint;
+    educationCount: bigint;
+    skillOverlap: bigint;
+}
+export interface ComparisonResult {
+    metrics: Array<ComparisonMetrics>;
+    resumes: Array<ResumeData>;
+}
 export interface JobRole {
     title: string;
     description: string;
@@ -90,6 +101,7 @@ export interface backendInterface {
     analyzeResume(completenessScore: bigint, contentQualityScore: bigint, formattingScore: bigint, skillRelevanceScore: bigint, feedback: string): Promise<ResumeScore>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     calculateSkillGaps(documentId: string, jobRole: string): Promise<Array<string>>;
+    compareResumes(principalIds: Array<Principal>): Promise<ComparisonResult>;
     deleteResume(documentId: string): Promise<void>;
     getAllSkills(user: Principal): Promise<Array<Skill>>;
     getCallerResumes(): Promise<Array<Resume>>;
@@ -105,6 +117,7 @@ export interface backendInterface {
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     setResumeData(name: string, contactInfo: string | null, skills: Array<string> | null, workExperience: Array<WorkExperience> | null, education: Array<Education> | null, yearsOfExperience: bigint, certifications: Array<string> | null): Promise<void>;
     updateJobRole(title: string, description: string, requiredSkills: Array<Skill>): Promise<void>;
+    updateResumeData(updatedData: ResumeData): Promise<void>;
     uploadResume(documentId: string, blob: ExternalBlob, experiences: Array<WorkExperience>, skills: Array<Skill>, education: Array<Education>, recommendations: Array<string>): Promise<void>;
     validateResume(experiences: Array<WorkExperience> | null, skills: Array<Skill> | null, education: Array<Education> | null): Promise<boolean>;
 }

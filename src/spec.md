@@ -1,14 +1,17 @@
 # Specification
 
 ## Summary
-**Goal:** Enhance the resume analyzer with comprehensive data extraction, intelligent scoring, and a professional redesigned UI.
+**Goal:** Create a comprehensive result page that displays resume analysis with editing, download, and comparison features.
 
 **Planned changes:**
-- Extract complete contact information (phone, email, LinkedIn, location), professional summary, certifications with organizations/dates, and languages with proficiency levels
-- Parse detailed work experience including job titles, companies, employment dates, locations, and bullet-point descriptions
-- Extract comprehensive education details including degree type, field of study, institution, graduation date, GPA, and coursework/honors
-- Categorize skills into Technical, Soft, and Domain categories with automatic proficiency level inference
-- Implement resume scoring system (0-100) with breakdown by completeness, content quality, formatting, and skill relevance
-- Redesign results display with card-based layout, section icons, improved typography, color-coded skill tags, and responsive mobile design
+- Add new result page route displaying parsed resume data (contact info, work experience, education, skills, certifications)
+- Show scoring breakdown with overall score and dimension scores (completeness, content quality, formatting, skill relevance)
+- Display skill matches and gaps with color-coded indicators (green for matches, red for missing, yellow for insufficient proficiency)
+- Show personalized recommendations with learning resources and practice projects
+- Implement inline editing for all resume data fields with backend save functionality
+- Add PDF report download button that generates comprehensive analysis report
+- Implement compare feature to analyze multiple resumes side-by-side with comparative metrics
+- Configure automatic navigation to result page after successful resume analysis
+- Design responsive UI with warm education-focused color palette (coral, teal, amber)
 
-**User-visible outcome:** Users upload a resume and receive comprehensive parsed information across all sections (contact, summary, experience, education, skills, certifications, languages), an overall score with detailed feedback, and results displayed in a modern, professional, mobile-responsive interface.
+**User-visible outcome:** After uploading a resume, users automatically see a comprehensive result page with their analysis, can edit extracted data, download a PDF report, and compare multiple resumes side-by-side.

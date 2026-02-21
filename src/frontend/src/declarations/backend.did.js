@@ -46,18 +46,38 @@ export const UserRole = IDL.Variant({
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
-export const ExternalBlob = IDL.Vec(IDL.Nat8);
+export const ComparisonMetrics = IDL.Record({
+  'experienceLevel' : IDL.Float64,
+  'overallScore' : IDL.Float64,
+  'certificationsCount' : IDL.Nat,
+  'educationCount' : IDL.Nat,
+  'skillOverlap' : IDL.Nat,
+});
 export const Education = IDL.Record({
   'institution' : IDL.Text,
   'graduationYear' : IDL.Int,
   'degree' : IDL.Text,
 });
-export const Time = IDL.Int;
 export const WorkExperience = IDL.Record({
   'role' : IDL.Text,
   'durationMonths' : IDL.Nat,
   'company' : IDL.Text,
 });
+export const ResumeData = IDL.Record({
+  'yearsOfExperience' : IDL.Nat,
+  'contactInfo' : IDL.Opt(IDL.Text),
+  'name' : IDL.Text,
+  'education' : IDL.Opt(IDL.Vec(Education)),
+  'workExperience' : IDL.Opt(IDL.Vec(WorkExperience)),
+  'certifications' : IDL.Opt(IDL.Vec(IDL.Text)),
+  'skills' : IDL.Opt(IDL.Vec(IDL.Text)),
+});
+export const ComparisonResult = IDL.Record({
+  'metrics' : IDL.Vec(ComparisonMetrics),
+  'resumes' : IDL.Vec(ResumeData),
+});
+export const ExternalBlob = IDL.Vec(IDL.Nat8);
+export const Time = IDL.Int;
 export const Resume = IDL.Record({
   'blob' : ExternalBlob,
   'recommendations' : IDL.Opt(IDL.Vec(IDL.Text)),
@@ -81,15 +101,6 @@ export const JobRole = IDL.Record({
   'title' : IDL.Text,
   'description' : IDL.Text,
   'requiredSkills' : IDL.Vec(Skill),
-});
-export const ResumeData = IDL.Record({
-  'yearsOfExperience' : IDL.Nat,
-  'contactInfo' : IDL.Opt(IDL.Text),
-  'name' : IDL.Text,
-  'education' : IDL.Opt(IDL.Vec(Education)),
-  'workExperience' : IDL.Opt(IDL.Vec(WorkExperience)),
-  'certifications' : IDL.Opt(IDL.Vec(IDL.Text)),
-  'skills' : IDL.Opt(IDL.Vec(IDL.Text)),
 });
 
 export const idlService = IDL.Service({
@@ -132,6 +143,7 @@ export const idlService = IDL.Service({
       [IDL.Vec(IDL.Text)],
       [],
     ),
+  'compareResumes' : IDL.Func([IDL.Vec(IDL.Principal)], [ComparisonResult], []),
   'deleteResume' : IDL.Func([IDL.Text], [], []),
   'getAllSkills' : IDL.Func([IDL.Principal], [IDL.Vec(Skill)], ['query']),
   'getCallerResumes' : IDL.Func([], [IDL.Vec(Resume)], ['query']),
@@ -163,6 +175,7 @@ export const idlService = IDL.Service({
       [],
     ),
   'updateJobRole' : IDL.Func([IDL.Text, IDL.Text, IDL.Vec(Skill)], [], []),
+  'updateResumeData' : IDL.Func([ResumeData], [], []),
   'uploadResume' : IDL.Func(
       [
         IDL.Text,
@@ -227,18 +240,38 @@ export const idlFactory = ({ IDL }) => {
     'user' : IDL.Null,
     'guest' : IDL.Null,
   });
-  const ExternalBlob = IDL.Vec(IDL.Nat8);
+  const ComparisonMetrics = IDL.Record({
+    'experienceLevel' : IDL.Float64,
+    'overallScore' : IDL.Float64,
+    'certificationsCount' : IDL.Nat,
+    'educationCount' : IDL.Nat,
+    'skillOverlap' : IDL.Nat,
+  });
   const Education = IDL.Record({
     'institution' : IDL.Text,
     'graduationYear' : IDL.Int,
     'degree' : IDL.Text,
   });
-  const Time = IDL.Int;
   const WorkExperience = IDL.Record({
     'role' : IDL.Text,
     'durationMonths' : IDL.Nat,
     'company' : IDL.Text,
   });
+  const ResumeData = IDL.Record({
+    'yearsOfExperience' : IDL.Nat,
+    'contactInfo' : IDL.Opt(IDL.Text),
+    'name' : IDL.Text,
+    'education' : IDL.Opt(IDL.Vec(Education)),
+    'workExperience' : IDL.Opt(IDL.Vec(WorkExperience)),
+    'certifications' : IDL.Opt(IDL.Vec(IDL.Text)),
+    'skills' : IDL.Opt(IDL.Vec(IDL.Text)),
+  });
+  const ComparisonResult = IDL.Record({
+    'metrics' : IDL.Vec(ComparisonMetrics),
+    'resumes' : IDL.Vec(ResumeData),
+  });
+  const ExternalBlob = IDL.Vec(IDL.Nat8);
+  const Time = IDL.Int;
   const Resume = IDL.Record({
     'blob' : ExternalBlob,
     'recommendations' : IDL.Opt(IDL.Vec(IDL.Text)),
@@ -262,15 +295,6 @@ export const idlFactory = ({ IDL }) => {
     'title' : IDL.Text,
     'description' : IDL.Text,
     'requiredSkills' : IDL.Vec(Skill),
-  });
-  const ResumeData = IDL.Record({
-    'yearsOfExperience' : IDL.Nat,
-    'contactInfo' : IDL.Opt(IDL.Text),
-    'name' : IDL.Text,
-    'education' : IDL.Opt(IDL.Vec(Education)),
-    'workExperience' : IDL.Opt(IDL.Vec(WorkExperience)),
-    'certifications' : IDL.Opt(IDL.Vec(IDL.Text)),
-    'skills' : IDL.Opt(IDL.Vec(IDL.Text)),
   });
   
   return IDL.Service({
@@ -313,6 +337,11 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(IDL.Text)],
         [],
       ),
+    'compareResumes' : IDL.Func(
+        [IDL.Vec(IDL.Principal)],
+        [ComparisonResult],
+        [],
+      ),
     'deleteResume' : IDL.Func([IDL.Text], [], []),
     'getAllSkills' : IDL.Func([IDL.Principal], [IDL.Vec(Skill)], ['query']),
     'getCallerResumes' : IDL.Func([], [IDL.Vec(Resume)], ['query']),
@@ -344,6 +373,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'updateJobRole' : IDL.Func([IDL.Text, IDL.Text, IDL.Vec(Skill)], [], []),
+    'updateResumeData' : IDL.Func([ResumeData], [], []),
     'uploadResume' : IDL.Func(
         [
           IDL.Text,

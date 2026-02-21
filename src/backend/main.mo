@@ -2,25 +2,28 @@ import Array "mo:core/Array";
 import Iter "mo:core/Iter";
 import Map "mo:core/Map";
 import Nat "mo:core/Nat";
-import List "mo:core/List";
 import Order "mo:core/Order";
 import Principal "mo:core/Principal";
+import List "mo:core/List";
 import Runtime "mo:core/Runtime";
 import Time "mo:core/Time";
 import Storage "blob-storage/Storage";
 import MixinAuthorization "authorization/MixinAuthorization";
 import MixinStorage "blob-storage/Mixin";
 import AccessControl "authorization/access-control";
-import Text "mo:core/Text";
 import Int "mo:core/Int";
+import Migration "migration";
+import Nat64 "mo:core/Nat64";
+import Float "mo:core/Float";
 
+(with migration = Migration.run)
 actor {
   // Mixins
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
   include MixinStorage();
 
-  // Data Types
+  // Data Types and Comparisons
   public type WorkExperience = {
     company : Text;
     role : Text;
@@ -96,6 +99,19 @@ actor {
     feedback : Text;
   };
 
+  public type ComparisonMetrics = {
+    overallScore : Float;
+    experienceLevel : Float;
+    educationCount : Nat;
+    skillOverlap : Nat;
+    certificationsCount : Nat;
+  };
+
+  public type ComparisonResult = {
+    resumes : [ResumeData];
+    metrics : [ComparisonMetrics];
+  };
+
   module JobRole {
     public func compare(role1 : JobRole, role2 : JobRole) : Order.Order {
       role1.title.compare(role2.title);
@@ -116,8 +132,136 @@ actor {
     };
   };
 
-  // Public function - accessible to all users including guests
-  // No authorization needed as it only validates data structure without accessing user data
+  // Resume Comparison and Editing
+  public shared ({ caller }) func compareResumes(
+    principalIds : [Principal]
+  ) : async ComparisonResult {
+    if (not AccessControl.hasPermission(accessControlState, caller, #user)) {
+      Runtime.trap("Unauthorized: Only registered users can compare resumes");
+    };
+
+    // Fetch resume data for all principal IDs
+    let resumesToCompare = principalIds.map(
+      func(_id) {
+        let data = resumeDataMap.get(caller);
+        switch (data) {
+          case (null) {
+            Runtime.trap("Resume data not found for one or more users");
+          };
+          case (?resumeData) {
+            resumeData;
+          };
+        };
+      }
+    );
+
+    // Calculate comparison metrics
+    let metrics = resumesToCompare.map(
+      func(resumeData) {
+        let overallScore = calculateOverallScore(resumeData);
+        let experienceLevel = calculateExperienceLevel(resumeData);
+        let educationCount = calculateEducationCount(resumeData);
+        let skillOverlap = calculateSkillOverlap(resumesToCompare, resumeData);
+        let certificationsCount = calculateCertificationsCount(resumeData);
+
+        {
+          overallScore;
+          experienceLevel;
+          educationCount;
+          skillOverlap;
+          certificationsCount;
+        };
+      }
+    );
+
+    {
+      resumes = resumesToCompare;
+      metrics;
+    };
+  };
+
+  public shared ({ caller }) func updateResumeData(updatedData : ResumeData) : async () {
+    if (updatedData.name == "") {
+      Runtime.trap("Name cannot be empty");
+    };
+
+    resumeDataMap.add(caller, updatedData);
+  };
+
+  // Helper Functions for comparison metrics
+  func calculateOverallScore(resume : ResumeData) : Float {
+    let experienceScore = if (resume.yearsOfExperience > 5) { 5.0 } else { resume.yearsOfExperience.toFloat() };
+    let educationScore = switch (resume.education) {
+      case (null) { 0.0 };
+      case (?edu) {
+        let degreeCount = edu.size();
+        if (degreeCount > 3) { 3.0 } else { degreeCount.toFloat() };
+      };
+    };
+    let certificationsScore = switch (resume.certifications) {
+      case (null) { 0.0 };
+      case (?certifications) {
+        let certCount = certifications.size();
+        if (certCount > 2) { 2.0 } else { certCount.toFloat() };
+      };
+    };
+    let skillsScore = switch (resume.skills) {
+      case (null) { 0.0 };
+      case (?skills) {
+        let skillCount = skills.size();
+        if (skillCount > 10) { 10.0 } else { skillCount.toFloat() };
+      };
+    };
+
+    let sum = experienceScore + educationScore + certificationsScore + skillsScore;
+    sum / 4.0;
+  };
+
+  func calculateExperienceLevel(resume : ResumeData) : Float {
+    if (resume.yearsOfExperience > 15) { 15.0 } else { resume.yearsOfExperience.toFloat() };
+  };
+
+  func calculateEducationCount(resume : ResumeData) : Nat {
+    switch (resume.education) {
+      case (null) { 0 };
+      case (?edu) { edu.size() };
+    };
+  };
+
+  func calculateSkillOverlap(resumesToCompare : [ResumeData], currentResume : ResumeData) : Nat {
+    var overlapCount = 0;
+
+    switch (currentResume.skills) {
+      case (null) {};
+      case (?currentSkills) {
+        for (resume in resumesToCompare.values()) {
+          switch (resume.skills) {
+            case (null) {};
+            case (?comparedSkills) {
+              for (skill in currentSkills.values()) {
+                for (comparedSkill in comparedSkills.values()) {
+                  if (skill == comparedSkill) {
+                    overlapCount += 1;
+                  };
+                };
+              };
+            };
+          };
+        };
+      };
+    };
+
+    overlapCount;
+  };
+
+  func calculateCertificationsCount(resume : ResumeData) : Nat {
+    switch (resume.certifications) {
+      case (null) { 0 };
+      case (?certifications) { certifications.size() };
+    };
+  };
+
+  // Rest of the code (same as initial implementation)
   public shared ({ caller }) func validateResume(
     experiences : ?[WorkExperience],
     skills : ?[Skill],
@@ -156,11 +300,16 @@ actor {
   };
 
   // Administrators and users can analyze resume quality
-  public shared ({ caller }) func analyzeResume(completenessScore : Nat, contentQualityScore : Nat, formattingScore : Nat, skillRelevanceScore : Nat, feedback : Text) : async ResumeScore {
+  public shared ({ caller }) func analyzeResume(
+    completenessScore : Nat,
+    contentQualityScore : Nat,
+    formattingScore : Nat,
+    skillRelevanceScore : Nat,
+    feedback : Text,
+  ) : async ResumeScore {
     if (not AccessControl.hasPermission(accessControlState, caller, #user)) {
       Runtime.trap("Unauthorized: Only registered users or admins can access resume scores");
     };
-    
     calculateResumeScore(completenessScore, contentQualityScore, formattingScore, skillRelevanceScore, feedback);
   };
 
@@ -561,3 +710,4 @@ actor {
     };
   };
 };
+
